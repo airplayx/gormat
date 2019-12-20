@@ -41,14 +41,14 @@ func LoadConfig() (err error) {
 }
 
 func Configs() AppConfigs {
-	reflect, err := ioutil.ReadFile("reflect.json")
+	reflect, err := ioutil.ReadFile("./source/reflect.json")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	if err := json.Unmarshal(reflect, &config.Reflect); err != nil {
 		log.Fatalln(err.Error())
 	}
-	special, err := ioutil.ReadFile("special.json")
+	special, err := ioutil.ReadFile("./source/special.json")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
