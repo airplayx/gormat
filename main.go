@@ -11,8 +11,6 @@ import (
 	"log"
 )
 
-const preferenceCurrentTab = "currentTab"
-
 func main() {
 	a := app.NewWithID("gormat")
 	a.SetIcon(theme.FyneLogo())
