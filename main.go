@@ -16,7 +16,7 @@ func main() {
 	_ = os.Setenv("FYNE_SCALE", `2`)
 	_ = os.Setenv("FYNE_THEME", "light")
 	main := app.NewWithID("Gopher")
-	icon, _ := fyne.LoadResourceFromPath("./source/Icon.png")
+	icon, _ := fyne.LoadResourceFromPath("./Icon.png")
 	main.SetIcon(icon)
 	window := main.NewWindow("Gopher工具箱")
 	window.CenterOnScreen()

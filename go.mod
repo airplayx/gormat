@@ -6,6 +6,7 @@ require (
 	fyne.io/fyne v1.2.0
 	github.com/BurntSushi/toml v0.3.1
 	github.com/denisenkom/go-mssqldb v0.0.0-20191128021309-1d7a30a10f73
+	github.com/go-gl/glfw v0.0.0-20191125211704-12ad95a8df72 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hsyan2008/hfw v0.0.0-20191210023201-540505a3dfba
 	github.com/lib/pq v1.3.0
