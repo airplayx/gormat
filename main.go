@@ -32,8 +32,6 @@ func main() {
 		)),
 	)
 	tabs.SetTabLocation(widget.TabLocationLeading)
-	tabs.SelectTabIndex(a.Preferences().Int(preferenceCurrentTab))
-	a.Preferences().SetInt(preferenceCurrentTab, tabs.CurrentTabIndex())
 
 	w.SetContent(tabs)
 	w.ShowAndRun()
