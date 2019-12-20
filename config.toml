@@ -1,0 +1,7 @@
+target_dir = "./models"
+driver     = "mysql"
+source     = "root:password@(localhost:3306)/adProduct"
+tag_type   = ["gorm","json"]
+json_omitempty  =  false
+exclude_tables = []
+try_complete = true
