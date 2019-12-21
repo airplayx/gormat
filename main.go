@@ -30,8 +30,8 @@ func main() {
 				widget.NewTabContainer(
 					widget.NewTabItem("选项", tab.Option()),
 					widget.NewTabItem("数据库", tab.DataBase()),
-					widget.NewTabItem("映射", tab.Reflect()),
-					widget.NewTabItem("特殊转型", tab.Special()),
+					widget.NewTabItem("映射", tab.Reflect(window)),
+					widget.NewTabItem("特殊转型", tab.Special(window)),
 				),
 			)),
 	)

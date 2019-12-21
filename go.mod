@@ -10,8 +10,8 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hsyan2008/hfw v0.0.0-20191210023201-540505a3dfba
 	github.com/lib/pq v1.3.0
-	github.com/lxn/win v0.0.0-20191128105842-2da648fda5b4
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
+	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
 	xorm.io/core v0.7.2
 	xorm.io/xorm v0.8.1
 )
