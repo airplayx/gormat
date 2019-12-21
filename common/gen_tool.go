@@ -26,7 +26,7 @@ func NewGenTool() *GenTool {
 	}
 	if !common.IsExist(dir) {
 		if err := os.MkdirAll(dir, 0755); err != nil {
-			log.Fatal(err.Error())
+			log.Println(err.Error())
 		}
 	}
 	return &GenTool{
@@ -36,8 +36,8 @@ func NewGenTool() *GenTool {
 	}
 }
 
-func (genTool *GenTool) getDBMetas() (err error) {
-	genTool.tables, err = DBMetas(Configs().ExcludeTables, Configs().TryComplete)
+func (genTool *GenTool) getDBMetas(ts []string) (err error) {
+	genTool.tables, err = DBMetas(ts, Configs().ExcludeTables, Configs().TryComplete)
 	if err != nil {
 		return
 	}
@@ -53,10 +53,10 @@ func (genTool *GenTool) genModels(maps map[string]string) {
 	return
 }
 
-func (genTool *GenTool) genFile() (err error) {
+func (genTool *GenTool) genFile() (str string, err error) {
 	for _, model := range genTool.models {
 		//package
-		str := fmt.Sprintln("package", genTool.packageName)
+		str = fmt.Sprintln("package", genTool.packageName)
 
 		//import
 		if len(model.Imports) > 0 {
@@ -77,37 +77,31 @@ func (genTool *GenTool) genFile() (err error) {
 		str += fmt.Sprintln("func (*", model.StructName, ") TableName() string {")
 		str += fmt.Sprintln(fmt.Sprintf("return `%s` //"+model.Comment, model.TableName))
 		str += fmt.Sprintln("}")
-
 		//format
-		b, err := format.Source([]byte(str))
+		var by []byte
+		by, err = format.Source([]byte(str))
 		if err != nil {
-			return err
+			return
 		}
 		file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", model.TableName))
-		err = ioutil.WriteFile(file, b, 0644)
+		err = ioutil.WriteFile(file, by, 0644)
 		if err != nil {
-			return err
+			return
 		}
 		log.Println("gen into file:", file)
 	}
 	return
 }
 
-func (genTool *GenTool) Gen() (err error) {
+func (genTool *GenTool) Gen(ts []string) (str string, err error) {
 	if err = InitDb(); err != nil {
 		return
 	}
 
-	if err = genTool.getDBMetas(); err != nil {
+	if err = genTool.getDBMetas(ts); err != nil {
 		return
 	}
-
 	genTool.genModels(Configs().Reflect)
 	log.Println("start generate model files...")
-	if err = genTool.genFile(); err != nil {
-		return
-	}
-	log.Println("generate complete!")
-
-	return nil
+	return genTool.genFile()
 }

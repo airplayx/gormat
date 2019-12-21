@@ -9,6 +9,7 @@ require (
 	github.com/go-gl/glfw v0.0.0-20191125211704-12ad95a8df72 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hsyan2008/hfw v0.0.0-20191210023201-540505a3dfba
+	github.com/josephspurrier/goversioninfo v0.0.0-20190209210621-63e6d1acd3dd // indirect
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
 	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect

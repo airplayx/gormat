@@ -14,7 +14,7 @@
   "time": "time.Time",
   "date": "time.Time",
   "datetime": "time.Time",
-  "timestramp": "int64",
+  "timestamp": "time.Time",
   "enum": "string",
   "set": "string",
   "blob": "string"

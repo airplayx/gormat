@@ -32,13 +32,17 @@ func DB() *xorm.Engine {
 	return engine
 }
 
-func DBMetas(et []string, tryComplete bool) (tables []*core.Table, err error) {
+func DBMetas(t []string, et []string, tryComplete bool) (tables []*core.Table, err error) {
 	tmpTables, err := DB().Dialect().GetTables()
 	if err != nil {
 		return nil, fmt.Errorf("get tables faild: %s", err)
 	}
 	for _, v := range tmpTables {
-		if len(et) > 0 {
+		if len(t) > 0 {
+			if !InStringSlice(v.Name, t) {
+				continue
+			}
+		} else if len(et) > 0 {
 			if InStringSlice(v.Name, et) {
 				continue
 			}

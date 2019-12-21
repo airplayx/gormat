@@ -14,6 +14,12 @@ import (
 func Option() fyne.Widget {
 	targetDir := widget.NewEntry()
 	targetDir.SetPlaceHolder("./models")
+	autoSave := widget.NewRadio([]string{"是", "否"}, func(s string) {
+
+	})
+	autoSave.Horizontal = true
+	autoSave.SetSelected("是")
+
 	gorm := widget.NewCheck("gorm", func(bool) {})
 	gorm.SetChecked(true)
 	gorm.Hide()
@@ -22,7 +28,7 @@ func Option() fyne.Widget {
 
 	})
 	json.SetSelected("仅生成")
-	excludeTables := widget.NewMultiLineEntry()
+	//excludeTables := widget.NewMultiLineEntry()
 	tryComplete := widget.NewRadio([]string{"是", "否"}, func(s string) {
 
 	})
@@ -37,8 +43,9 @@ func Option() fyne.Widget {
 		},
 		Items: []*widget.FormItem{
 			{Text: "输出文件夹", Widget: targetDir},
+			{Text: "自动保存", Widget: autoSave},
 			{Text: "json标签", Widget: json},
-			{Text: "排除表", Widget: excludeTables},
+			//{Text: "排除表", Widget: excludeTables},
 			{Text: "始终执行", Widget: tryComplete},
 		},
 	}

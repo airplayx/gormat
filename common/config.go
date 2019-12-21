@@ -29,7 +29,7 @@ type AppConfigs struct {
 func LoadConfig() (err error) {
 	appConfigPath := filepath.Join(workPath, "config.toml")
 	if AppPath, err := filepath.Abs(filepath.Dir(os.Args[0])); err != nil {
-		panic(err)
+		log.Println(err.Error())
 	} else {
 		envConfig := filepath.Join(AppPath, "config.toml")
 		if _, err := os.Stat(envConfig); err == nil {
@@ -43,17 +43,17 @@ func LoadConfig() (err error) {
 func Configs() AppConfigs {
 	reflect, err := ioutil.ReadFile("./source/reflect.json")
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	if err := json.Unmarshal(reflect, &config.Reflect); err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	special, err := ioutil.ReadFile("./source/special.json")
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	if err := json.Unmarshal(special, &config.Special); err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err.Error())
 	}
 	return config
 }
