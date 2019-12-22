@@ -26,35 +26,19 @@ func main() {
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("首页", nil, _app.WelcomeScreen()),
 		widget.NewTabItemWithIcon("SQL转Struct", nil, fyne.NewContainerWithLayout(
-			layout.NewBorderLayout(nil, nil, nil, nil),
+			layout.NewGridLayoutWithColumns(1),
 			widget.NewTabContainer(
 				widget.NewTabItem("选项", tab.Option()),
 				widget.NewTabItem("数据库", tab.DataBase()),
 				widget.NewTabItem("映射", tab.Reflect(window)),
 				widget.NewTabItem("特殊转型", tab.Special(window)),
-				widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(),
-					fyne.NewContainerWithLayout(
-						layout.NewGridLayoutWithRows(1),
-						//左侧表数据
-						widget.NewScrollContainer(widget.NewGroup("选择表",
-							widget.NewButton("pro_account_group", func() {
-								if str, err := _app.Sql2struct(window,
-									[]string{
-										"pro_account_group",
-									}); err != nil {
-									result.SetText(err.Error())
-								} else {
-									result.SetText(str)
-								}
-							}),
-						)),
-						//右侧结构体
-						result,
-					)),
+				widget.NewTabItemWithIcon("开始转换",
+					theme.ViewRefreshIcon(),
+					_app.Sql2structScreen(window, result)),
 			),
 		)),
 		widget.NewTabItemWithIcon("JSON转Struct", nil, fyne.NewContainerWithLayout(
-			layout.NewBorderLayout(nil, nil, nil, nil),
+			layout.NewGridLayoutWithColumns(1),
 		)),
 	)
 	tabs.SetTabLocation(widget.TabLocationLeading)
