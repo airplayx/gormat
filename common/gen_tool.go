@@ -53,10 +53,10 @@ func (genTool *GenTool) genModels(maps map[string]string) {
 	return
 }
 
-func (genTool *GenTool) genFile() (str string, err error) {
+func (genTool *GenTool) genFile() (by []byte, err error) {
 	for _, model := range genTool.models {
 		//package
-		str = fmt.Sprintln("package", genTool.packageName)
+		str := fmt.Sprintln("package", genTool.packageName)
 
 		//import
 		if len(model.Imports) > 0 {
@@ -78,11 +78,11 @@ func (genTool *GenTool) genFile() (str string, err error) {
 		str += fmt.Sprintln(fmt.Sprintf("return `%s` //"+model.Comment, model.TableName))
 		str += fmt.Sprintln("}")
 		//format
-		var by []byte
 		by, err = format.Source([]byte(str))
 		if err != nil {
 			return
 		}
+
 		file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", model.TableName))
 		err = ioutil.WriteFile(file, by, 0644)
 		if err != nil {
@@ -93,7 +93,7 @@ func (genTool *GenTool) genFile() (str string, err error) {
 	return
 }
 
-func (genTool *GenTool) Gen(ts []string) (str string, err error) {
+func (genTool *GenTool) Gen(ts []string) (result []byte, err error) {
 	if err = InitDb(); err != nil {
 		return
 	}
