@@ -28,17 +28,20 @@ func Aside(win fyne.Window) (aside *widget.TabContainer) {
 	}
 	aside = widget.NewTabContainer(
 		widget.NewTabItemWithIcon("首页", nil, _app.WelcomeScreen()),
-		widget.NewTabItemWithIcon("SQL转Struct", nil, fyne.NewContainerWithLayout(
+		widget.NewTabItemWithIcon("Sql转Struct", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 			sql2Str,
 		)),
-		widget.NewTabItemWithIcon("JSON转Struct", nil, fyne.NewContainerWithLayout(
+		widget.NewTabItemWithIcon("Json转Struct", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 		)),
 		widget.NewTabItemWithIcon("URL编解码", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 		)),
-		widget.NewTabItemWithIcon("时间戳格式", nil, fyne.NewContainerWithLayout(
+		widget.NewTabItemWithIcon("日期格式化", nil, fyne.NewContainerWithLayout(
+			layout.NewGridLayoutWithColumns(1),
+		)),
+		widget.NewTabItemWithIcon("进制转换", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 		)),
 	)

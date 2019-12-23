@@ -16,7 +16,7 @@ func main() {
 	main.SetIcon(icon)
 	window := main.NewWindow("Gopher工具箱")
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 800, Height: 450})
+	window.Resize(fyne.Size{Width: 1000, Height: 450})
 	window.SetContent(menu.Aside(window))
 	window.ShowAndRun()
 	window.SetMaster()

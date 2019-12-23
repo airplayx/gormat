@@ -32,7 +32,7 @@ func Reflect(win fyne.Window) fyne.Widget {
 "time": "time.Time",
 "date": "time.Time",
 "datetime": "time.Time",
-"timestramp": "int64",
+"timestamp": "int64",
 "enum": "string",
 "set": "string",
 "blob": "string"
