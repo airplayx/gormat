@@ -4,7 +4,7 @@
 @File : option
 @Author : Bingo <airplayx@gmail.com>
 */
-package tab
+package sql2struct
 
 import (
 	"fyne.io/fyne"
@@ -43,7 +43,7 @@ func Option() fyne.Widget {
 		},
 		Items: []*widget.FormItem{
 			{Text: "输出文件夹", Widget: targetDir},
-			{Text: "自动保存", Widget: autoSave},
+			{Text: "自动存为文件", Widget: autoSave},
 			{Text: "json标签", Widget: json},
 			//{Text: "排除表", Widget: excludeTables},
 			{Text: "始终执行", Widget: tryComplete},

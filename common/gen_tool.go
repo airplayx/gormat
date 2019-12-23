@@ -97,11 +97,9 @@ func (genTool *GenTool) Gen(ts []string) (result []byte, err error) {
 	if err = InitDb(); err != nil {
 		return
 	}
-
 	if err = genTool.getDBMetas(ts); err != nil {
 		return
 	}
 	genTool.genModels(Configs().Reflect)
-	log.Println("start generate model files...")
 	return genTool.genFile()
 }

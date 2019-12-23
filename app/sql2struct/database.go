@@ -4,7 +4,7 @@
 @File : database_tab
 @Author : Bingo <airplayx@gmail.com>
 */
-package tab
+package sql2struct
 
 import (
 	"fyne.io/fyne"

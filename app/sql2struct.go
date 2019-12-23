@@ -11,19 +11,18 @@ import (
 	"time"
 )
 
-func Sql2structScreen(win fyne.Window, result *widget.Entry) *fyne.Container {
+func Sql2structScreen(win fyne.Window) (c *fyne.Container) {
+	result := widget.NewMultiLineEntry()
+	c = &fyne.Container{}
 	if err := common.LoadConfig(); err != nil {
-		dialog.ShowError(errors.New("加载配置文件错误"), win)
-		return nil
+		return
 	}
 	if err := common.InitDb(); err != nil {
-		dialog.ShowError(errors.New("数据库连接失败"), win)
-		return nil
+		return
 	}
 	ts, err := common.DBMetas(nil, common.Configs().ExcludeTables, common.Configs().TryComplete)
 	if err != nil {
-		dialog.ShowError(errors.New("数据库信息获取失败"), win)
-		return nil
+		return
 	}
 	var tables []fyne.CanvasObject
 	for _, v := range ts {
@@ -38,15 +37,14 @@ func Sql2structScreen(win fyne.Window, result *widget.Entry) *fyne.Container {
 			}
 		}))
 	}
-	return fyne.NewContainerWithLayout(
+	c = fyne.NewContainerWithLayout(
 		layout.NewGridLayoutWithRows(1),
-		//左侧表数据
 		widget.NewGroupWithScroller("选择表",
 			tables...,
 		),
-		//右侧结构体
 		widget.NewScrollContainer(result),
 	)
+	return
 }
 
 func sql2struct(win fyne.Window, ts []string) (result []byte, err error) {
