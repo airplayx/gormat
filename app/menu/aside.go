@@ -25,6 +25,9 @@ func Aside(win fyne.Window) (aside *widget.TabContainer) {
 		sql2Str.Items = append(sql2Str.Items,
 			widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), c),
 		)
+		sql2Str.Items = append(sql2Str.Items,
+			widget.NewTabItemWithIcon("反向入库", theme.DocumentSaveIcon(), fyne.NewContainer()),
+		)
 	}
 	aside = widget.NewTabContainer(
 		widget.NewTabItemWithIcon("首页", nil, _app.WelcomeScreen()),
