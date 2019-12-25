@@ -25,6 +25,10 @@ func DataBase() fyne.Widget {
 	user := widget.NewEntry()
 	user.SetPlaceHolder("root")
 	database := widget.NewEntry()
+	see := widget.NewHBox()
+	see.Append(widget.NewButton("测试连接", func() {
+
+	}))
 	return &widget.Form{
 		OnCancel: func() {
 
@@ -39,6 +43,7 @@ func DataBase() fyne.Widget {
 			{Text: "用户名", Widget: user},
 			{Text: "密码", Widget: password},
 			{Text: "数据库", Widget: database},
+			{Text: "", Widget: see},
 		},
 	}
 }
