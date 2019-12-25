@@ -26,12 +26,12 @@ var (
     "driver": "mysql",
     "exclude_tables": [],
     "try_complete": true,
-    "sourceMap": {
+     "sourceMap": {
       "user": "root",
-      "password": "root",
-      "host": "10.25.26.195",
-      "port": "17426",
-      "db": "xtp_csmp_db"
+      "password": "password",
+      "host": "localhost",
+      "port": "3306",
+      "db": "test"
     },
     "reflect": {
       "tinyint": "int8",

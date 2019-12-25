@@ -13,11 +13,13 @@ import (
 	"fyne.io/fyne/widget"
 	_app "gormat/app"
 	"gormat/app/sql2struct"
+	"gormat/common"
 )
 
 func Aside(win fyne.Window) (aside *widget.TabContainer) {
+	var options = common.Configs()
 	sql2Str := widget.NewTabContainer(
-		widget.NewTabItem("选项", sql2struct.Option()),
+		widget.NewTabItem("选项", sql2struct.Option(&options)),
 		widget.NewTabItem("数据库", sql2struct.DataBase()),
 		widget.NewTabItem("映射", sql2struct.Reflect(win)),
 		widget.NewTabItem("特殊转型", sql2struct.Special(win)))

@@ -23,7 +23,7 @@ func main() {
 	main.SetIcon(fyne.NewStaticResource("ico", _app.Ico))
 	window := main.NewWindow("Gopher工具箱")
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 1000, Height: 450})
+	window.Resize(fyne.Size{Width: 1366, Height: 768})
 	window.SetContent(menu.Aside(window))
 	window.ShowAndRun()
 	window.SetMaster()

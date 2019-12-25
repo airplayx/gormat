@@ -15,7 +15,14 @@ import (
 var engine *xorm.Engine
 
 func InitDb() (err error) {
-	engine, err = xorm.NewEngine(Configs().Driver, "root:root@(10.25.26.195:17426)/xtp_csmp_db")
+	engine, err = xorm.NewEngine(Configs().Driver,
+		fmt.Sprintf("%s:%s@(%s:%s)/%s",
+			Configs().SourceMap.User,
+			Configs().SourceMap.Password,
+			Configs().SourceMap.Host,
+			Configs().SourceMap.Port,
+			Configs().SourceMap.Db,
+		))
 	if err != nil {
 		return
 	}

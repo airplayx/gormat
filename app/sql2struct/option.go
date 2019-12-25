@@ -9,30 +9,41 @@ package sql2struct
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
+	"github.com/chenhg5/collection"
+
+	"gormat/common"
 )
 
-func Option() fyne.Widget {
+func Option(options *common.SQL2Struct) fyne.Widget {
 	targetDir := widget.NewEntry()
-	targetDir.SetText("./models")
+	targetDir.SetText(options.TargetDir)
 	autoSave := widget.NewRadio([]string{"是", "否"}, func(s string) {
 
 	})
 	autoSave.Horizontal = true
-	autoSave.SetSelected("是")
+	if options.AutoSave {
+		autoSave.SetSelected("是")
+	} else {
+		autoSave.SetSelected("否")
+	}
 
 	gorm := widget.NewCheck("gorm", func(bool) {})
-	gorm.SetChecked(true)
+	gorm.SetChecked(collection.Collect(options.Tags).Contains("gorm"))
 
 	xorm := widget.NewCheck("xorm", func(bool) {})
-	xorm.SetChecked(true)
+	xorm.SetChecked(collection.Collect(options.Tags).Contains("xorm"))
 
 	beegoOrm := widget.NewCheck("beegoOrm", func(bool) {})
-	beegoOrm.SetChecked(true)
+	beegoOrm.SetChecked(collection.Collect(options.Tags).Contains("beegoOrm"))
 
 	jsonType := widget.NewSelect([]string{"仅生成", "生成并包含 omitempty"}, func(s string) {
 
 	})
-	jsonType.SetSelected("仅生成")
+	if options.JSONOmitempty {
+		jsonType.SetSelected("仅生成")
+	} else {
+		jsonType.SetSelected("生成并包含 omitempty")
+	}
 
 	json := widget.NewCheck("json", func(on bool) {
 		if !on {
@@ -41,7 +52,8 @@ func Option() fyne.Widget {
 			jsonType.Show()
 		}
 	})
-	json.SetChecked(true)
+	jsonType.Hidden = !collection.Collect(options.Tags).Contains("json")
+	json.SetChecked(!jsonType.Hidden)
 
 	excludeTables := widget.NewMultiLineEntry()
 	excludeTables.SetPlaceHolder("多个数据表以回车换行")
@@ -49,7 +61,12 @@ func Option() fyne.Widget {
 
 	})
 	tryComplete.Horizontal = true
-	tryComplete.SetSelected("是")
+	if options.TryComplete {
+		tryComplete.SetSelected("是")
+	} else {
+		tryComplete.SetSelected("否")
+	}
+
 	return &widget.Form{
 		OnCancel: func() {
 
