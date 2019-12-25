@@ -16,4 +16,4 @@
 .idea
 go.sum
 models*/
-
+*.syso

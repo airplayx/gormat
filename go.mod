@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.37.4 // indirect
 	fyne.io/fyne v1.2.1
 	github.com/BurntSushi/toml v0.3.1
+	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 	github.com/denisenkom/go-mssqldb v0.0.0-20191128021309-1d7a30a10f73
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/hsyan2008/hfw v0.0.0-20191210023201-540505a3dfba

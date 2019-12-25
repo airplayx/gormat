@@ -100,6 +100,6 @@ func (genTool *GenTool) Gen(ts []string) (result []byte, err error) {
 	if err = genTool.getDBMetas(ts); err != nil {
 		return
 	}
-	genTool.genModels(Configs().Reflect)
+	genTool.genModels(JSONMethod(Configs().Reflect))
 	return genTool.genFile()
 }

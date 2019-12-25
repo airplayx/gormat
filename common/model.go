@@ -50,16 +50,16 @@ func NewModelField(table *core.Table, column *core.Column, maps map[string]strin
 	if strings.HasPrefix(f.ColumnName, "is_") && column.SQLType.Name == core.TinyInt {
 		f.Type = "bool"
 	}
-	for key, val := range Configs().Special {
+	for key, val := range JSONMethod(Configs().Special) {
 		if f.ColumnName == key {
 			f.Type = val
 		}
 	}
 	var tags []string
-	for _, v := range Configs().TagType {
+	for _, v := range Configs().Tags {
 		switch v {
 		case "json":
-			tags = append(tags, GetJsonTag(column, Configs().JsonOmitempty))
+			tags = append(tags, GetJsonTag(column, Configs().JSONOmitempty))
 		case "gorm":
 			tags = append(tags, GetGormTag(table, column))
 		}
