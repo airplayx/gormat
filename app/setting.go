@@ -11,6 +11,7 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
 )
 
 func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
@@ -23,7 +24,12 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			app.Settings().SetTheme(theme.LightTheme())
 		}
 	})
-	theme.SetSelected("白色")
+	switch t, _ := jsonparser.GetString(Config, "const", "theme"); t {
+	case "light":
+		theme.SetSelected("白色")
+	default:
+		theme.SetSelected("黑色")
+	}
 	theme.Horizontal = true
 
 	dpi := widget.NewRadio([]string{"默认" /*"全屏",*/, "4K"}, func(s string) {
@@ -37,7 +43,12 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			win.Canvas().SetScale(1)
 		}
 	})
-	dpi.SetSelected("默认")
+	switch scale, _ := jsonparser.GetFloat(Config, "const", "scale"); scale {
+	case 1.0:
+		dpi.SetSelected("默认")
+	case 2.0:
+		dpi.SetSelected("4K")
+	}
 	dpi.Horizontal = true
 	return fyne.NewContainerWithLayout(
 		layout.NewGridLayoutWithColumns(1),
