@@ -16,7 +16,7 @@ import (
 	"gormat/common"
 )
 
-func Aside(win fyne.Window) (aside *widget.TabContainer) {
+func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 	var options = common.Configs()
 	sql2Str := widget.NewTabContainer(
 		widget.NewTabItem("选项", sql2struct.Option(&options)),
@@ -49,6 +49,7 @@ func Aside(win fyne.Window) (aside *widget.TabContainer) {
 		widget.NewTabItemWithIcon("进制转换", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 		)),
+		widget.NewTabItemWithIcon("设置", nil, _app.SettingScreen(app, win)),
 	)
 	aside.SetTabLocation(widget.TabLocationLeading)
 	return

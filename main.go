@@ -24,7 +24,7 @@ func main() {
 	window := main.NewWindow("Gopher工具箱")
 	window.CenterOnScreen()
 	window.Resize(fyne.Size{Width: 1366, Height: 768})
-	window.SetContent(menu.Aside(window))
+	window.SetContent(menu.Aside(main, window))
 	window.ShowAndRun()
 	window.SetMaster()
 }
