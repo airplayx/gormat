@@ -1,4 +1,4 @@
-package common
+package Sql2struct
 
 import (
 	"fmt"
@@ -85,7 +85,7 @@ func loadTableInfo(table *core.Table) error {
 			if col := table.GetColumn(name); col != nil {
 				col.Indexes[index.Name] = index.Type
 			} else {
-				return fmt.Errorf("Unknown col %s in index %v of table %v, columns %v", name, index.Name, table.Name, table.ColumnsSeq())
+				return fmt.Errorf("Unknown col %s in index %v of table %v, columns %v ", name, index.Name, table.Name, table.ColumnsSeq())
 			}
 		}
 	}

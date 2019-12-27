@@ -6,18 +6,18 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/common"
+	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
 )
 
-func Sql2structScreen(win fyne.Window) (c *fyne.Container) {
+func Screen(win fyne.Window) (c *fyne.Container) {
 	result := widget.NewMultiLineEntry()
 	c = &fyne.Container{}
-	if err := common.InitDb(); err != nil {
+	if err := Sql2struct.InitDb(); err != nil {
 		return
 	}
-	ts, err := common.DBMetas(nil, common.Configs().ExcludeTables, common.Configs().TryComplete)
+	ts, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete)
 	if err != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func sql2struct(win fyne.Window, ts []string) (result []byte, err error) {
 		status.SetValue(1)
 	}()
 	status.Show()
-	if result, err = common.NewGenTool().Gen(ts); err != nil {
+	if result, err = Sql2struct.NewGenTool().Gen(ts); err != nil {
 		dialog.ShowError(errors.New("转换失败"), win)
 		return
 	}

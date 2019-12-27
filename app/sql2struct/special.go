@@ -12,11 +12,11 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"gormat/common"
+	"gormat/controllers/Sql2struct"
 	"strings"
 )
 
-func Special(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
+func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
 	special, _ := json.Marshal(options.Special)
 	specialData.SetText(strings.ReplaceAll(string(special), ",", ",\n"))

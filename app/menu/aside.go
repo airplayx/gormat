@@ -13,26 +13,22 @@ import (
 	"fyne.io/fyne/widget"
 	_app "gormat/app"
 	"gormat/app/sql2struct"
-	"gormat/common"
+	"gormat/controllers/Sql2struct"
 )
 
 func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
-	var options = common.Configs()
-	sql2Str := widget.NewTabContainer(
-		widget.NewTabItem("选项", sql2struct.Option(&options)),
-		widget.NewTabItem("数据库", sql2struct.DataBase(win, &options)),
-		widget.NewTabItem("映射", sql2struct.Reflect(win, &options)),
-		widget.NewTabItem("特殊转型", sql2struct.Special(win, &options)))
-	if c := sql2struct.Sql2structScreen(win); len(c.Objects) != 0 {
-		sql2Str.Items = append(sql2Str.Items,
-			widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), c),
-		)
-	}
+	var options = Sql2struct.Configs()
 	aside = widget.NewTabContainer(
 		widget.NewTabItemWithIcon("首页", nil, _app.WelcomeScreen()),
 		widget.NewTabItemWithIcon("Sql转Struct", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
-			sql2Str,
+			widget.NewTabContainer(
+				widget.NewTabItem("选项", sql2struct.Option(&options)),
+				widget.NewTabItem("数据库", sql2struct.DataBase(win, &options)),
+				widget.NewTabItem("映射", sql2struct.Reflect(win, &options)),
+				widget.NewTabItem("特殊转型", sql2struct.Special(win, &options)),
+				widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), sql2struct.Screen(win)),
+			),
 		)),
 		widget.NewTabItemWithIcon("Json转Struct", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),

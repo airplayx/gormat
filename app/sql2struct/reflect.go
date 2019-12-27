@@ -12,12 +12,12 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"gormat/common"
+	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
 )
 
-func Reflect(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
+func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	dataType := widget.NewMultiLineEntry()
 	reflect, _ := json.Marshal(options.Reflect)
 	dataType.SetText(strings.ReplaceAll(string(reflect), ",", ",\n"))

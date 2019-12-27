@@ -1,4 +1,4 @@
-package common
+package Sql2struct
 
 import (
 	"bytes"

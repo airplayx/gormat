@@ -10,12 +10,11 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
 	"github.com/chenhg5/collection"
+	"gormat/controllers/Sql2struct"
 	"strings"
-
-	"gormat/common"
 )
 
-func Option(options *common.SQL2Struct) fyne.Widget {
+func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
 	targetDir := widget.NewEntry()
 	targetDir.SetText(options.TargetDir)
 	autoSave := widget.NewRadio([]string{"是", "否"}, func(s string) {

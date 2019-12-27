@@ -11,12 +11,12 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
-	"gormat/common"
+	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
 )
 
-func DataBase(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
+func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -49,7 +49,7 @@ func DataBase(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
 			progressDialog.Hide()
 		}()
 		progressDialog.Show()
-		if err := common.InitDb(); err != nil {
+		if err := Sql2struct.InitDb(); err != nil {
 			dialog.ShowError(errors.New("连接失败"), win)
 		} else {
 			dialog.ShowInformation("成功", "连接成功", win)
