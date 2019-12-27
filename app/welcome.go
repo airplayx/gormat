@@ -18,16 +18,15 @@ func WelcomeScreen() fyne.CanvasObject {
 	logo := canvas.NewImageFromFile("./source/gopher.png")
 	logo.SetMinSize(fyne.NewSize(275, 470))
 
-	link, err := url.Parse("https://github.com/airplayx")
-	if err != nil {
-		fyne.LogError("Could not parse URL", err)
-	}
+	airplayx, _ := url.Parse("http://github.com/airplayx")
+	fyneIo, _ := url.Parse("http://fyne.io/fyne")
 
 	return widget.NewVBox(
 		widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		layout.NewSpacer(),
 		widget.NewHBox(layout.NewSpacer(), logo, layout.NewSpacer()),
-		widget.NewHyperlinkWithStyle("github.com/airplayx", link, fyne.TextAlignCenter, fyne.TextStyle{}),
+		widget.NewHyperlinkWithStyle("github.com/airplayx", airplayx, fyne.TextAlignCenter, fyne.TextStyle{}),
+		widget.NewHyperlinkWithStyle("fyne.io/fyne", fyneIo, fyne.TextAlignCenter, fyne.TextStyle{}),
 		layout.NewSpacer(),
 	)
 }

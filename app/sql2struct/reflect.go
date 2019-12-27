@@ -7,36 +7,20 @@
 package sql2struct
 
 import (
+	"encoding/json"
 	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"gormat/common"
+	"strings"
 	"time"
 )
 
-func Reflect(win fyne.Window) fyne.Widget {
+func Reflect(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
 	dataType := widget.NewMultiLineEntry()
-	dataType.SetText(`{
-"tinyint": "int8",
-"smallint": "int16",
-"int": "int32",
-"bigint": "int64",
-"float": "float64",
-"double": "float64",
-"decimal": "float64",
-"char": "string",
-"varchar": "string",
-"text": "string",
-"mediumtext": "string",
-"longtext": "string",
-"time": "time.Time",
-"date": "time.Time",
-"datetime": "time.Time",
-"timestamp": "int64",
-"enum": "string",
-"set": "string",
-"blob": "string"
-}`)
+	reflect, _ := json.Marshal(options.Reflect)
+	dataType.SetText(strings.ReplaceAll(string(reflect), ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
 			cnf := dialog.NewConfirm("Confirmation", "Are you enjoying this demo?", func(b bool) {

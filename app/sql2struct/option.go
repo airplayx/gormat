@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
 	"github.com/chenhg5/collection"
+	"strings"
 
 	"gormat/common"
 )
@@ -57,6 +58,7 @@ func Option(options *common.SQL2Struct) fyne.Widget {
 
 	excludeTables := widget.NewMultiLineEntry()
 	excludeTables.SetPlaceHolder("多个数据表以回车换行")
+	excludeTables.SetText(strings.Join(options.ExcludeTables, "\n"))
 	tryComplete := widget.NewRadio([]string{"是", "否"}, func(s string) {
 
 	})

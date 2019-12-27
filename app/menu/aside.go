@@ -20,9 +20,9 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 	var options = common.Configs()
 	sql2Str := widget.NewTabContainer(
 		widget.NewTabItem("选项", sql2struct.Option(&options)),
-		widget.NewTabItem("数据库", sql2struct.DataBase()),
-		widget.NewTabItem("映射", sql2struct.Reflect(win)),
-		widget.NewTabItem("特殊转型", sql2struct.Special(win)))
+		widget.NewTabItem("数据库", sql2struct.DataBase(win, &options)),
+		widget.NewTabItem("映射", sql2struct.Reflect(win, &options)),
+		widget.NewTabItem("特殊转型", sql2struct.Special(win, &options)))
 	if c := sql2struct.Sql2structScreen(win); len(c.Objects) != 0 {
 		sql2Str.Items = append(sql2Str.Items,
 			widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), c),

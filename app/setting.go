@@ -15,7 +15,7 @@ import (
 )
 
 func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
-	theme := widget.NewRadio([]string{"黑色", "白色"}, func(s string) {
+	theMe := widget.NewRadio([]string{"黑色", "白色"}, func(s string) {
 		switch s {
 		case "黑色":
 			app.Settings().SetTheme(theme.DarkTheme())
@@ -26,11 +26,11 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 	})
 	switch t, _ := jsonparser.GetString(Config, "const", "theme"); t {
 	case "light":
-		theme.SetSelected("白色")
+		theMe.SetSelected("白色")
 	default:
-		theme.SetSelected("黑色")
+		theMe.SetSelected("黑色")
 	}
-	theme.Horizontal = true
+	theMe.Horizontal = true
 
 	dpi := widget.NewRadio([]string{"默认" /*"全屏",*/, "4K"}, func(s string) {
 		//win.SetFullScreen(false)
@@ -57,7 +57,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 				widget.NewGroup("主题",
 					fyne.NewContainerWithLayout(
 						layout.NewHBoxLayout(),
-						theme,
+						theMe,
 					),
 				),
 				widget.NewGroup("DPI适应",

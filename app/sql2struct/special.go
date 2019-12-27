@@ -7,17 +7,19 @@
 package sql2struct
 
 import (
+	"encoding/json"
 	"errors"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"gormat/common"
+	"strings"
 )
 
-func Special(win fyne.Window) fyne.Widget {
+func Special(win fyne.Window, options *common.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
-	specialData.SetText(`{
-  "id": "uint"
-}`)
+	special, _ := json.Marshal(options.Special)
+	specialData.SetText(strings.ReplaceAll(string(special), ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
 			err := errors.New("A dummy error message")
