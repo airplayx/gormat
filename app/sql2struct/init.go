@@ -11,15 +11,14 @@ import (
 	"time"
 )
 
-func Screen(win fyne.Window) (c *fyne.Container) {
+func Screen(win fyne.Window) *fyne.Container {
 	result := widget.NewMultiLineEntry()
-	c = &fyne.Container{}
 	if err := Sql2struct.InitDb(); err != nil {
-		return
+		return &fyne.Container{}
 	}
 	ts, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete)
 	if err != nil {
-		return
+		return &fyne.Container{}
 	}
 	var tables []fyne.CanvasObject
 	for _, v := range ts {
@@ -34,14 +33,13 @@ func Screen(win fyne.Window) (c *fyne.Container) {
 			}
 		}))
 	}
-	c = fyne.NewContainerWithLayout(
+	return fyne.NewContainerWithLayout(
 		layout.NewGridLayoutWithRows(1),
 		widget.NewGroupWithScroller("选择表",
 			tables...,
 		),
 		widget.NewScrollContainer(result),
 	)
-	return
 }
 
 func sql2struct(win fyne.Window, ts []string) (result []byte, err error) {
