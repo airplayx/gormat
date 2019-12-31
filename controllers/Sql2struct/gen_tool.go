@@ -1,14 +1,13 @@
 package Sql2struct
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/format"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/hsyan2008/hfw/common"
 	"xorm.io/core"
 )
 
@@ -21,16 +20,11 @@ type GenTool struct {
 
 func NewGenTool() *GenTool {
 	dir := Configs().TargetDir
-	if !filepath.IsAbs(dir) {
-		dir = filepath.Join(common.GetAppPath(), dir)
-	}
-	if !common.IsExist(dir) {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			log.Println(err.Error())
-		}
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		log.Println(err.Error())
 	}
 	return &GenTool{
-		targetDir:   Configs().TargetDir,
+		targetDir:   dir,
 		packageName: filepath.Base(dir),
 		models:      make(map[string]model),
 	}
@@ -45,7 +39,7 @@ func (genTool *GenTool) getDBMetas(ts []string) (err error) {
 	return nil
 }
 
-func (genTool *GenTool) genModels(maps map[string]string) {
+func (genTool *GenTool) genModels(maps string) {
 	for _, table := range genTool.tables {
 		model := NewModel(table, maps)
 		genTool.models[model.TableName] = model
@@ -82,13 +76,13 @@ func (genTool *GenTool) genFile() (by []byte, err error) {
 		if err != nil {
 			return
 		}
-
-		file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", model.TableName))
-		err = ioutil.WriteFile(file, by, 0644)
-		if err != nil {
-			return
+		if Configs().AutoSave {
+			file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", model.TableName))
+			if err = ioutil.WriteFile(file, by, 0644); err != nil {
+				return
+			}
+			log.Println("gen into file:", file)
 		}
-		log.Println("gen into file:", file)
 	}
 	return
 }
@@ -100,6 +94,11 @@ func (genTool *GenTool) Gen(ts []string) (result []byte, err error) {
 	if err = genTool.getDBMetas(ts); err != nil {
 		return
 	}
-	genTool.genModels(JSONMethod(Configs().Reflect))
+	reflect, _ := json.Marshal(Configs().Reflect)
+	var config string
+	if err = json.Unmarshal(reflect, &config); err != nil {
+		return
+	}
+	genTool.genModels(config)
 	return genTool.genFile()
 }

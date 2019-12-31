@@ -3,6 +3,7 @@ package Sql2struct
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -15,7 +16,8 @@ import (
 var engine *xorm.Engine
 
 func InitDb() (err error) {
-	engine, err = xorm.NewEngine(Configs().Driver,
+	engine, err = xorm.NewEngine(
+		strings.ToLower(Configs().Driver),
 		fmt.Sprintf("%s:%s@(%s:%s)/%s",
 			Configs().SourceMap.User,
 			Configs().SourceMap.Password,

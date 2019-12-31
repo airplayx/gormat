@@ -1,6 +1,7 @@
 package Sql2struct
 
 import (
+	"encoding/json"
 	"strings"
 
 	"xorm.io/core"
@@ -23,7 +24,7 @@ type modelField struct {
 	Comment    string
 }
 
-func NewModel(table *core.Table, maps map[string]string) (m model) {
+func NewModel(table *core.Table, maps string) (m model) {
 	m = model{
 		StructName: core.LintGonicMapper.Table2Obj(table.Name),
 		TableName:  table.Name,
@@ -40,17 +41,25 @@ func NewModel(table *core.Table, maps map[string]string) (m model) {
 	return
 }
 
-func NewModelField(table *core.Table, column *core.Column, maps map[string]string) (f modelField) {
+func NewModelField(table *core.Table, column *core.Column, maps string) (f modelField) {
+	var reflect, special map[string]string
+	_ = json.Unmarshal([]byte(maps), &reflect)
 	f = modelField{
 		FieldName:  core.LintGonicMapper.Table2Obj(column.Name),
 		ColumnName: column.Name,
-		Type:       maps[strings.ToLower(column.SQLType.Name)],
+		Type:       reflect[strings.ToLower(column.SQLType.Name)],
 		Imports:    getGoImports(column),
 	}
 	if strings.HasPrefix(f.ColumnName, "is_") && column.SQLType.Name == core.TinyInt {
 		f.Type = "bool"
 	}
-	for key, val := range JSONMethod(Configs().Special) {
+	s, _ := json.Marshal(Configs().Special)
+	var config string
+	if err := json.Unmarshal(s, &config); err != nil {
+		return
+	}
+	_ = json.Unmarshal([]byte(config), &special)
+	for key, val := range special {
 		if f.ColumnName == key {
 			f.Type = val
 		}

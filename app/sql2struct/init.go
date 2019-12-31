@@ -57,7 +57,7 @@ func sql2struct(win fyne.Window, ts []string) (result []byte, err error) {
 	}()
 	status.Show()
 	if result, err = Sql2struct.NewGenTool().Gen(ts); err != nil {
-		dialog.ShowError(errors.New("转换失败"), win)
+		dialog.ShowError(errors.New(err.Error()), win)
 		return
 	}
 	status.Hide()

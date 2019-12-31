@@ -7,10 +7,13 @@
 package sql2struct
 
 import (
+	"encoding/json"
 	"errors"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
+	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
@@ -37,6 +40,18 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	database.SetText(options.SourceMap.Db)
 	testDb := widget.NewHBox()
 	testDb.Append(widget.NewButton("测试连接", func() {
+
+		options.Driver = driver.Selected
+		options.SourceMap.Db = database.Text
+		options.SourceMap.User = user.Text
+		options.SourceMap.Password = password.Text
+		options.SourceMap.Host = host.Text
+		options.SourceMap.Port = port.Text
+		jsons, _ := json.Marshal(options)
+		if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+			_app.Config = data
+		}
+
 		progressDialog := dialog.NewProgress("连接中", host.Text, win)
 		go func() {
 			num := 0.0
@@ -50,7 +65,7 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 		}()
 		progressDialog.Show()
 		if err := Sql2struct.InitDb(); err != nil {
-			dialog.ShowError(errors.New("连接失败"), win)
+			dialog.ShowError(errors.New(err.Error()), win)
 		} else {
 			dialog.ShowInformation("成功", "连接成功", win)
 		}
@@ -60,7 +75,19 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 
 		},
 		OnSubmit: func() {
-
+			options.Driver = driver.Selected
+			options.SourceMap.Db = database.Text
+			options.SourceMap.User = user.Text
+			options.SourceMap.Password = password.Text
+			options.SourceMap.Host = host.Text
+			options.SourceMap.Port = port.Text
+			jsons, _ := json.Marshal(options)
+			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+				_app.Config = data
+				dialog.ShowInformation("成功", "保存成功", win)
+			} else {
+				dialog.ShowError(errors.New(err.Error()), win)
+			}
 		},
 		Items: []*widget.FormItem{
 			{Text: "引擎", Widget: driver},

@@ -7,14 +7,19 @@
 package sql2struct
 
 import (
+	"encoding/json"
+	"errors"
 	"fyne.io/fyne"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
 	"github.com/chenhg5/collection"
+	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
 )
 
-func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
+func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	targetDir := widget.NewEntry()
 	targetDir.SetText(options.TargetDir)
 	autoSave := widget.NewRadio([]string{"是", "否"}, func(s string) {
@@ -40,12 +45,12 @@ func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
 
 	})
 	if options.JSONOmitempty {
-		jsonType.SetSelected("仅生成")
-	} else {
 		jsonType.SetSelected("生成并包含 omitempty")
+	} else {
+		jsonType.SetSelected("仅生成")
 	}
 
-	json := widget.NewCheck("json", func(on bool) {
+	jsonT := widget.NewCheck("json", func(on bool) {
 		if !on {
 			jsonType.Hide()
 		} else {
@@ -53,7 +58,7 @@ func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
 		}
 	})
 	jsonType.Hidden = !collection.Collect(options.Tags).Contains("json")
-	json.SetChecked(!jsonType.Hidden)
+	jsonT.SetChecked(!jsonType.Hidden)
 
 	excludeTables := widget.NewMultiLineEntry()
 	excludeTables.SetPlaceHolder("多个数据表以回车换行")
@@ -67,13 +72,37 @@ func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
 	} else {
 		tryComplete.SetSelected("否")
 	}
-
 	return &widget.Form{
 		OnCancel: func() {
 
 		},
 		OnSubmit: func() {
+			options.TargetDir = targetDir.Text
+			options.AutoSave = autoSave.Selected == "是"
+			options.Tags = []string{}
+			if gorm.Checked {
+				options.Tags = append(options.Tags, "gorm")
+			}
+			if xorm.Checked {
+				options.Tags = append(options.Tags, "xorm")
+			}
+			if beegoOrm.Checked {
+				options.Tags = append(options.Tags, "beegoOrm")
+			}
+			if jsonT.Checked {
+				options.Tags = append(options.Tags, "json")
+			}
+			options.JSONOmitempty = jsonType.Selected == "生成并包含 omitempty"
+			options.ExcludeTables = strings.Split(excludeTables.Text, "\n")
+			options.TryComplete = tryComplete.Selected == "是"
 
+			jsons, _ := json.Marshal(options)
+			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+				_app.Config = data
+				dialog.ShowInformation("成功", "保存成功", win)
+			} else {
+				dialog.ShowError(errors.New(err.Error()), win)
+			}
 		},
 		Items: []*widget.FormItem{
 			{Text: "输出文件夹", Widget: targetDir},
@@ -81,7 +110,7 @@ func Option(options *Sql2struct.SQL2Struct) fyne.Widget {
 			{Text: "标签选择", Widget: gorm},
 			{Text: "", Widget: beegoOrm},
 			{Text: "", Widget: xorm},
-			{Text: "", Widget: json},
+			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
 			{Text: "排除表", Widget: excludeTables},
 			{Text: "始终执行", Widget: tryComplete},

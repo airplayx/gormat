@@ -8,44 +8,32 @@ package sql2struct
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
+	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
-	"time"
 )
 
 func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	dataType := widget.NewMultiLineEntry()
-	reflect, _ := json.Marshal(options.Reflect)
-	dataType.SetText(strings.ReplaceAll(string(reflect), ",", ",\n"))
+	dataType.SetText(strings.ReplaceAll(options.Reflect, ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
-			cnf := dialog.NewConfirm("Confirmation", "Are you enjoying this demo?", func(b bool) {
-				fmt.Println("Responded with", b)
-			}, win)
-			cnf.SetDismissText("Nah")
-			cnf.SetConfirmText("Oh Yes!")
-			cnf.Show()
+
 		},
 		OnSubmit: func() {
-			prog := dialog.NewProgress("MyProgress", "Nearly there...", win)
-
-			go func() {
-				num := 0.0
-				for num < 1.0 {
-					time.Sleep(50 * time.Millisecond)
-					prog.SetValue(num)
-					num += 0.01
-				}
-
-				prog.SetValue(1)
-				prog.Hide()
-			}()
-
-			prog.Show()
+			options.Reflect = strings.ReplaceAll(dataType.Text, ",\n", ",")
+			jsons, _ := json.Marshal(options)
+			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+				_app.Config = data
+				dialog.ShowInformation("成功", "保存成功", win)
+			} else {
+				dialog.ShowError(errors.New(err.Error()), win)
+			}
 		},
 		Items: []*widget.FormItem{
 			{Text: "数据类型转换", Widget: dataType},

@@ -12,21 +12,28 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
+	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
 )
 
 func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
-	special, _ := json.Marshal(options.Special)
-	specialData.SetText(strings.ReplaceAll(string(special), ",", ",\n"))
+	specialData.SetText(strings.ReplaceAll(options.Special, ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
-			err := errors.New("A dummy error message")
-			dialog.ShowError(err, win)
+
 		},
 		OnSubmit: func() {
-			dialog.ShowInformation("Information", "You should know this thing...", win)
+			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
+			jsons, _ := json.Marshal(options)
+			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+				_app.Config = data
+				dialog.ShowInformation("成功", "保存成功", win)
+			} else {
+				dialog.ShowError(errors.New(err.Error()), win)
+			}
 		},
 		Items: []*widget.FormItem{
 			{Text: "指定字段名转型", Widget: specialData},

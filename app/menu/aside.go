@@ -23,10 +23,10 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 		widget.NewTabItemWithIcon("Sql转Struct", nil, fyne.NewContainerWithLayout(
 			layout.NewGridLayoutWithColumns(1),
 			widget.NewTabContainer(
-				widget.NewTabItem("选项", sql2struct.Option(&options)),
-				widget.NewTabItem("数据库", sql2struct.DataBase(win, &options)),
-				widget.NewTabItem("映射", sql2struct.Reflect(win, &options)),
-				widget.NewTabItem("特殊转型", sql2struct.Special(win, &options)),
+				widget.NewTabItem("选项", sql2struct.Option(win, options)),
+				widget.NewTabItem("数据库", sql2struct.DataBase(win, options)),
+				widget.NewTabItem("映射", sql2struct.Reflect(win, options)),
+				widget.NewTabItem("特殊转型", sql2struct.Special(win, options)),
 				widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), sql2struct.Screen(win)),
 			),
 		)),
