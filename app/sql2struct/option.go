@@ -106,13 +106,13 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 		},
 		Items: []*widget.FormItem{
 			{Text: "输出文件夹", Widget: targetDir},
-			{Text: "自动存为文件", Widget: autoSave},
+			{Text: "自动存文件", Widget: autoSave},
 			{Text: "标签选择", Widget: gorm},
-			{Text: "", Widget: beegoOrm},
-			{Text: "", Widget: xorm},
+			//{Text: "", Widget: beegoOrm},
+			//{Text: "", Widget: xorm},
 			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
-			{Text: "排除表", Widget: excludeTables},
+			//{Text: "排除表", Widget: excludeTables},
 			{Text: "始终执行", Widget: tryComplete},
 		},
 	}

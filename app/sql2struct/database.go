@@ -9,6 +9,7 @@ package sql2struct
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
@@ -17,9 +18,11 @@ import (
 	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
+	"xorm.io/core"
+	"xorm.io/xorm"
 )
 
-func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
+func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Struct) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -40,18 +43,6 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	database.SetText(options.SourceMap.Db)
 	testDb := widget.NewHBox()
 	testDb.Append(widget.NewButton("测试连接", func() {
-
-		options.Driver = driver.Selected
-		options.SourceMap.Db = database.Text
-		options.SourceMap.User = user.Text
-		options.SourceMap.Password = password.Text
-		options.SourceMap.Host = host.Text
-		options.SourceMap.Port = port.Text
-		jsons, _ := json.Marshal(options)
-		if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
-			_app.Config = data
-		}
-
 		progressDialog := dialog.NewProgress("连接中", host.Text, win)
 		go func() {
 			num := 0.0
@@ -64,12 +55,30 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			progressDialog.Hide()
 		}()
 		progressDialog.Show()
-		if err := Sql2struct.InitDb(); err != nil {
+		engine, err := xorm.NewEngine(
+			strings.ToLower(driver.Selected),
+			fmt.Sprintf("%s:%s@(%s:%s)/%s",
+				user.Text,
+				password.Text,
+				host.Text,
+				port.Text,
+				database.Text,
+			))
+		if err != nil {
+			dialog.ShowError(errors.New(err.Error()), win)
+			return
+		}
+		engine.SetLogLevel(core.LOG_WARNING)
+		if err := engine.Ping(); err != nil {
 			dialog.ShowError(errors.New(err.Error()), win)
 		} else {
 			dialog.ShowInformation("成功", "连接成功", win)
 		}
+		_ = engine.Close()
 	}))
+	go func() {
+		_ = initTables(win, tab)
+	}()
 	return &widget.Form{
 		OnCancel: func() {
 
@@ -84,7 +93,11 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data
-				dialog.ShowInformation("成功", "保存成功", win)
+				if err := initTables(win, tab); err != nil {
+					dialog.ShowError(errors.New(err.Error()), win)
+				} else {
+					dialog.ShowInformation("成功", "保存成功", win)
+				}
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
@@ -99,4 +112,16 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			{Text: "", Widget: testDb},
 		},
 	}
+}
+
+func initTables(win fyne.Window, tab *fyne.Container) (err error) {
+	if err = Sql2struct.InitDb(); err != nil {
+		return
+	}
+	if Sql2struct.Tables, err = Sql2struct.DBMetas(nil,
+		Sql2struct.Configs().ExcludeTables,
+		Sql2struct.Configs().TryComplete); err == nil {
+		tab.Objects = Screen(win).Objects
+	}
+	return
 }

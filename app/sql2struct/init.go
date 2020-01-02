@@ -13,15 +13,8 @@ import (
 
 func Screen(win fyne.Window) *fyne.Container {
 	result := widget.NewMultiLineEntry()
-	if err := Sql2struct.InitDb(); err != nil {
-		return &fyne.Container{}
-	}
-	ts, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete)
-	if err != nil {
-		return &fyne.Container{}
-	}
 	var tables []fyne.CanvasObject
-	for _, v := range ts {
+	for _, v := range Sql2struct.Tables {
 		tName := v.Name
 		tables = append(tables, widget.NewCheck(tName, func(checked bool) {
 			if checked {

@@ -21,7 +21,7 @@ var (
 	"sql2struct": {
 		"target_dir": "./models",
 		"auto_save": false,
-		"tags": ["gorm", "beegoOrm", "xorm", "json"],
+		"tags": ["gorm", "json"],
 		"json_omitempty": true,
 		"driver": "mysql",
 		"exclude_tables": [],

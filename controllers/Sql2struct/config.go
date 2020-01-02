@@ -5,7 +5,10 @@ import (
 	"github.com/buger/jsonparser"
 	_app "gormat/app"
 	"log"
+	"xorm.io/core"
 )
+
+var Tables []*core.Table
 
 type SQL2Struct struct {
 	TargetDir     string   `json:"target_dir"`
