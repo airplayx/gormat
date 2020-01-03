@@ -30,7 +30,7 @@ func Screen() *fyne.Container {
 		switch f.(type) {
 		case map[string]interface{}:
 		default:
-			result.SetText("错误的数据")
+			result.SetText("bad data")
 			return
 		}
 		bytes, _ := Json2struct.PrintGo(f, "YourStruct")

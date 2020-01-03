@@ -46,7 +46,7 @@ func New(data interface{}, name string) *Model {
 		Data:        data,
 		Name:        name,
 		Format:      true,
-		Convert:     true,
+		Convert:     false,
 	}
 }
 
@@ -84,10 +84,9 @@ func Get(url string) ([]byte, string, error) {
 	return b, getName(url), err
 }
 
-func ParseJson(b []byte) (interface{}, error) {
-	var f interface{}
-	err := json.Unmarshal(b, &f)
-	return f, err
+func ParseJson(b []byte) (f interface{}, err error) {
+	err = json.Unmarshal(b, &f)
+	return
 }
 
 func PrintGo(f interface{}, name string) (b []byte, err error) {
@@ -97,11 +96,11 @@ func PrintGo(f interface{}, name string) (b []byte, err error) {
 func WriteGo(w io.Writer, f interface{}, name string) (b []byte, err error) {
 	m := &Model{
 		Writer:      w,
-		WithExample: true,
+		WithExample: false,
 		Data:        f,
 		Name:        name,
 		Format:      true,
-		Convert:     true,
+		Convert:     false,
 	}
 
 	return m.WriteGo()
@@ -110,17 +109,14 @@ func WriteGo(w io.Writer, f interface{}, name string) (b []byte, err error) {
 func (m *Model) WriteGo() (b []byte, err error) {
 	if m.Format {
 		org := m.Writer
-
 		var buf bytes.Buffer
 		m.Writer = &buf
-
 		m.writeGo()
-
 		b, err = format.Source(buf.Bytes())
 		if err == nil {
 			//org.Write(b)
 		} else {
-			io.Copy(org, &buf)
+			_, _ = io.Copy(org, &buf)
 		}
 		m.Writer = org
 	} else {
@@ -178,7 +174,7 @@ func (m *Model) print(fu func(map[string]interface{}), templData string) {
 		//fmt.Fprintf(m.Writer, object, m.Name)
 	}
 	fu(ma)
-	fmt.Fprintln(m.Writer, "}")
+	_, _ = fmt.Fprintln(m.Writer, "}")
 }
 
 func (m *Model) parseMap(ms map[string]interface{}) {
@@ -316,24 +312,24 @@ func (m *Model) printType(key string, value interface{}, t string, converted boo
 		key += ",string"
 	}
 	if m.WithExample {
-		fmt.Fprintf(m.Writer, "%s %s `json:\"%s\"` // %v\n", name, t, key, value)
+		_, _ = fmt.Fprintf(m.Writer, "%s %s `json:\"%s\"` // %v\n", name, t, key, value)
 	} else {
-		fmt.Fprintf(m.Writer, "%s %s `json:\"%s\"`\n", name, t, key)
+		_, _ = fmt.Fprintf(m.Writer, "%s %s `json:\"%s\"`\n", name, t, key)
 	}
 }
 
 func (m *Model) printObject(n string, t string, f func()) {
 	name := replaceName(n)
-	fmt.Fprintf(m.Writer, "%s %s {\n", name, t)
+	_, _ = fmt.Fprintf(m.Writer, "%s %s {\n", name, t)
 	f()
-	fmt.Fprintf(m.Writer, "} `json:\"%s\"`\n", n)
+	_, _ = fmt.Fprintf(m.Writer, "} `json:\"%s\"`\n", n)
 }
 
 func (m *Model) parseArrayJava(ms []map[string]interface{}, s []string) {
 	for i, v := range ms {
-		fmt.Fprintln(m.Writer, "public class", replaceName(s[i]), "{")
+		_, _ = fmt.Fprintln(m.Writer, "public class", replaceName(s[i]), "{")
 		v, n := m.parseMapJava(v)
-		fmt.Fprintln(m.Writer, "}")
+		_, _ = fmt.Fprintln(m.Writer, "}")
 		if v != nil {
 			m.parseArrayJava(v, n)
 		}
@@ -366,7 +362,7 @@ public void set{{.Name}}({{.Type}} {{.LowerName}}) {
 		strings.ToLower(tmpName),
 	}
 	t := template.Must(template.New("type").Parse(tmpl))
-	t.Execute(m.Writer, data)
+	_ = t.Execute(m.Writer, data)
 }
 
 func replaceName(name string) string {
@@ -399,7 +395,7 @@ func Mock(b []byte, i interface{}) ([]byte, error) {
 	}
 
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "package main\nvar test = %#v", i)
+	_, _ = fmt.Fprintf(&buf, "package main\nvar test = %#v", i)
 
 	form, err := format.Source(buf.Bytes())
 	if err != nil {
