@@ -112,7 +112,7 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			//{Text: "", Widget: xorm},
 			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
-			//{Text: "排除表", Widget: excludeTables},
+			{Text: "排除表", Widget: excludeTables},
 			{Text: "始终执行", Widget: tryComplete},
 		},
 	}

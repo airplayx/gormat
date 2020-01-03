@@ -15,7 +15,7 @@ import (
 )
 
 func WelcomeScreen() fyne.CanvasObject {
-	logo := canvas.NewImageFromFile("./source/gopher.png")
+	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", Logo))
 	logo.SetMinSize(fyne.NewSize(275, 470))
 
 	airplayx, _ := url.Parse("http://github.com/airplayx")

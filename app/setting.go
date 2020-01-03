@@ -60,7 +60,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 						theMe,
 					),
 				),
-				widget.NewGroup("DPI适应",
+				widget.NewGroup("屏幕适配",
 					fyne.NewContainerWithLayout(
 						layout.NewHBoxLayout(),
 						dpi,

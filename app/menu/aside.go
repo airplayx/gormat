@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	_app "gormat/app"
+	"gormat/app/json2struct"
 	"gormat/app/sql2struct"
 	"gormat/controllers/Sql2struct"
 )
@@ -20,9 +21,10 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 	var options = Sql2struct.Configs()
 	sql2Screen := sql2struct.Screen(win)
 	aside = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("首页", nil, _app.WelcomeScreen()),
-		widget.NewTabItemWithIcon("Sql转Struct", nil, fyne.NewContainerWithLayout(
-			layout.NewGridLayoutWithColumns(1),
+		widget.NewTabItemWithIcon("", theme.HomeIcon(), _app.WelcomeScreen()),
+		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
+		widget.NewTabItem("Sql转Struct", fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
 			widget.NewTabContainer(
 				widget.NewTabItem("选项", sql2struct.Option(win, options)),
 				widget.NewTabItem("映射", sql2struct.Reflect(win, options)),
@@ -31,19 +33,19 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 				widget.NewTabItemWithIcon("开始转换", theme.ViewRefreshIcon(), sql2Screen),
 			),
 		)),
-		widget.NewTabItemWithIcon("Json转Struct", nil, fyne.NewContainerWithLayout(
-			layout.NewGridLayoutWithColumns(1),
+		widget.NewTabItem("Json转Struct", fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
+			widget.NewScrollContainer(json2struct.Screen()),
 		)),
-		widget.NewTabItemWithIcon("Map转Struct", nil, fyne.NewContainerWithLayout(
-			layout.NewGridLayoutWithColumns(1),
+		widget.NewTabItem("Map转Struct", fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
 		)),
-		widget.NewTabItemWithIcon("日期格式化", nil, fyne.NewContainerWithLayout(
-			layout.NewGridLayoutWithColumns(1),
+		widget.NewTabItem("日期格式化", fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
 		)),
-		widget.NewTabItemWithIcon("URL编解码", nil, fyne.NewContainerWithLayout(
-			layout.NewGridLayoutWithColumns(1),
+		widget.NewTabItem("URL编解码", fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
 		)),
-		//widget.NewTabItemWithIcon("设置", nil, _app.SettingScreen(app, win)),
 	)
 	aside.SetTabLocation(widget.TabLocationBottom)
 	return

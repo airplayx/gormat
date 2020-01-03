@@ -1,3 +1,9 @@
+/*
+@Time : 2020/1/3 13:58
+@Software: GoLand
+@File : init
+@Author : https://github.com/hsyan2008/gom
+*/
 package Sql2struct
 
 import (

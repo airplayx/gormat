@@ -41,8 +41,7 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 	user.SetText(options.SourceMap.User)
 	database := widget.NewEntry()
 	database.SetText(options.SourceMap.Db)
-	testDb := widget.NewHBox()
-	testDb.Append(widget.NewButton("测试连接", func() {
+	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
 		progressDialog := dialog.NewProgress("连接中", host.Text, win)
 		go func() {
 			num := 0.0
