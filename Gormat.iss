@@ -1,7 +1,7 @@
 ; 脚本由 Inno Setup 脚本向导 生成！
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
-#define MyAppName "Gormat"
+#define MyAppName "Gopher工具箱"
 #define MyAppVersion "0.1"
 #define MyAppPublisher "airplayx"
 #define MyAppURL "http://airplayx.com"
