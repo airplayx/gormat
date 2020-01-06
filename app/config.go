@@ -14,7 +14,7 @@ import (
 var (
 	Config = []byte(`{
 	"const": {
-		"font": "./source/miniHei.ttf",
+		"font": "./miniHei.ttf",
 		"theme": "light",
 		"scale": 1.0
 	},
