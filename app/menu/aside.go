@@ -37,12 +37,12 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 			layout.NewGridLayout(1),
 			widget.NewScrollContainer(json2struct.Screen()),
 		)),
-		widget.NewTabItem("日期格式化", fyne.NewContainerWithLayout(
-			layout.NewGridLayout(1),
-		)),
-		widget.NewTabItem("URL编解码", fyne.NewContainerWithLayout(
-			layout.NewGridLayout(1),
-		)),
+		//widget.NewTabItem("日期格式化", fyne.NewContainerWithLayout(
+		//	layout.NewGridLayout(1),
+		//)),
+		//widget.NewTabItem("URL编解码", fyne.NewContainerWithLayout(
+		//	layout.NewGridLayout(1),
+		//)),
 	)
 	aside.SetTabLocation(widget.TabLocationBottom)
 	return
