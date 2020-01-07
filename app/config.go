@@ -26,6 +26,7 @@ var (
 		"driver": "mysql",
 		"exclude_tables": [],
 		"try_complete": true,
+		"tinyint2bool":true,
 		"sourceMap": {
 			"user": "root",
 			"password": "password",

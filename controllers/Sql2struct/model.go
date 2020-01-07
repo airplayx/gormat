@@ -50,9 +50,8 @@ func NewModelField(table *core.Table, column *core.Column, maps string) (f model
 		Type:       reflect[strings.ToLower(column.SQLType.Name)],
 		Imports:    getGoImports(column),
 	}
-	if strings.HasPrefix(f.ColumnName, "is_") && column.SQLType.Name == core.TinyInt {
-		f.Type = "bool"
-	}
+	f.Type = getTypeAndImports(column)
+
 	s, _ := json.Marshal(Configs().Special)
 	var config string
 	if err := json.Unmarshal(s, &config); err != nil {
@@ -69,6 +68,8 @@ func NewModelField(table *core.Table, column *core.Column, maps string) (f model
 		switch v {
 		case "json":
 			tags = append(tags, GetJsonTag(column, Configs().JSONOmitempty))
+		case "xorm":
+			tags = append(tags, GetXormTag(table, column))
 		case "gorm":
 			tags = append(tags, GetGormTag(table, column))
 		}

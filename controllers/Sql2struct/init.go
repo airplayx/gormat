@@ -24,6 +24,7 @@ type SQL2Struct struct {
 	Driver        string   `json:"driver"`
 	ExcludeTables []string `json:"exclude_tables"`
 	TryComplete   bool     `json:"try_complete"`
+	Tinyint2Bool  bool     `json:"tinyint2bool"`
 	SourceMap     struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
