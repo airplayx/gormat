@@ -6,32 +6,39 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
 	"time"
 )
 
 func Screen(win fyne.Window) *fyne.Container {
-	result := widget.NewMultiLineEntry()
-	var tables []fyne.CanvasObject
+	//result := widget.NewMultiLineEntry()
+	//var tables []fyne.CanvasObject
+	tbs := widget.NewTabContainer(
+		widget.NewTabItemWithIcon("test", _app.Table, fyne.NewContainer()),
+	)
 	for _, v := range Sql2struct.Tables {
-		tName := v.Name
-		tables = append(tables, widget.NewCheck(tName, func(checked bool) {
-			if checked {
-				if rs, err := sql2struct(win, []string{tName}); err != nil {
-					result.SetText(err.Error())
-				} else {
-					result.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
-				}
-			}
-		}))
+		tbs.Items = append(tbs.Items, widget.NewTabItemWithIcon(v.Name, _app.Table, widget.NewMultiLineEntry()))
+		//tName := v.Name
+		//tables = append(tables, widget.NewButton(tName, func() {
+		//	//if checked {
+		//	if rs, err := sql2struct(win, []string{tName}); err != nil {
+		//		result.SetText(err.Error())
+		//	} else {
+		//		result.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
+		//	}
+		//	//}
+		//}))
 	}
+	tbs.SetTabLocation(widget.TabLocationLeading)
 	return fyne.NewContainerWithLayout(
 		layout.NewGridLayoutWithRows(1),
-		widget.NewGroupWithScroller("选择表",
-			tables...,
-		),
-		widget.NewScrollContainer(result),
+		tbs,
+		//widget.NewGroupWithScroller("选择表",
+		//	tables...,
+		//),
+		//widget.NewScrollContainer(result),
 	)
 }
 

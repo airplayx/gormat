@@ -27,7 +27,7 @@ func main() {
 	scale, _ := jsonparser.GetFloat(_app.Config, "const", "scale")
 	window.Canvas().SetScale(float32(scale))
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 1000, Height: 610})
+	window.Resize(fyne.Size{Width: 1366, Height: 650})
 	window.SetContent(menu.Aside(main, window))
 	window.SetMaster()
 	window.ShowAndRun()
