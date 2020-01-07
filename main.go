@@ -22,7 +22,7 @@ func main() {
 			_ = os.Setenv("FYNE_THEME", theme)
 		}, []string{"const"})
 	main := app.NewWithID("Gopher")
-	main.SetIcon(fyne.NewStaticResource("ico", _app.Ico))
+	main.SetIcon(_app.Ico)
 	window := main.NewWindow("Gopher工具箱")
 	scale, _ := jsonparser.GetFloat(_app.Config, "const", "scale")
 	window.Canvas().SetScale(float32(scale))
