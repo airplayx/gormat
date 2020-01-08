@@ -8,7 +8,6 @@ require (
 	github.com/chenhg5/collection v0.0.0-20191118032303-cb21bccce4c3
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20191128021309-1d7a30a10f73
-	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-sqlite3 v2.0.2+incompatible
