@@ -87,8 +87,8 @@ func (genTool *GenTool) genFile() (by []byte, err error) {
 	return
 }
 
-func (genTool *GenTool) Gen(ts []string) (result []byte, err error) {
-	if err = InitDb(); err != nil {
+func (genTool *GenTool) Gen(ts []string, dbConf []interface{}) (result []byte, err error) {
+	if err = InitDb(dbConf); err != nil {
 		return
 	}
 	if err = genTool.getDBMetas(ts); err != nil {

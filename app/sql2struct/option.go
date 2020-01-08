@@ -44,7 +44,7 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	jsonType := widget.NewSelect([]string{"仅生成", "生成并包含 omitempty"}, func(s string) {
 
 	})
-	if options.JSONOmitempty {
+	if options.JsonOmitempty {
 		jsonType.SetSelected("生成并包含 omitempty")
 	} else {
 		jsonType.SetSelected("仅生成")
@@ -61,7 +61,7 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	jsonT.SetChecked(!jsonType.Hidden)
 
 	autoBool := widget.NewCheck("is_开头的字段自动转bool", func(bool) {})
-	autoBool.SetChecked(options.Tinyint2Bool)
+	autoBool.SetChecked(options.Tinyint2bool)
 	excludeTables := widget.NewMultiLineEntry()
 	excludeTables.SetPlaceHolder("多个数据表以回车换行")
 	excludeTables.SetText(strings.Join(options.ExcludeTables, "\n"))
@@ -94,10 +94,10 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			if jsonT.Checked {
 				options.Tags = append(options.Tags, "json")
 			}
-			options.JSONOmitempty = jsonType.Selected == "生成并包含 omitempty"
+			options.JsonOmitempty = jsonType.Selected == "生成并包含 omitempty"
 			options.ExcludeTables = strings.Split(excludeTables.Text, "\n")
 			options.TryComplete = tryComplete.Selected == "是"
-			options.Tinyint2Bool = autoBool.Checked
+			options.Tinyint2bool = autoBool.Checked
 
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {

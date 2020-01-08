@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func Screen(win fyne.Window) *fyne.Container {
+func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
 	tables := widget.NewTabContainer()
 	for _, t := range Sql2struct.Tables {
@@ -19,7 +19,7 @@ func Screen(win fyne.Window) *fyne.Container {
 		tableBox := widget.NewMultiLineEntry()
 		tableBox.SetText(tableName) //读取表结构
 		tableBox.OnCursorChanged = func() {
-			if rs, err := sql2struct(win, []string{tableName}); err != nil {
+			if rs, err := sql2struct(win, []string{tableName}, dbConf); err != nil {
 				resultBox.SetText(err.Error())
 			} else {
 				resultBox.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
@@ -40,8 +40,8 @@ func Screen(win fyne.Window) *fyne.Container {
 	)
 }
 
-func sql2struct(win fyne.Window, ts []string) (result []byte, err error) {
-	if result, err = Sql2struct.NewGenTool().Gen(ts); err != nil {
+func sql2struct(win fyne.Window, ts []string, dbConf []interface{}) (result []byte, err error) {
+	if result, err = Sql2struct.NewGenTool().Gen(ts, dbConf); err != nil {
 		dialog.ShowError(errors.New(err.Error()), win)
 		return
 	}

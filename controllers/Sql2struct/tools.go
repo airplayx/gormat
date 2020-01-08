@@ -16,7 +16,7 @@ func InStringSlice(f string, a []string) bool {
 
 func getTypeAndImports(column *core.Column) (t string) {
 	t = sqlType2TypeString(column.SQLType)
-	if Configs().Tinyint2Bool && strings.HasPrefix(column.Name, "is_") &&
+	if Configs().Tinyint2bool && strings.HasPrefix(column.Name, "is_") &&
 		column.SQLType.Name == "TINYINT" && column.SQLType.DefaultLength == 1 {
 		t = "bool"
 		return

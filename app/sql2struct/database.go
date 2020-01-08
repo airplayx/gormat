@@ -22,25 +22,27 @@ import (
 	"xorm.io/xorm"
 )
 
-func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Struct) fyne.Widget {
+func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Struct, dbIndex int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
 	driver.SetSelected(strings.Title(options.Driver))
 	host := widget.NewEntry()
 	host.SetPlaceHolder("localhost")
-	host.SetText(options.SourceMap.Host)
 	port := widget.NewEntry()
 	port.SetPlaceHolder("3306")
-	port.SetText(options.SourceMap.Port)
 	password := widget.NewPasswordEntry()
 	password.SetPlaceHolder("Password")
-	password.SetText(options.SourceMap.Password)
 	user := widget.NewEntry()
 	user.SetPlaceHolder("root")
-	user.SetText(options.SourceMap.User)
-	database := widget.NewEntry()
-	database.SetText(options.SourceMap.Db)
+	db := widget.NewEntry()
+	if dbIndex > -1 {
+		host.SetText(options.SourceMap[dbIndex].Host)
+		port.SetText(options.SourceMap[dbIndex].Port)
+		password.SetText(options.SourceMap[dbIndex].Password)
+		user.SetText(options.SourceMap[dbIndex].User)
+		db.SetText(options.SourceMap[dbIndex].Db[0])
+	}
 	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
 		progressDialog := dialog.NewProgress("连接中", host.Text, win)
 		go func() {
@@ -61,7 +63,7 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 				password.Text,
 				host.Text,
 				port.Text,
-				database.Text,
+				db.Text,
 			))
 		if err != nil {
 			dialog.ShowError(errors.New(err.Error()), win)
@@ -76,7 +78,13 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 		_ = engine.Close()
 	}))
 	go func() {
-		_ = initTables(win, tab)
+		_ = initTables(win, tab, []interface{}{
+			user.Text,
+			password.Text,
+			host.Text,
+			port.Text,
+			db.Text,
+		})
 	}()
 	return &widget.Form{
 		OnCancel: func() {
@@ -84,15 +92,21 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 		},
 		OnSubmit: func() {
 			options.Driver = driver.Selected
-			options.SourceMap.Db = database.Text
-			options.SourceMap.User = user.Text
-			options.SourceMap.Password = password.Text
-			options.SourceMap.Host = host.Text
-			options.SourceMap.Port = port.Text
+			//options.SourceMap[dbIndex].Db[0] = db.Text
+			options.SourceMap[dbIndex].User = user.Text
+			options.SourceMap[dbIndex].Password = password.Text
+			options.SourceMap[dbIndex].Host = host.Text
+			options.SourceMap[dbIndex].Port = port.Text
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data
-				if err := initTables(win, tab); err != nil {
+				if err := initTables(win, tab, []interface{}{
+					user.Text,
+					password.Text,
+					host.Text,
+					port.Text,
+					db.Text,
+				}); err != nil {
 					dialog.ShowError(errors.New(err.Error()), win)
 				} else {
 					dialog.ShowInformation("成功", "保存成功", win)
@@ -107,20 +121,20 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 			{Text: "端口", Widget: port},
 			{Text: "用户名", Widget: user},
 			{Text: "密码", Widget: password},
-			{Text: "数据库", Widget: database},
+			{Text: "数据库", Widget: db},
 			{Text: "", Widget: testDb},
 		},
 	}
 }
 
-func initTables(win fyne.Window, tab *fyne.Container) (err error) {
-	if err = Sql2struct.InitDb(); err != nil {
+func initTables(win fyne.Window, tab *fyne.Container, dbConf []interface{}) (err error) {
+	if err = Sql2struct.InitDb(dbConf); err != nil {
 		return
 	}
 	if Sql2struct.Tables, err = Sql2struct.DBMetas(nil,
 		Sql2struct.Configs().ExcludeTables,
 		Sql2struct.Configs().TryComplete); err == nil {
-		tab.Objects = Screen(win).Objects
+		tab.Objects = Screen(win, dbConf).Objects
 	}
 	return
 }
