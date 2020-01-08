@@ -13,32 +13,31 @@ import (
 )
 
 func Screen(win fyne.Window) *fyne.Container {
-	//result := widget.NewMultiLineEntry()
-	//var tables []fyne.CanvasObject
-	tbs := widget.NewTabContainer(
-		widget.NewTabItemWithIcon("test", _app.Table, fyne.NewContainer()),
-	)
+	result := widget.NewMultiLineEntry()
+	var tables []fyne.CanvasObject
+	tbs := widget.NewTabContainer()
 	for _, v := range Sql2struct.Tables {
 		tbs.Items = append(tbs.Items, widget.NewTabItemWithIcon(v.Name, _app.Table, widget.NewMultiLineEntry()))
-		//tName := v.Name
-		//tables = append(tables, widget.NewButton(tName, func() {
-		//	//if checked {
-		//	if rs, err := sql2struct(win, []string{tName}); err != nil {
-		//		result.SetText(err.Error())
-		//	} else {
-		//		result.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
-		//	}
-		//	//}
-		//}))
+		tName := v.Name
+		tables = append(tables, widget.NewButton(tName, func() {
+			//if checked {
+			if rs, err := sql2struct(win, []string{tName}); err != nil {
+				result.SetText(err.Error())
+			} else {
+				result.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
+			}
+			//}
+		}))
 	}
-	tbs.SetTabLocation(widget.TabLocationLeading)
+	tableBox := widget.NewGroupWithScroller("表结构")
+	if len(tbs.Items) > 0 {
+		tbs.SetTabLocation(widget.TabLocationLeading)
+		tableBox.Append(tbs)
+	}
 	return fyne.NewContainerWithLayout(
-		layout.NewGridLayoutWithRows(1),
-		tbs,
-		//widget.NewGroupWithScroller("选择表",
-		//	tables...,
-		//),
-		//widget.NewScrollContainer(result),
+		layout.NewGridLayout(1),
+		tableBox,
+		widget.NewScrollContainer(result),
 	)
 }
 
