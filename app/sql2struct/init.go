@@ -9,20 +9,26 @@ import (
 	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
+	"xorm.io/core"
 )
 
 func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
+	resultBox.SetPlaceHolder(`准备就绪`)
 	tables := widget.NewTabContainer()
+	Sql2struct.Tables = []*core.Table{
+		core.NewTable("article", nil),
+		core.NewTable("category", nil),
+	}
 	for _, t := range Sql2struct.Tables {
 		tableName := t.Name
 		tableBox := widget.NewMultiLineEntry()
-		tableBox.SetText(tableName) //读取表结构
 		tableBox.OnCursorChanged = func() {
 			if rs, err := sql2struct(win, []string{tableName}, dbConf); err != nil {
 				resultBox.SetText(err.Error())
 			} else {
 				resultBox.SetText(strings.ReplaceAll(string(rs), "\t", "    "))
+				tableBox.SetText(tableName) //转换为表结构
 			}
 			resultBox.Refresh()
 		}

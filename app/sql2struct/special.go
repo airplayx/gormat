@@ -21,12 +21,16 @@ import (
 func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
 	specialData.SetText(strings.ReplaceAll(options.Special, ",", ",\n"))
+	autoBool := widget.NewCheck("is_开头的字段自动转bool", func(bool) {})
+	autoBool.SetChecked(options.Tinyint2bool)
+
 	return &widget.Form{
 		OnCancel: func() {
 
 		},
 		OnSubmit: func() {
 			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
+			options.Tinyint2bool = autoBool.Checked
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data
@@ -36,7 +40,8 @@ func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			}
 		},
 		Items: []*widget.FormItem{
-			{Text: "指定字段名转型", Widget: specialData},
+			{Text: "布尔选型", Widget: autoBool},
+			{Text: "指定字段转型", Widget: specialData},
 		},
 	}
 }

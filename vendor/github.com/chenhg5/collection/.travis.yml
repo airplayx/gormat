@@ -1,0 +1,7 @@
+language: go
+go:
+  - "1.10"
+before_script:
+  - git clone --depth=50 --branch=master https://github.com/chenhg5/collection.git /home/travis/gopath/src/collection
+script:
+  -  go test -test.run Test*

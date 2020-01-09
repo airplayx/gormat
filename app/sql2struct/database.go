@@ -22,7 +22,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Struct, dbIndex int) fyne.Widget {
+func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -78,7 +78,7 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 		_ = engine.Close()
 	}))
 	go func() {
-		_ = initTables(win, tab, []interface{}{
+		_ = initTables([]interface{}{
 			user.Text,
 			password.Text,
 			host.Text,
@@ -100,7 +100,7 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data
-				if err := initTables(win, tab, []interface{}{
+				if err := initTables([]interface{}{
 					user.Text,
 					password.Text,
 					host.Text,
@@ -127,14 +127,13 @@ func DataBase(win fyne.Window, tab *fyne.Container, options *Sql2struct.SQL2Stru
 	}
 }
 
-func initTables(win fyne.Window, tab *fyne.Container, dbConf []interface{}) (err error) {
+func initTables(dbConf []interface{}) (err error) {
 	if err = Sql2struct.InitDb(dbConf); err != nil {
 		return
 	}
 	if Sql2struct.Tables, err = Sql2struct.DBMetas(nil,
 		Sql2struct.Configs().ExcludeTables,
 		Sql2struct.Configs().TryComplete); err == nil {
-		tab.Objects = Screen(win, dbConf).Objects
 	}
 	return
 }
