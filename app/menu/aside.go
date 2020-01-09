@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"github.com/buger/jsonparser"
 	_app "gormat/app"
 	"gormat/app/json2struct"
 	"gormat/app/sql2struct"
@@ -43,6 +44,7 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 	addBox := widget.NewScrollContainer(
 		sql2struct.DataBase(win, options, 0),
 	)
+	addBox.Hide()
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(_app.Store, func() {
 			IPBox.Show()
@@ -58,6 +60,8 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(json2struct.Screen()),
 			))
+			scale, _ := jsonparser.GetFloat(_app.Config, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
@@ -91,6 +95,8 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
+			scale, _ := jsonparser.GetFloat(_app.Config, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()

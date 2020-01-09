@@ -77,15 +77,6 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 		}
 		_ = engine.Close()
 	}))
-	go func() {
-		_ = initTables([]interface{}{
-			user.Text,
-			password.Text,
-			host.Text,
-			port.Text,
-			db.Text,
-		})
-	}()
 	return &widget.Form{
 		OnCancel: func() {
 
@@ -100,17 +91,7 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data
-				if err := initTables([]interface{}{
-					user.Text,
-					password.Text,
-					host.Text,
-					port.Text,
-					db.Text,
-				}); err != nil {
-					dialog.ShowError(errors.New(err.Error()), win)
-				} else {
-					dialog.ShowInformation("成功", "保存成功", win)
-				}
+				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
@@ -125,15 +106,4 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 			{Text: "", Widget: testDb},
 		},
 	}
-}
-
-func initTables(dbConf []interface{}) (err error) {
-	if err = Sql2struct.InitDb(dbConf); err != nil {
-		return
-	}
-	if Sql2struct.Tables, err = Sql2struct.DBMetas(nil,
-		Sql2struct.Configs().ExcludeTables,
-		Sql2struct.Configs().TryComplete); err == nil {
-	}
-	return
 }
