@@ -20,7 +20,7 @@ import (
 	"net/url"
 )
 
-func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
+func Aside(app fyne.App, win fyne.Window) *fyne.Container {
 	var options = Sql2struct.Configs()
 	var ipList []*widget.TabItem
 	for _, v := range options.SourceMap {
@@ -41,21 +41,18 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 		ipList = append(ipList, widget.NewTabItem(v.Host, dbBox))
 	}
 	IPBox := widget.NewTabContainer(ipList...)
-	addBox := widget.NewScrollContainer(
-		sql2struct.DataBase(win, options, 0),
-	)
+	addBox := widget.NewScrollContainer(sql2struct.DataBase(win, options, 0))
 	addBox.Hide()
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(_app.Store, func() {
 			IPBox.Show()
 			addBox.Hide()
 		}),
-		widget.NewToolbarAction(_app.Insert, func() {
-			IPBox.Hide()
-			addBox.Show()
-		}),
 		widget.NewToolbarAction(_app.SQL, func() {
-			w := fyne.CurrentApp().NewWindow("SQL语句转Struct")
+
+		}),
+		widget.NewToolbarAction(_app.JSON, func() {
+			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(json2struct.Screen()),
@@ -66,28 +63,12 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		//widget.NewToolbarSeparator(),
-		widget.NewToolbarAction(_app.GroupDelete, func() {
-			content := widget.NewEntry()
-			content.SetPlaceHolder("输入 yes 删除当前组")
-			content.OnChanged = func(text string) {
-				if text == "yes" {
-					dialog.ShowInformation("操作", "删除成功", win)
-				}
-			}
-			dialog.ShowCustom("操作", "取消", content, win)
+		widget.NewToolbarAction(_app.URL, func() {
+
 		}),
-		widget.NewToolbarAction(_app.Delete, func() {
-			cnf := dialog.NewConfirm("操作", "确定删除当前记录?", func(b bool) {
-				fmt.Println(b)
-			}, win)
-			cnf.SetDismissText("否")
-			cnf.SetConfirmText("是")
-			cnf.Show()
-		}),
-		widget.NewToolbarSpacer(),
-		widget.NewToolbarAction(_app.Setting, func() {
-			w := fyne.CurrentApp().NewWindow("设置")
+		widget.NewToolbarSeparator(),
+		widget.NewToolbarAction(_app.Option, func() {
+			w := fyne.CurrentApp().NewWindow("选项")
 			setting := widget.NewTabContainer(
 				widget.NewTabItem("基本", sql2struct.Option(w, options)),
 				widget.NewTabItem("映射", sql2struct.Reflect(w, options)),
@@ -101,6 +82,32 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 			w.CenterOnScreen()
 			w.Show()
 		}),
+		widget.NewToolbarAction(_app.Insert, func() {
+			IPBox.Hide()
+			addBox.Show()
+		}),
+		widget.NewToolbarAction(_app.Edit, func() {
+
+		}),
+		widget.NewToolbarAction(_app.GroupDelete, func() {
+			content := widget.NewEntry()
+			content.SetPlaceHolder(fmt.Sprintf("请输入 %s 确认删除当前组记录", sql2struct.CurLink[2]))
+			content.OnChanged = func(text string) {
+				if text == sql2struct.CurLink[2] {
+					dialog.ShowInformation("操作", "删除成功", win)
+				}
+			}
+			dialog.ShowCustom("操作", "取消", content, win)
+		}),
+		widget.NewToolbarAction(_app.Delete, func() {
+			cnf := dialog.NewConfirm("操作", fmt.Sprintf("确定删除当前 %s 库连接记录?", sql2struct.CurLink[4]), func(b bool) {
+				fmt.Println(b)
+			}, win)
+			cnf.SetDismissText("否")
+			cnf.SetConfirmText("是")
+			cnf.Show()
+		}),
+		widget.NewToolbarSpacer(),
 		widget.NewToolbarAction(_app.Info, func() {
 			airPlayX, _ := url.Parse("http://airplayx.com/gopher-tool")
 			_ = fyne.CurrentApp().OpenURL(airPlayX)
@@ -115,21 +122,5 @@ func Aside(app fyne.App, win fyne.Window) (aside *widget.TabContainer) {
 		IPBox.SetTabLocation(widget.TabLocationLeading)
 		s2sBox.AddObject(IPBox)
 	}
-	aside = widget.NewTabContainer(
-		widget.NewTabItemWithIcon("", _app.Home, _app.WelcomeScreen()),
-		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
-		widget.NewTabItem("Sql转Struct", s2sBox),
-		widget.NewTabItem("Json转Struct", fyne.NewContainerWithLayout(
-			layout.NewGridLayout(1),
-			widget.NewScrollContainer(json2struct.Screen()),
-		)),
-		//widget.NewTabItem("日期格式化", fyne.NewContainerWithLayout(
-		//	layout.NewGridLayout(1),
-		//)),
-		//widget.NewTabItem("URL编解码", fyne.NewContainerWithLayout(
-		//	layout.NewGridLayout(1),
-		//)),
-	)
-	aside.SetTabLocation(widget.TabLocationBottom)
-	return
+	return fyne.NewContainerWithLayout(layout.NewAdaptiveGridLayout(1), s2sBox)
 }

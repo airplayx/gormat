@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"github.com/buger/jsonparser"
@@ -11,6 +12,7 @@ import (
 )
 
 func main() {
+	fmt.Println(_app.File2Bytes(`C:\Users\Administrator\Desktop\连接.svg`))
 	defer func() {
 		_ = ioutil.WriteFile(_app.ConFile, _app.Config, os.ModePerm)
 	}()

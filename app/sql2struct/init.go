@@ -1,12 +1,18 @@
 package sql2struct
 
 import (
+	"errors"
 	"fyne.io/fyne"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
 	"strings"
+)
+
+var (
+	CurLink []interface{}
 )
 
 func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
@@ -19,16 +25,20 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	if tbs, err := Sql2struct.DBMetas(
 		nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
-			tableName := t.Name
+			tName := t.Name
 			tableItem := widget.NewMultiLineEntry()
 			tableItem.OnCursorChanged = func() {
-				if result, err := Sql2struct.NewGenTool().Gen([]string{tableName}, dbConf); err != nil {
-					resultBox.SetText(err.Error())
-				} else {
-					resultBox.SetText(strings.ReplaceAll(string(result), "\t", "    "))
-					tableItem.SetText(tableName) //转换为表结构
-				}
-				resultBox.Refresh()
+				go func() {
+					CurLink = dbConf
+					if result, err := Sql2struct.NewGenTool().Gen([]string{tName}, dbConf); err != nil {
+						dialog.ShowError(errors.New(err.Error()), win)
+						resultBox.SetText(err.Error())
+					} else {
+						resultBox.SetText(strings.ReplaceAll(string(result), "\t", "    "))
+						tableItem.SetText(tName) //转换为表结构
+					}
+					resultBox.Refresh()
+				}()
 			}
 			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, _app.Table, tableItem))
 		}
