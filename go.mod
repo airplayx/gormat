@@ -14,4 +14,4 @@ require (
 	xorm.io/xorm v0.8.1
 )
 
-replace fyne.io/fyne => /vendor/fyne.io/fyne
+replace fyne.io/fyne => ./vendor/fyne.io/fyne
