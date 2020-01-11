@@ -52,6 +52,16 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 			}
 		}
 		res = append(res, s)
+		result := []string{}
+		tempMap := map[string]byte{}
+		for _, e := range res {
+			l := len(tempMap)
+			tempMap[e] = 0
+			if len(tempMap) != l {
+				result = append(result, e)
+			}
+		}
+		res = result
 	}
 
 	nstr := "type:" + strings.ToLower(col.SQLType.Name)

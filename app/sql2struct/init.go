@@ -1,14 +1,20 @@
 package sql2struct
 
 import (
-	"errors"
+	"fmt"
 	"fyne.io/fyne"
-	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"github.com/liudanking/gorm2sql/program"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	_app "gormat/app"
 	"gormat/controllers/Sql2struct"
+	"gormat/controllers/Sql2struct/sqlorm"
+	"path/filepath"
 	"strings"
+	"time"
 )
 
 var (
@@ -17,33 +23,69 @@ var (
 
 func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	if err := Sql2struct.InitDb(dbConf); err != nil {
-		return &fyne.Container{}
+		return fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
+			widget.NewLabel(err.Error()),
+		)
 	}
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(`准备就绪`)
 	tables := widget.NewTabContainer()
-	if tbs, err := Sql2struct.DBMetas(
-		nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
+	if tbs, err := Sql2struct.DBMetas(nil,
+		Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
-			tName := t.Name
+			currentT := t
 			tableItem := widget.NewMultiLineEntry()
 			tableItem.OnCursorChanged = func() {
 				go func() {
 					CurLink = dbConf
-					if result, err := Sql2struct.NewGenTool().Gen([]string{tName}, dbConf); err != nil {
-						dialog.ShowError(errors.New(err.Error()), win)
-						resultBox.SetText(err.Error())
+					_ = Sql2struct.InitDb(dbConf)
+					if result, err := Sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
+						resultBox.SetText(``)
+						tableItem.SetText(err.Error())
 					} else {
 						resultBox.SetText(strings.ReplaceAll(string(result), "\t", "    "))
-						tableItem.SetText(tName) //转换为表结构
+						url := strings.Split(currentT.Name, "_")
+						for k, v := range url {
+							url[k] = strings.Title(v)
+						}
+						f, err := parser.ParseFile(
+							token.NewFileSet(),
+							fmt.Sprintf(currentT.Name+"_%d", time.Now().Nanosecond()),
+							resultBox.Text, parser.ParseComments)
+						if err != nil {
+							tableItem.SetText(fmt.Sprintf("generate sql failed:%v", err))
+							return
+						}
+						types := program.FindMatchStruct([]*ast.File{f}, func(structName string) bool {
+							match, _ := filepath.Match(strings.Join(url, ""), structName)
+							return match
+						})
+						var sqlStr []string
+						for _, typ := range types {
+							ms, err := sqlorm.NewSqlGenerator(typ)
+							if err != nil {
+								tableItem.SetText(fmt.Sprintf("create model struct failed:%v", err))
+								return
+							}
+							sql, err := ms.GetCreateTableSql(currentT)
+							if err != nil {
+								tableItem.SetText(fmt.Sprintf("generate sql failed:%v", err))
+								return
+							}
+							sqlStr = append(sqlStr, sql)
+						}
+						tableItem.SetText(strings.Join(sqlStr, "\n\n"))
 					}
-					resultBox.Refresh()
 				}()
 			}
-			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, _app.Table, tableItem))
+			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(currentT.Name, _app.Table, tableItem))
 		}
 	} else {
-		return &fyne.Container{}
+		return fyne.NewContainerWithLayout(
+			layout.NewGridLayout(1),
+			widget.NewLabel(err.Error()),
+		)
 	}
 	tableBox := widget.NewGroupWithScroller("表结构")
 	if len(tables.Items) > 0 {
