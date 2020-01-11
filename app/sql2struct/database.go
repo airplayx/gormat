@@ -83,11 +83,13 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 		},
 		OnSubmit: func() {
 			options.Driver = driver.Selected
-			//options.SourceMap[dbIndex].Db[0] = db.Text
-			options.SourceMap[dbIndex].User = user.Text
-			options.SourceMap[dbIndex].Password = password.Text
-			options.SourceMap[dbIndex].Host = host.Text
-			options.SourceMap[dbIndex].Port = port.Text
+			if dbIndex > -1 {
+				//options.SourceMap[dbIndex].Db[0] = db.Text
+				options.SourceMap[dbIndex].User = user.Text
+				options.SourceMap[dbIndex].Password = password.Text
+				options.SourceMap[dbIndex].Host = host.Text
+				options.SourceMap[dbIndex].Port = port.Text
+			}
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
 				_app.Config = data

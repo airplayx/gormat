@@ -11,9 +11,6 @@ import (
 )
 
 func main() {
-	defer func() {
-		_ = ioutil.WriteFile(_app.ConFile, _app.Config, os.ModePerm)
-	}()
 	jsonparser.EachKey(_app.Config,
 		func(i int, bytes []byte, valueType jsonparser.ValueType, e error) {
 			font, _ := jsonparser.GetString(bytes, "font")
@@ -29,6 +26,9 @@ func main() {
 	window.CenterOnScreen()
 	window.Resize(fyne.Size{Width: 1366, Height: 650})
 	window.SetContent(menu.Aside(main, window))
+	window.SetOnClosed(func() {
+		_ = ioutil.WriteFile(_app.ConFile, _app.Config, os.ModePerm)
+	})
 	window.SetMaster()
 	window.ShowAndRun()
 }

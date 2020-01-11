@@ -14,14 +14,13 @@ import (
 )
 
 func WelcomeScreen() fyne.CanvasObject {
-	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", Logo))
+	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", LogoBg))
 	logo.SetMinSize(fyne.NewSize(275, 470))
 
 	//airplayx, _ := url.Parse("http://github.com/airplayx")
 	//fyneIo, _ := url.Parse("http://fyne.io/fyne")
 
 	return widget.NewVBox(
-		widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		layout.NewSpacer(),
 		widget.NewHBox(layout.NewSpacer(), logo, layout.NewSpacer()),
 		//widget.NewHyperlinkWithStyle("github.com/airplayx", airplayx, fyne.TextAlignCenter, fyne.TextStyle{Monospace: true}),
