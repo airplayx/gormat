@@ -124,12 +124,20 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 									if dbBox.CurrentTabIndex()-1 < 0 {
 										if len(dbBox.Items) == 0 {
 											dbBox.Hide()
+											ipBox.RemoveIndex(ipBox.CurrentTabIndex())
+											if ipBox.CurrentTabIndex()-1 < 0 {
+												if len(ipBox.Items) == 0 {
+													ipBox.Hide()
+												}
+												goto loop
+											}
+											ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
+											ipBox.Refresh()
 										}
-										return
+										goto loop
 									}
 									dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)
 									dbBox.Refresh()
-									goto loop
 								}
 							}
 						}
