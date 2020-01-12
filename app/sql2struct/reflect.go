@@ -14,7 +14,7 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	_app "gormat/app"
-	"gormat/controllers/Sql2struct"
+	"gormat/internal/Sql2struct"
 	"strings"
 )
 

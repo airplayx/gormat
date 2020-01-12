@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/controllers/Json2struct"
+	"gormat/internal/Json2struct"
 	"strings"
 )
 

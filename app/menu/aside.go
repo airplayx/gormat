@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/widget"
 	_app "gormat/app"
 	"gormat/app/sql2struct"
-	"gormat/controllers/Sql2struct"
+	"gormat/internal/Sql2struct"
 )
 
 func Aside(app fyne.App, win fyne.Window) *fyne.Container {

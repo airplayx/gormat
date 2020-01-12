@@ -11,7 +11,7 @@ import (
 	"github.com/buger/jsonparser"
 	_app "gormat/app"
 	"gormat/app/json2struct"
-	"gormat/controllers/Sql2struct"
+	"gormat/internal/Sql2struct"
 	"net/url"
 )
 

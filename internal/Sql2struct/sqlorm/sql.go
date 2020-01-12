@@ -14,7 +14,7 @@ import (
 	"strings"
 	"xorm.io/core"
 
-	"gormat/controllers/Sql2struct/sqlorm/util"
+	"gormat/internal/Sql2struct/sqlorm/util"
 
 	"github.com/pinzolo/casee"
 	"log"
