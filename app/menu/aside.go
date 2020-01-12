@@ -18,6 +18,7 @@ import (
 func Aside(app fyne.App, win fyne.Window) *fyne.Container {
 	var options = Sql2struct.Configs()
 	var ipList []*widget.TabItem
+	dbBox := widget.NewTabContainer()
 	for _, v := range options.SourceMap {
 		var dbList []*widget.TabItem
 		for _, curDb := range v.Db {
@@ -31,15 +32,15 @@ func Aside(app fyne.App, win fyne.Window) *fyne.Container {
 					curDb,
 				})))
 		}
-		dbBox := widget.NewTabContainer(dbList...)
+		dbBox = widget.NewTabContainer(dbList...)
 		dbBox.SetTabLocation(widget.TabLocationLeading)
 		ipList = append(ipList, widget.NewTabItem(v.Host, dbBox))
 	}
 	iPBox := widget.NewTabContainer(ipList...)
-	tooBar := sql2struct.ToolBar(win, options)
+	toolBar := sql2struct.ToolBar(win, iPBox, dbBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
-		layout.NewBorderLayout(tooBar, nil, nil, nil),
-		tooBar,
+		layout.NewBorderLayout(toolBar, nil, nil, nil),
+		toolBar,
 		_app.WelcomeScreen(),
 	)
 	if len(iPBox.Items) > 0 {

@@ -17,8 +17,7 @@ import (
 	"gormat/controllers/Sql2struct/sqlorm/util"
 
 	"github.com/pinzolo/casee"
-
-	log "github.com/liudanking/goutil/logutil"
+	"log"
 )
 
 type SqlGenerator struct {
@@ -48,19 +47,19 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 		case *ast.Ident:
 			tag, err := generateSqlTag(field)
 			if err != nil {
-				log.Warning("generateSqlTag [%s] failed:%v", t.Name, err)
+				log.Printf("generateSqlTag [%s] failed:%v", t.Name, err)
 			} else {
 				tags = append(tags, fmt.Sprintf("%s %s", getColumnName(field), tag))
 			}
 		case *ast.SelectorExpr:
 			tag, err := generateSqlTag(field)
 			if err != nil {
-				log.Warning("generateSqlTag [%s] failed:%v", t.Sel.Name, err)
+				log.Printf("generateSqlTag [%s] failed:%v", t.Sel.Name, err)
 			} else {
 				tags = append(tags, fmt.Sprintf("%s %s", getColumnName(field), tag))
 			}
 		default:
-			log.Warning("field %s not supported, ignore", util.GetFieldName(field))
+			log.Printf("field %s not supported, ignore", util.GetFieldName(field))
 		}
 
 		columnName := getColumnName(field)
@@ -112,7 +111,7 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
   %v,
   %v
 ) %v;`,
-		"`"+ms.tableName()+"`",
+		"`"+t.Name+"`",
 		strings.Join(append(tags, append(indicesStrs, uniqIndicesStrs...)...), ",\n  "),
 		primaryKeyStr,
 		strings.Join(options, " ")), nil
@@ -141,15 +140,11 @@ func (ms *SqlGenerator) getStructFieds(node ast.Node) []*ast.Field {
 		case *ast.SelectorExpr:
 			fields = append(fields, field)
 		default:
-			log.Warning("filed %s not supported, ignore", util.GetFieldName(field))
+			log.Printf("filed %s not supported, ignore", util.GetFieldName(field))
 		}
 	}
 
 	return fields
-}
-
-func (ms *SqlGenerator) tableName() string {
-	return casee.ToSnakeCase(ms.structName)
 }
 
 func generateSqlTag(field *ast.Field) (string, error) {
@@ -157,10 +152,6 @@ func generateSqlTag(field *ast.Field) (string, error) {
 	var err error
 
 	sqlSettings := ParseTagSetting(util.GetFieldTag(field, "gorm").Name)
-
-	if value, ok := sqlSettings["TYPE"]; ok {
-		sqlType = value
-	}
 
 	if _, found := sqlSettings["NOT NULL"]; !found { // default: not null
 		sqlSettings["NOT NULL"] = ""
@@ -179,6 +170,10 @@ func generateSqlTag(field *ast.Field) (string, error) {
 		additionalType += " COLLATE " + value
 	}
 
+	if value, ok := sqlSettings["TYPE"]; ok {
+		sqlType = value
+	}
+
 	if sqlType == "" {
 		var size = 128
 
@@ -193,7 +188,7 @@ func generateSqlTag(field *ast.Field) (string, error) {
 
 		sqlType, err = mysqlTag(field, size, autoIncrease)
 		if err != nil {
-			log.Warning("get mysql field tag failed:%v", err)
+			log.Printf("get mysql field tag failed:%v", err)
 			return "", err
 		}
 	}

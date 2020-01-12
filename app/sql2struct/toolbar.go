@@ -1,6 +1,8 @@
 package sql2struct
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
@@ -13,7 +15,7 @@ import (
 	"net/url"
 )
 
-func ToolBar(win fyne.Window, options *Sql2struct.SQL2Struct) *widget.Toolbar {
+func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(_app.Store, func() {
 
@@ -76,7 +78,29 @@ func ToolBar(win fyne.Window, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 			content.SetPlaceHolder(fmt.Sprintf("请输入 %s 确认删除当前组记录", CurLink[2]))
 			content.OnChanged = func(text string) {
 				if text == CurLink[2] {
-					dialog.ShowInformation("操作", "删除成功", win)
+					sourceMap := options.SourceMap
+					for k, v := range sourceMap {
+						if v.Host == CurLink[2] {
+							options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
+							break
+						}
+					}
+					jsons, _ := json.Marshal(options)
+					if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+						_app.Config = data
+						dialog.ShowInformation("操作", "保存成功", win)
+						ipBox.RemoveIndex(ipBox.CurrentTabIndex())
+						if ipBox.CurrentTabIndex()-1 < 0 {
+							if len(ipBox.Items) == 0 {
+								ipBox.Hide()
+							}
+							return
+						}
+						ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
+						ipBox.Refresh()
+					} else {
+						dialog.ShowError(errors.New(err.Error()), win)
+					}
 				}
 			}
 			dialog.ShowCustom("操作", "取消", content, win)
@@ -86,7 +110,39 @@ func ToolBar(win fyne.Window, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 				return
 			}
 			cnf := dialog.NewConfirm("操作", fmt.Sprintf("确定删除当前 %s 库连接记录?", CurLink[4]), func(b bool) {
-				fmt.Println(b)
+				if b {
+					sourceMap := options.SourceMap
+					for k, v := range sourceMap {
+						if v.Host == CurLink[2] {
+							for key, db := range v.Db {
+								if db == CurLink[4] {
+									sourceMap[k].Db = append(v.Db[:key], v.Db[key+1:]...)
+									if len(sourceMap[k].Db) == 0 {
+										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
+									}
+									dbBox.RemoveIndex(dbBox.CurrentTabIndex())
+									if dbBox.CurrentTabIndex()-1 < 0 {
+										if len(dbBox.Items) == 0 {
+											dbBox.Hide()
+										}
+										return
+									}
+									dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)
+									dbBox.Refresh()
+									goto loop
+								}
+							}
+						}
+					}
+				loop:
+					jsons, _ := json.Marshal(options)
+					if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
+						_app.Config = data
+						dialog.ShowInformation("操作", "保存成功", win)
+					} else {
+						dialog.ShowError(errors.New(err.Error()), win)
+					}
+				}
 			}, win)
 			cnf.SetDismissText("否")
 			cnf.SetConfirmText("是")

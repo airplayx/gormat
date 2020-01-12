@@ -9,7 +9,6 @@ require (
 	github.com/denisenkom/go-mssqldb v0.0.0-20191128021309-1d7a30a10f73
 	github.com/fatih/astrewrite v0.0.0-20191207154002-9094e544fcef // indirect
 	github.com/fatih/camelcase v1.0.0 // indirect
-	github.com/fatih/structtag v1.2.0
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/lib/pq v1.3.0
 	github.com/liudanking/gorm2sql v0.0.0-20180430122841-1fe6dd257bc8

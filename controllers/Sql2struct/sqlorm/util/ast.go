@@ -5,24 +5,22 @@ import (
 	"strconv"
 
 	log "github.com/liudanking/goutil/logutil"
-
-	"github.com/fatih/structtag"
 )
 
-func GetFieldTag(field *ast.Field, key string) *structtag.Tag {
+func GetFieldTag(field *ast.Field, key string) *Tag {
 	if field.Tag == nil {
-		return &structtag.Tag{}
+		return &Tag{}
 	}
 
 	s, _ := strconv.Unquote(field.Tag.Value)
-	tags, err := structtag.Parse(s)
+	tags, err := Parse(s)
 	if err != nil {
 		log.Warning("parse tag string:%s failed:%v", field.Tag.Value, err)
-		return &structtag.Tag{}
+		return &Tag{}
 	}
 	tag, err := tags.Get(key)
 	if err != nil {
-		return &structtag.Tag{}
+		return &Tag{}
 	}
 
 	return tag
