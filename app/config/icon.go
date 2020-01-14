@@ -4,7 +4,7 @@
 @File : icons
 @Author : Bingo <airplayx@gmail.com>
 */
-package _app
+package config
 
 import (
 	"fyne.io/fyne"

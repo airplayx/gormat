@@ -21,6 +21,5 @@ func getTypeAndImports(column *core.Column) (t string) {
 		t = "bool"
 		return
 	}
-
 	return
 }

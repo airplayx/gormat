@@ -4,18 +4,18 @@
 @File : aside
 @Author : Bingo <airplayx@gmail.com>
 */
-package menu
+package _app
 
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	_app "gormat/app"
+	"gormat/app/config"
 	"gormat/app/sql2struct"
 	"gormat/internal/Sql2struct"
 )
 
-func Aside(app fyne.App, win fyne.Window) *fyne.Container {
+func Container(app fyne.App, win fyne.Window) *fyne.Container {
 	var options = Sql2struct.Configs()
 	var ipList []*widget.TabItem
 	dbBox := widget.NewTabContainer()
@@ -23,7 +23,7 @@ func Aside(app fyne.App, win fyne.Window) *fyne.Container {
 		var dbList []*widget.TabItem
 		for _, curDb := range v.Db {
 			dbList = append(dbList, widget.NewTabItemWithIcon(
-				curDb, _app.Database,
+				curDb, config.Database,
 				sql2struct.Screen(win, []interface{}{
 					v.User,
 					v.Password,
@@ -37,11 +37,11 @@ func Aside(app fyne.App, win fyne.Window) *fyne.Container {
 		ipList = append(ipList, widget.NewTabItem(v.Host, dbBox))
 	}
 	iPBox := widget.NewTabContainer(ipList...)
-	toolBar := sql2struct.ToolBar(win, iPBox, dbBox, options)
+	toolBar := ToolBar(win, iPBox, dbBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(toolBar, nil, nil, nil),
 		toolBar,
-		_app.WelcomeScreen(),
+		WelcomeScreen(),
 	)
 	if len(iPBox.Items) > 0 {
 		iPBox.SetTabLocation(widget.TabLocationLeading)

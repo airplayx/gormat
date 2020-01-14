@@ -11,10 +11,11 @@ import (
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"gormat/app/config"
 )
 
 func WelcomeScreen() fyne.CanvasObject {
-	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", LogoBg))
+	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", config.LogoBg))
 	logo.SetMinSize(fyne.NewSize(275, 470))
 
 	//airplayx, _ := url.Parse("http://github.com/airplayx")

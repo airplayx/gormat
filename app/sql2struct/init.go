@@ -9,7 +9,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	_app "gormat/app"
+	"gormat/app/config"
 	"gormat/internal/Sql2struct"
 	"gormat/internal/Sql2struct/sqlorm"
 	"path/filepath"
@@ -31,8 +31,7 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(`准备就绪`)
 	tables := widget.NewTabContainer()
-	if tbs, err := Sql2struct.DBMetas(nil,
-		Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
+	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
 			currentT := t
 			tableItem := widget.NewMultiLineEntry()
@@ -79,7 +78,7 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 					}
 				}()
 			}
-			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(currentT.Name, _app.Table, tableItem))
+			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(currentT.Name, config.Table, tableItem))
 		}
 	} else {
 		return fyne.NewContainerWithLayout(
@@ -96,5 +95,11 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 		layout.NewGridLayout(1),
 		tableBox,
 		widget.NewScrollContainer(resultBox),
+	)
+}
+
+func QuickScreen() *fyne.Container {
+	return fyne.NewContainerWithLayout(
+		layout.NewGridLayout(1),
 	)
 }

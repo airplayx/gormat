@@ -13,7 +13,7 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
-	_app "gormat/app"
+	"gormat/app/config"
 	"gormat/internal/Sql2struct"
 	"strings"
 )
@@ -23,13 +23,13 @@ func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	dataType.SetText(strings.ReplaceAll(options.Reflect, ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
-
+			win.Close()
 		},
 		OnSubmit: func() {
 			options.Reflect = strings.ReplaceAll(dataType.Text, ",\n", ",")
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(_app.Config, jsons, "sql2struct"); err == nil {
-				_app.Config = data
+			if data, err := jsonparser.Set(config.Config, jsons, "sql2struct"); err == nil {
+				config.Config = data
 				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

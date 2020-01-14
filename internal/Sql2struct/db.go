@@ -93,7 +93,6 @@ func sqlType2TypeString(st core.SQLType) string {
 	s := t.String()
 	if s == "[]uint8" {
 		return "[]byte"
-
 	}
 	return s
 }
