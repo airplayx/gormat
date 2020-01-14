@@ -22,7 +22,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 
 		}),
 		widget.NewToolbarAction(config.SQL, func() {
-			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
+			w := fyne.CurrentApp().NewWindow("Sql语句转Struct")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(sql2struct.QuickScreen()),
@@ -46,7 +46,18 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			w.Show()
 		}),
 		widget.NewToolbarAction(config.URL, func() {
-
+			w := fyne.CurrentApp().NewWindow("Url相关工具")
+			w.SetContent(fyne.NewContainerWithLayout(
+				layout.NewGridLayout(1),
+				widget.NewScrollContainer(fyne.NewContainerWithLayout(
+					layout.NewGridLayout(1),
+				)),
+			))
+			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
+			w.Resize(fyne.Size{Width: 1000, Height: 500})
+			w.CenterOnScreen()
+			w.Show()
 		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Insert, func() {
