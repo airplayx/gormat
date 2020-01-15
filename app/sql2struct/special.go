@@ -32,8 +32,8 @@ func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
 			options.Tinyint2bool = autoBool.Checked
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(config.Config, jsons, "sql2struct"); err == nil {
-				config.Config = data
+			if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
+				config.Setting = data
 				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

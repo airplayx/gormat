@@ -18,52 +18,10 @@ import (
 
 func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
-		widget.NewToolbarAction(config.Store, func() {
-
-		}),
-		widget.NewToolbarAction(config.SQL, func() {
-			w := fyne.CurrentApp().NewWindow("Sql语句转Struct")
-			w.SetContent(fyne.NewContainerWithLayout(
-				layout.NewGridLayout(1),
-				widget.NewScrollContainer(sql2struct.QuickScreen()),
-			))
-			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
-			w.Resize(fyne.Size{Width: 1000, Height: 500})
-			w.CenterOnScreen()
-			w.Show()
-		}),
-		widget.NewToolbarAction(config.JSON, func() {
-			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
-			w.SetContent(fyne.NewContainerWithLayout(
-				layout.NewGridLayout(1),
-				widget.NewScrollContainer(json2struct.Screen()),
-			))
-			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
-			w.Resize(fyne.Size{Width: 1000, Height: 500})
-			w.CenterOnScreen()
-			w.Show()
-		}),
-		widget.NewToolbarAction(config.URL, func() {
-			w := fyne.CurrentApp().NewWindow("Url相关工具")
-			w.SetContent(fyne.NewContainerWithLayout(
-				layout.NewGridLayout(1),
-				widget.NewScrollContainer(fyne.NewContainerWithLayout(
-					layout.NewGridLayout(1),
-				)),
-			))
-			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
-			w.Resize(fyne.Size{Width: 1000, Height: 500})
-			w.CenterOnScreen()
-			w.Show()
-		}),
-		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Insert, func() {
 			w := fyne.CurrentApp().NewWindow("添加连接")
 			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, options, -1)))
-			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
@@ -78,12 +36,51 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
-			scale, _ := jsonparser.GetFloat(config.Config, "const", "scale")
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
 		}),
+		widget.NewToolbarAction(config.SQL, func() {
+			w := fyne.CurrentApp().NewWindow("Sql语句转Struct")
+			w.SetContent(fyne.NewContainerWithLayout(
+				layout.NewGridLayout(1),
+				widget.NewScrollContainer(sql2struct.QuickScreen()),
+			))
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
+			w.Resize(fyne.Size{Width: 1000, Height: 500})
+			w.CenterOnScreen()
+			w.Show()
+		}),
+		widget.NewToolbarAction(config.JSON, func() {
+			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
+			w.SetContent(fyne.NewContainerWithLayout(
+				layout.NewGridLayout(1),
+				widget.NewScrollContainer(json2struct.Screen()),
+			))
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
+			w.Resize(fyne.Size{Width: 1000, Height: 500})
+			w.CenterOnScreen()
+			w.Show()
+		}),
+		widget.NewToolbarAction(config.URL, func() {
+			w := fyne.CurrentApp().NewWindow("Url相关工具")
+			w.SetContent(fyne.NewContainerWithLayout(
+				layout.NewGridLayout(1),
+				widget.NewScrollContainer(fyne.NewContainerWithLayout(
+					layout.NewGridLayout(1),
+				)),
+			))
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
+			w.Resize(fyne.Size{Width: 1000, Height: 500})
+			w.CenterOnScreen()
+			w.Show()
+		}),
+		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Edit, func() {
 			if len(sql2struct.CurLink) == 0 {
 				return
@@ -106,8 +103,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 						}
 					}
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(config.Config, jsons, "sql2struct"); err == nil {
-						config.Config = data
+					if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
+						config.Setting = data
 						dialog.ShowInformation("操作", "保存成功", win)
 						ipBox.RemoveIndex(ipBox.CurrentTabIndex())
 						if ipBox.CurrentTabIndex()-1 < 0 {
@@ -164,8 +161,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 					}
 				loop:
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(config.Config, jsons, "sql2struct"); err == nil {
-						config.Config = data
+					if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
+						config.Setting = data
 						dialog.ShowInformation("操作", "保存成功", win)
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)

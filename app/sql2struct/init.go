@@ -11,7 +11,9 @@ import (
 	"go/token"
 	"gormat/app/config"
 	"gormat/internal/Sql2struct"
+	"gormat/internal/Sql2struct/quick"
 	"gormat/internal/Sql2struct/sqlorm"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -99,7 +101,29 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 }
 
 func QuickScreen() *fyne.Container {
+	result := widget.NewMultiLineEntry()
+	data := widget.NewMultiLineEntry()
+	data.OnChanged = func(s string) {
+		if data.Text == "" {
+			result.SetText(data.Text)
+			return
+		}
+		data.Text = strings.ReplaceAll(data.Text, "`", "")
+		fmt.Println(data.Text)
+		blocks, _ := quick.MatchStmt(strings.NewReader(data.Text))
+		for i := range blocks {
+			t := quick.HandleStmtBlock(blocks[i])
+			t.GenType(os.Stdout)
+		}
+		result.SetText(strings.ReplaceAll(``, "\t", "    "))
+	}
+	data.SetPlaceHolder(``)
+	result.SetPlaceHolder(`type YourStruct struct {
+    A string ` + "`" + `json:"a"` + "`" + ` // b
+}`)
 	return fyne.NewContainerWithLayout(
-		layout.NewGridLayout(1),
+		layout.NewGridLayoutWithRows(1),
+		widget.NewScrollContainer(data),
+		widget.NewScrollContainer(result),
 	)
 }

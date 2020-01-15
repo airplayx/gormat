@@ -15,7 +15,7 @@ import (
 	"gormat/internal/Sql2struct"
 )
 
-func Container(app fyne.App, win fyne.Window) *fyne.Container {
+func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	var options = Sql2struct.Configs()
 	var ipList []*widget.TabItem
 	dbBox := widget.NewTabContainer()
@@ -47,5 +47,13 @@ func Container(app fyne.App, win fyne.Window) *fyne.Container {
 		iPBox.SetTabLocation(widget.TabLocationLeading)
 		s2sBox.AddObject(iPBox)
 	}
-	return fyne.NewContainerWithLayout(layout.NewAdaptiveGridLayout(1), s2sBox)
+	c := widget.NewTabContainer(
+		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),
+		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
+		widget.NewTabItemWithIcon("", config.Store, s2sBox),
+		widget.NewTabItemWithIcon("", config.Daily, fyne.NewContainer()),
+		widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),
+	)
+	c.SetTabLocation(widget.TabLocationBottom)
+	return c
 }

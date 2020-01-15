@@ -36,7 +36,7 @@ type SourceMap struct {
 }
 
 func Configs() (config *SQL2Struct) {
-	data, _, _, _ := jsonparser.Get(config2.Config, "sql2struct")
+	data, _, _, _ := jsonparser.Get(config2.Setting, "sql2struct")
 	if err := json.Unmarshal([]byte(data), &config); err != nil {
 		log.Println(err.Error())
 	}
