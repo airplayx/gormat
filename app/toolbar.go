@@ -3,7 +3,6 @@ package _app
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
@@ -82,22 +81,16 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Edit, func() {
-			if len(sql2struct.CurLink) == 0 {
-				return
-			}
 
 		}),
 		widget.NewToolbarAction(config.GroupDelete, func() {
-			if len(sql2struct.CurLink) == 0 {
-				return
-			}
 			content := widget.NewEntry()
-			content.SetPlaceHolder(fmt.Sprintf("请输入 %s 确认删除当前组记录", sql2struct.CurLink[2]))
+			content.SetPlaceHolder("请输入 " + ipBox.CurrentTab().Text + " 确认删除当前组记录")
 			content.OnChanged = func(text string) {
-				if text == sql2struct.CurLink[2] {
+				if text == ipBox.CurrentTab().Text {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
-						if v.Host == sql2struct.CurLink[2] {
+						if v.Host == ipBox.CurrentTab().Text {
 							options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 							break
 						}
@@ -123,38 +116,33 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			dialog.ShowCustom("操作", "取消", content, win)
 		}),
 		widget.NewToolbarAction(config.Delete, func() {
-			if len(sql2struct.CurLink) == 0 {
-				return
-			}
-			cnf := dialog.NewConfirm("操作", fmt.Sprintf("确定删除当前 %s 库连接记录?", sql2struct.CurLink[4]), func(b bool) {
-				if b {
+			cnf := dialog.NewConfirm("操作", "确定删除当前 "+dbBox.CurrentTab().Text+" 库连接记录?", func(isDelete bool) {
+				if isDelete {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
-						if v.Host == sql2struct.CurLink[2] {
+						if v.Host == ipBox.CurrentTab().Text {
 							for key, db := range v.Db {
-								if db == sql2struct.CurLink[4] {
+								if db == dbBox.CurrentTab().Text {
 									sourceMap[k].Db = append(v.Db[:key], v.Db[key+1:]...)
 									if len(sourceMap[k].Db) == 0 {
 										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 									}
-									dbBox.RemoveIndex(dbBox.CurrentTabIndex())
-									if dbBox.CurrentTabIndex()-1 < 0 {
-										if len(dbBox.Items) == 0 {
-											dbBox.Hide()
-											ipBox.RemoveIndex(ipBox.CurrentTabIndex())
-											if ipBox.CurrentTabIndex()-1 < 0 {
-												if len(ipBox.Items) == 0 {
-													ipBox.Hide()
-												}
-												goto loop
+									if dbBox.CurrentTabIndex() >= 0 && dbBox.CurrentTabIndex() < len(dbBox.Items)-1 {
+										dbBox.RemoveIndex(dbBox.CurrentTabIndex())
+										goto loop
+									} else if dbBox.CurrentTabIndex() > 0 && dbBox.CurrentTabIndex() == len(dbBox.Items)-1 {
+										dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)
+										dbBox.RemoveIndex(dbBox.CurrentTabIndex() + 1)
+										goto loop
+									} else if dbBox.CurrentTabIndex() == 0 && len(dbBox.Items) == 1 {
+										ipBox.RemoveIndex(ipBox.CurrentTabIndex())
+										if ipBox.CurrentTabIndex()-1 < 0 {
+											if len(ipBox.Items) == 0 {
+												ipBox.Hide()
 											}
-											ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
-											ipBox.Refresh()
 										}
 										goto loop
 									}
-									dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)
-									dbBox.Refresh()
 								}
 							}
 						}

@@ -13,16 +13,16 @@ import (
 	"gormat/app/config"
 	"gormat/app/sql2struct"
 	"gormat/internal/Sql2struct"
+	"time"
 )
 
 func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	var options = Sql2struct.Configs()
-	var ipList []*widget.TabItem
-	dbBox := widget.NewTabContainer()
+	var dbBox, iPBox = widget.NewTabContainer(), widget.NewTabContainer()
+	currentDB := make(chan *widget.TabItem)
 	for _, v := range options.SourceMap {
-		var dbList []*widget.TabItem
 		for _, curDb := range v.Db {
-			dbList = append(dbList, widget.NewTabItemWithIcon(
+			dbBox.Items = append(dbBox.Items, widget.NewTabItemWithIcon(
 				curDb, config.Database,
 				sql2struct.Screen(win, []interface{}{
 					v.User,
@@ -32,18 +32,30 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 					curDb,
 				})))
 		}
-		dbBox = widget.NewTabContainer(dbList...)
 		dbBox.SetTabLocation(widget.TabLocationLeading)
-		ipList = append(ipList, widget.NewTabItem(v.Host, dbBox))
+		iPBox.Items = append(iPBox.Items, widget.NewTabItem(v.Host, dbBox))
 	}
-	iPBox := widget.NewTabContainer(ipList...)
 	toolBar := ToolBar(win, iPBox, dbBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(toolBar, nil, nil, nil),
 		toolBar,
 		WelcomeScreen(),
 	)
+	go func() {
+		for {
+			time.Sleep(time.Microsecond * 200)
+			if <-currentDB != dbBox.CurrentTab() {
+
+			}
+		}
+	}()
 	if len(iPBox.Items) > 0 {
+		go func() {
+			currentDB <- &widget.TabItem{}
+			for {
+				currentDB <- dbBox.CurrentTab()
+			}
+		}()
 		iPBox.SetTabLocation(widget.TabLocationLeading)
 		s2sBox.AddObject(iPBox)
 	}

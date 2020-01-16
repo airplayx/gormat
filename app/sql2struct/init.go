@@ -16,10 +16,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-)
-
-var (
-	CurLink []interface{}
+	"xorm.io/core"
 )
 
 func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
@@ -31,56 +28,68 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	}
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(`准备就绪`)
-	tables := widget.NewTabContainer()
+	var tables = widget.NewTabContainer()
+	var currentTable = make(chan *widget.TabItem)
 	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
-			currentT := t
-			tableItem := widget.NewMultiLineEntry()
-			tableItem.OnCursorChanged = func() {
-				go func() {
-					CurLink = dbConf
+			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, config.Table, widget.NewMultiLineEntry()))
+		}
+		go func(dbConf []interface{}) {
+			for {
+				time.Sleep(time.Microsecond * 50)
+				if <-currentTable != tables.CurrentTab() {
+					var currentT *core.Table
+					for _, t := range tbs {
+						if t.Name == tables.CurrentTab().Text {
+							currentT = t
+						}
+					}
+					if currentT == nil {
+						return
+					}
 					_ = Sql2struct.InitDb(dbConf)
+					tableBox := widget.NewMultiLineEntry()
 					if result, err := Sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
 						resultBox.SetText(``)
-						tableItem.SetText(err.Error())
+						tableBox.SetText(err.Error())
 					} else {
 						resultBox.SetText(strings.ReplaceAll(string(result), "\t", "    "))
 						url := strings.Split(currentT.Name, "_")
 						for k, v := range url {
 							url[k] = strings.Title(v)
 						}
-						f, err := parser.ParseFile(
+						if file, err := parser.ParseFile(
 							token.NewFileSet(),
 							fmt.Sprintf(currentT.Name+"_%d", time.Now().Nanosecond()),
-							resultBox.Text, parser.ParseComments)
-						if err != nil {
-							tableItem.SetText(fmt.Sprintf("generate sql failed:%v", err))
-							return
-						}
-						types := program.FindMatchStruct([]*ast.File{f}, func(structName string) bool {
-							match, _ := filepath.Match(strings.Join(url, ""), structName)
-							return match
-						})
-						var sqlStr []string
-						for _, typ := range types {
-							ms, err := sqlorm.NewSqlGenerator(typ)
-							if err != nil {
-								tableItem.SetText(fmt.Sprintf("create model struct failed:%v", err))
-								return
+							resultBox.Text, parser.ParseComments); err != nil {
+							tableBox.SetText(fmt.Sprintf("generate sql failed:%v", err))
+						} else {
+							var sqlStr []string
+							types := program.FindMatchStruct([]*ast.File{file}, func(structName string) bool {
+								match, _ := filepath.Match(strings.Join(url, ""), structName)
+								return match
+							})
+							for _, typ := range types {
+								ms, err := sqlorm.NewSqlGenerator(typ)
+								if err != nil {
+									tableBox.SetText(fmt.Sprintf("create model struct failed:%v", err))
+									continue
+								} else {
+									if sql, err := ms.GetCreateTableSql(currentT); err != nil {
+										tableBox.SetText(fmt.Sprintf("generate sql failed:%v", err))
+									} else {
+										sqlStr = append(sqlStr, sql)
+									}
+								}
 							}
-							sql, err := ms.GetCreateTableSql(currentT)
-							if err != nil {
-								tableItem.SetText(fmt.Sprintf("generate sql failed:%v", err))
-								return
-							}
-							sqlStr = append(sqlStr, sql)
+							tableBox.SetText(strings.Join(sqlStr, "\n\n"))
 						}
-						tableItem.SetText(strings.Join(sqlStr, "\n\n"))
 					}
-				}()
+					tables.CurrentTab().Content = tableBox
+					tables.Refresh()
+				}
 			}
-			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(currentT.Name, config.Table, tableItem))
-		}
+		}(dbConf)
 	} else {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
@@ -89,6 +98,12 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 	}
 	tableBox := widget.NewGroupWithScroller("表结构")
 	if len(tables.Items) > 0 {
+		go func() {
+			currentTable <- &widget.TabItem{}
+			for {
+				currentTable <- tables.CurrentTab()
+			}
+		}()
 		tables.SetTabLocation(widget.TabLocationLeading)
 		tableBox.Append(tables)
 	}
