@@ -11,7 +11,7 @@ import (
 	"go/token"
 	"gormat/app/config"
 	"gormat/internal/Sql2struct"
-	"gormat/internal/Sql2struct/quick"
+	"gormat/internal/Sql2struct/quickly"
 	"gormat/internal/Sql2struct/sqlorm"
 	"os"
 	"path/filepath"
@@ -110,9 +110,9 @@ func QuickScreen() *fyne.Container {
 		}
 		data.Text = strings.ReplaceAll(data.Text, "`", "")
 		fmt.Println(data.Text)
-		blocks, _ := quick.MatchStmt(strings.NewReader(data.Text))
+		blocks, _ := quickly.MatchStmt(strings.NewReader(data.Text))
 		for i := range blocks {
-			t := quick.HandleStmtBlock(blocks[i])
+			t := quickly.HandleStmtBlock(blocks[i])
 			t.GenType(os.Stdout)
 		}
 		result.SetText(strings.ReplaceAll(``, "\t", "    "))
