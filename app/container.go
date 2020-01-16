@@ -52,7 +52,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
 		widget.NewTabItemWithIcon("", config.Store, s2sBox),
 		widget.NewTabItemWithIcon("", config.Daily, fyne.NewContainer()),
-		widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),
+		//widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),
 	)
 	c.SetTabLocation(widget.TabLocationBottom)
 	return c

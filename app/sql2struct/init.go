@@ -13,7 +13,6 @@ import (
 	"gormat/internal/Sql2struct"
 	"gormat/internal/Sql2struct/quickly"
 	"gormat/internal/Sql2struct/sqlorm"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -104,25 +103,35 @@ func QuickScreen() *fyne.Container {
 	result := widget.NewMultiLineEntry()
 	data := widget.NewMultiLineEntry()
 	data.OnChanged = func(s string) {
-		if data.Text == "" {
-			result.SetText(data.Text)
+		if s == "" {
+			result.SetText(s)
 			return
 		}
-		data.Text = strings.ReplaceAll(data.Text, "`", "")
-		fmt.Println(data.Text)
-		blocks, _ := quickly.MatchStmt(strings.NewReader(data.Text))
-		for i := range blocks {
-			t := quickly.HandleStmtBlock(blocks[i])
-			t.GenType(os.Stdout)
+		s = strings.ReplaceAll(s, "`", "")
+		blocks, err := quickly.MatchStmt(strings.NewReader(s))
+		if err != nil {
+			result.SetText(err.Error())
+			return
 		}
-		result.SetText(strings.ReplaceAll(``, "\t", "    "))
+		r := ""
+		for _, v := range blocks {
+			ss, err := quickly.HandleStmtBlock(v).GenType()
+			if err != nil {
+				r += err.Error()
+				continue
+			}
+			r += string(ss)
+		}
+		result.SetText(strings.ReplaceAll(r, "\t", "    "))
 	}
-	data.SetPlaceHolder(``)
+	data.PlaceHolder = `CREATE TABLE ` + "`" + `your_struct` + "`" + ` (
+  ` + "`" + `id` + "`" + ` int(11) NOT NULL AUTO_INCREMENT,
+);`
 	result.SetPlaceHolder(`type YourStruct struct {
-    A string ` + "`" + `json:"a"` + "`" + ` // b
+    ID uint ` + "`" + `gorm:"column:id;not null;AUTO_INCREMENT;type:int(11)" json:"id,omitempty"` + "`" + `
 }`)
 	return fyne.NewContainerWithLayout(
-		layout.NewGridLayoutWithRows(1),
+		layout.NewGridLayoutWithColumns(1),
 		widget.NewScrollContainer(data),
 		widget.NewScrollContainer(result),
 	)

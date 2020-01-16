@@ -11,25 +11,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/format"
 	"gormat/internal/Sql2struct"
 	"io"
 	"regexp"
+	"sort"
 	"strings"
 )
 
 var (
 	tableStmt = regexp.MustCompile(`(?is)create table (\w+) \(\s.+?;`)
-	comment   = regexp.MustCompile(`--.*`)
 	colDecl   = regexp.MustCompile(`\w.+`)
-
-	intType    = regexp.MustCompile(`(int|integer|smallint|bigint|serial)`)
-	boolType   = regexp.MustCompile(`boolean`)
-	floatType  = regexp.MustCompile(`(float|decimal|numeric|real)`)
-	timeType   = regexp.MustCompile(`(date|time|timestamp)`)
-	stringType = regexp.MustCompile(`(char|varchar|text)`)
-
-	hungaryStyle = regexp.MustCompile(`_[a-z]+`)
-	camelStyle   = regexp.MustCompile(`[a-z][A-Z]`)
 
 	upperDict map[string]struct{}
 	metaTag   = Sql2struct.Configs().Tags
@@ -42,7 +34,7 @@ type column struct {
 
 type langT struct {
 	Name   string
-	Fields map[string]field
+	Fields map[int]field
 }
 
 type field struct {
@@ -75,12 +67,24 @@ func (f field) String() string {
 	return fmt.Sprintf("%s %s `%s`", fieldName, f.FieldType, strings.Join(meta, " "))
 }
 
-func (t langT) GenType(w io.Writer) {
-	fmt.Fprintf(w, "\ntype %s struct {\n", t.Name)
-	for _, f := range t.Fields {
-		fmt.Fprintf(w, "\t%s\n", f)
+func (t langT) GenType() ([]byte, error) {
+	str := fmt.Sprintln("type", t.Name, "struct {")
+	sortedMap(t.Fields, func(k int, v field) {
+		str += fmt.Sprintln(v)
+	})
+	str += fmt.Sprintln("}")
+	return format.Source([]byte(str))
+}
+
+func sortedMap(m map[int]field, f func(k int, v field)) {
+	var keys []int
+	for k := range m {
+		keys = append(keys, k)
 	}
-	fmt.Fprintln(w, "}")
+	sort.Ints(keys)
+	for _, k := range keys {
+		f(k, m[k])
+	}
 }
 
 func newField(name, constraint []byte) (f field) {
@@ -91,7 +95,8 @@ func newField(name, constraint []byte) (f field) {
 	col := strings.ToUpper(string(constraint))
 	f.FieldType, _ = scanType(name, strings.ToLower(strings.Split(col, " ")[0]))
 	for _, v := range Sql2struct.Configs().Tags {
-		if v == "gorm" {
+		switch v {
+		case "gorm":
 			tag := []string{"column:" + string(name) + ";"}
 			if strings.Contains(col, "NOT NULL") {
 				tag = append(tag, "not null;")
@@ -107,17 +112,15 @@ func newField(name, constraint []byte) (f field) {
 			}
 			tag = append(tag, "type:"+strings.ToLower(strings.Split(col, " ")[0]))
 			f.MetaInfo[v] = tag
-			continue
-		}
-		if v == "json" {
+		case "json":
 			if Sql2struct.Configs().JsonOmitempty {
 				f.MetaInfo[v] = []string{string(name), ",omitempty"}
 			} else {
 				f.MetaInfo[v] = []string{string(name)}
 			}
-			continue
+		default:
+			f.MetaInfo[v] = []string{string(name)}
 		}
-		f.MetaInfo[v] = []string{string(name)}
 	}
 	return
 }
@@ -143,26 +146,14 @@ func scanType(name []byte, tag string) (s string, haveType bool) {
 	return
 }
 
-func (t *langT) AddJSONinfo(fieldName, info string) {
-	if f, ok := t.Fields[fieldName]; ok {
-		if _, ok := f.MetaInfo["json"]; ok {
-			f.MetaInfo["json"] = append(f.MetaInfo["json"], info)
-		} else {
-			f.MetaInfo["json"] = []string{info}
-		}
-	}
-}
-
 func MatchStmt(r io.Reader) (byte [][][]byte, err error) {
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(r)
-
-	stmt := buf.Bytes()
-	byte = tableStmt.FindAllSubmatch(stmt, -1)
+	byte = tableStmt.FindAllSubmatch(buf.Bytes(), -1)
 	return
 }
 
-func HandleStmtBlock(s [][]byte) langT {
+func HandleStmtBlock(s [][]byte) (t langT) {
 	block := s[0]
 	leftTrimIdx := 0
 	rightTrimIdx := len(block) - 1
@@ -171,40 +162,30 @@ func HandleStmtBlock(s [][]byte) langT {
 	for ; rightTrimIdx >= 0 && block[rightTrimIdx] != ')'; rightTrimIdx-- {
 	}
 	block = block[leftTrimIdx+1 : rightTrimIdx]
-	block = delComment(block)
-
-	//fmt.Printf("%s\n***\n", string(block))
 	cols := extractRawCols(block)
-	var t langT
 	t.Name = strings.Title(toCamel(s[1]))
-	t.Fields = make(map[string]field)
-	for k := range cols {
-		f := newField(cols[k].Name, cols[k].Constraint)
+	t.Fields = make(map[int]field)
+	for k, v := range cols {
+		f := newField(v.Name, v.Constraint)
 		if f.FieldType == "" {
 			continue
 		}
-		t.Fields[f.Name] = f
+		t.Fields[k] = f
 	}
 	return t
-}
-
-func delComment(s []byte) []byte {
-	return comment.ReplaceAll(s, nil)
 }
 
 func extractRawCols(s []byte) []column {
 	cols := colDecl.FindAll(s, -1)
 	allColumns := make([]column, len(cols))
 
-	for i := range cols {
-		cols[i] = bytes.TrimRight(cols[i], ", ")
-		c := bytes.SplitN(cols[i], []byte{' '}, 2)
+	for k, v := range cols {
+		v = bytes.TrimRight(v, ", ")
+		c := bytes.SplitN(v, []byte{' '}, 2)
 
-		allColumns[i].Name = c[0]
-		allColumns[i].Constraint = bytes.ToLower(c[1])
+		allColumns[k].Name = c[0]
+		allColumns[k].Constraint = bytes.ToLower(c[1])
 	}
-	//fmt.Printf("%q\n", allColumns)
-
 	return allColumns
 }
 
@@ -223,28 +204,4 @@ func hunToCamel(str string) string {
 		ns += strings.Title(s[i])
 	}
 	return ns
-}
-
-func camelTohun(str []byte) string {
-	pos := camelStyle.FindAllSubmatchIndex(str, -1)
-	if len(pos) == 0 {
-		return string(str)
-	}
-
-	underPos := make([]int, len(pos))
-	for i := range pos {
-		underPos[i] = pos[i][0]
-	}
-
-	str = bytes.ToLower(str)
-	nb := make([]byte, 0, len(str)+len(pos))
-	underIdx := 0
-	for i := range str {
-		nb = append(nb, str[i])
-		if underIdx < len(underPos) && i == underPos[underIdx] {
-			nb = append(nb, '_')
-			underIdx++
-		}
-	}
-	return string(nb)
 }

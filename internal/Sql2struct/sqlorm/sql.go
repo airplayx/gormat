@@ -106,8 +106,7 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 		"DEFAULT charset=" + t.Charset,
 		"COMMENT='" + t.Comment + "'",
 	}
-	return fmt.Sprintf(`CREATE TABLE %v 
-(
+	return fmt.Sprintf(`CREATE TABLE %v (
   %v,
   %v
 ) %v;`,
