@@ -87,7 +87,7 @@ func (genTool *GenTool) genFile() (by []byte, err error) {
 	return
 }
 
-func (genTool *GenTool) Gen(ts []string, dbConf []interface{}) (result []byte, err error) {
+func (genTool *GenTool) Gen(ts []string, dbConf *SourceMap) (result []byte, err error) {
 	if err = InitDb(dbConf); err != nil {
 		return
 	}

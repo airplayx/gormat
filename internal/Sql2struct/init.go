@@ -9,13 +9,12 @@ package Sql2struct
 import (
 	"encoding/json"
 	"github.com/buger/jsonparser"
-	config2 "gormat/app/config"
+	"gormat/app/config"
 	"log"
 )
 
 type SQL2Struct struct {
 	AutoSave      bool        `json:"auto_save"`
-	Driver        string      `json:"driver"`
 	ExcludeTables []string    `json:"exclude_tables"`
 	JsonOmitempty bool        `json:"json_omitempty"`
 	Reflect       string      `json:"reflect"`
@@ -29,15 +28,16 @@ type SQL2Struct struct {
 
 type SourceMap struct {
 	Db       []string `json:"db"`
+	Driver   string   `json:"driver"`
 	Host     string   `json:"host"`
 	Password string   `json:"password"`
 	Port     string   `json:"port"`
 	User     string   `json:"user"`
 }
 
-func Configs() (config *SQL2Struct) {
-	data, _, _, _ := jsonparser.Get(config2.Setting, "sql2struct")
-	if err := json.Unmarshal([]byte(data), &config); err != nil {
+func Configs() (s2s *SQL2Struct) {
+	data, _, _, _ := jsonparser.Get(config.Setting, "sql2struct")
+	if err := json.Unmarshal([]byte(data), &s2s); err != nil {
 		log.Println(err.Error())
 	}
 	return

@@ -81,7 +81,13 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Edit, func() {
-
+			w := fyne.CurrentApp().NewWindow("编辑连接")
+			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, options, -1)))
+			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			w.Canvas().SetScale(float32(scale))
+			w.Resize(fyne.Size{Width: 650, Height: 300})
+			w.CenterOnScreen()
+			w.Show()
 		}),
 		widget.NewToolbarAction(config.GroupDelete, func() {
 			content := widget.NewEntry()

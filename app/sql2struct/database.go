@@ -26,7 +26,6 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
-	driver.SetSelected(strings.Title(options.Driver))
 	host := widget.NewEntry()
 	host.SetPlaceHolder("localhost")
 	port := widget.NewEntry()
@@ -37,6 +36,7 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 	user.SetPlaceHolder("root")
 	db := widget.NewEntry()
 	if dbIndex > -1 {
+		driver.SetSelected(strings.Title(options.SourceMap[dbIndex].Driver))
 		host.SetText(options.SourceMap[dbIndex].Host)
 		port.SetText(options.SourceMap[dbIndex].Port)
 		password.SetText(options.SourceMap[dbIndex].Password)
@@ -82,8 +82,8 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 			win.Close()
 		},
 		OnSubmit: func() {
-			options.Driver = driver.Selected
 			if dbIndex > -1 {
+				options.SourceMap[dbIndex].Driver = driver.Selected
 				//options.SourceMap[dbIndex].Db[0] = db.Text
 				options.SourceMap[dbIndex].User = user.Text
 				options.SourceMap[dbIndex].Password = password.Text

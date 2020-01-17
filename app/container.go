@@ -18,24 +18,25 @@ import (
 
 func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	var options = Sql2struct.Configs()
-	var dbBox, iPBox = widget.NewTabContainer(), widget.NewTabContainer()
-	currentDB := make(chan *widget.TabItem)
+	var dbBox, ipBox = widget.NewTabContainer(), widget.NewTabContainer()
+	currentIP, currentDB := make(chan *widget.TabItem), make(chan *widget.TabItem)
 	for _, v := range options.SourceMap {
 		for _, curDb := range v.Db {
 			dbBox.Items = append(dbBox.Items, widget.NewTabItemWithIcon(
 				curDb, config.Database,
-				sql2struct.Screen(win, []interface{}{
-					v.User,
-					v.Password,
-					v.Host,
-					v.Port,
-					curDb,
+				sql2struct.Screen(win, &Sql2struct.SourceMap{
+					Driver:   v.Driver,
+					Host:     v.Host,
+					User:     v.User,
+					Password: v.Password,
+					Port:     v.Port,
+					Db:       []string{curDb},
 				})))
 		}
 		dbBox.SetTabLocation(widget.TabLocationLeading)
-		iPBox.Items = append(iPBox.Items, widget.NewTabItem(v.Host, dbBox))
+		ipBox.Items = append(ipBox.Items, widget.NewTabItem(v.Host, dbBox))
 	}
-	toolBar := ToolBar(win, iPBox, dbBox, options)
+	toolBar := ToolBar(win, ipBox, dbBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(toolBar, nil, nil, nil),
 		toolBar,
@@ -47,17 +48,22 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 			if <-currentDB != dbBox.CurrentTab() {
 
 			}
+			if <-currentIP != ipBox.CurrentTab() {
+
+			}
 		}
 	}()
-	if len(iPBox.Items) > 0 {
+	if len(ipBox.Items) > 0 {
 		go func() {
+			currentIP <- &widget.TabItem{}
 			currentDB <- &widget.TabItem{}
 			for {
+				currentIP <- ipBox.CurrentTab()
 				currentDB <- dbBox.CurrentTab()
 			}
 		}()
-		iPBox.SetTabLocation(widget.TabLocationLeading)
-		s2sBox.AddObject(iPBox)
+		ipBox.SetTabLocation(widget.TabLocationLeading)
+		s2sBox.AddObject(ipBox)
 	}
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),

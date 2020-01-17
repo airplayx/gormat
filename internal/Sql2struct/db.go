@@ -15,10 +15,11 @@ import (
 
 var engine *xorm.Engine
 
-func InitDb(dbConf []interface{}) (err error) {
+func InitDb(db *SourceMap) (err error) {
 	engine, err = xorm.NewEngine(
-		strings.ToLower(Configs().Driver),
-		fmt.Sprintf("%s:%s@(%s:%s)/%s", dbConf...))
+		strings.ToLower(db.Driver),
+		fmt.Sprintf("%s:%s@(%s:%s)/%s",
+			db.User, db.Password, db.Host, db.Port, strings.Join(db.Db, "")))
 	if err != nil {
 		return
 	}

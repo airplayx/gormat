@@ -19,7 +19,7 @@ import (
 	"xorm.io/core"
 )
 
-func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
+func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 	if err := Sql2struct.InitDb(dbConf); err != nil {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
@@ -34,7 +34,7 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 		for _, t := range tbs {
 			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, config.Table, widget.NewMultiLineEntry()))
 		}
-		go func(dbConf []interface{}) {
+		go func(dbConf *Sql2struct.SourceMap) {
 			for {
 				time.Sleep(time.Microsecond * 50)
 				if <-currentTable != tables.CurrentTab() {
@@ -47,7 +47,6 @@ func Screen(win fyne.Window, dbConf []interface{}) *fyne.Container {
 					if currentT == nil {
 						return
 					}
-					_ = Sql2struct.InitDb(dbConf)
 					tableBox := widget.NewMultiLineEntry()
 					if result, err := Sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
 						resultBox.SetText(``)
