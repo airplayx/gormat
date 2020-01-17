@@ -22,7 +22,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne.Widget {
+func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -35,13 +35,14 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 	user := widget.NewEntry()
 	user.SetPlaceHolder("root")
 	db := widget.NewEntry()
-	if dbIndex > -1 {
-		driver.SetSelected(strings.Title(options.SourceMap[dbIndex].Driver))
-		host.SetText(options.SourceMap[dbIndex].Host)
-		port.SetText(options.SourceMap[dbIndex].Port)
-		password.SetText(options.SourceMap[dbIndex].Password)
-		user.SetText(options.SourceMap[dbIndex].User)
-		db.SetText(options.SourceMap[dbIndex].Db[0])
+	if dbIndex != nil {
+		currentLink := options.SourceMap[dbIndex[0]]
+		driver.SetSelected(strings.Title(currentLink.Driver))
+		host.SetText(currentLink.Host)
+		port.SetText(currentLink.Port)
+		password.SetText(currentLink.Password)
+		user.SetText(currentLink.User)
+		db.SetText(currentLink.Db[dbIndex[1]])
 	}
 	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
 		progressDialog := dialog.NewProgress("连接中", host.Text, win)
@@ -82,17 +83,25 @@ func DataBase(win fyne.Window, options *Sql2struct.SQL2Struct, dbIndex int) fyne
 			win.Close()
 		},
 		OnSubmit: func() {
-			if dbIndex > -1 {
-				options.SourceMap[dbIndex].Driver = driver.Selected
-				//options.SourceMap[dbIndex].Db[0] = db.Text
-				options.SourceMap[dbIndex].User = user.Text
-				options.SourceMap[dbIndex].Password = password.Text
-				options.SourceMap[dbIndex].Host = host.Text
-				options.SourceMap[dbIndex].Port = port.Text
+			if dbIndex != nil {
+				//排除相同连接
+				currentLink := options.SourceMap[dbIndex[0]]
+				currentLink.Driver = driver.Selected
+				currentLink.Db[dbIndex[1]] = db.Text
+				currentLink.User = user.Text
+				currentLink.Password = password.Text
+				currentLink.Host = host.Text
+				currentLink.Port = port.Text
+			} else {
+				//添加连接
 			}
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
 				config.Setting = data
+				if dbIndex != nil {
+					ipBox.CurrentTab().Text = host.Text + ":" + port.Text
+					dbBox.CurrentTab().Text = db.Text
+				}
 				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

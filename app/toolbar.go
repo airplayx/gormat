@@ -19,7 +19,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 	return widget.NewToolbar(
 		widget.NewToolbarAction(config.Insert, func() {
 			w := fyne.CurrentApp().NewWindow("添加连接")
-			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, options, -1)))
+			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, nil)))
 			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
@@ -65,8 +65,9 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.URL, func() {
-			w := fyne.CurrentApp().NewWindow("Url相关工具")
+		widget.NewToolbarSeparator(),
+		widget.NewToolbarAction(config.Bash, func() {
+			w := fyne.CurrentApp().NewWindow("命令行相关工具")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(fyne.NewContainerWithLayout(
@@ -79,10 +80,26 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(config.Edit, func() {
 			w := fyne.CurrentApp().NewWindow("编辑连接")
-			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, options, -1)))
+			sourceMap := options.SourceMap
+			var dbIndex []int
+			for k, v := range sourceMap {
+				if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
+					for key, db := range v.Db {
+						if db == dbBox.CurrentTab().Text {
+							dbIndex = []int{k, key}
+							goto loop
+						}
+					}
+				}
+			}
+		loop:
+			if dbIndex == nil {
+				w.SetContent(widget.NewLabelWithStyle(`错误的连接参数`, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+			} else {
+				w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, dbIndex)))
+			}
 			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
@@ -96,7 +113,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 				if text == ipBox.CurrentTab().Text {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
-						if v.Host == ipBox.CurrentTab().Text {
+						if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
 							options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 							break
 						}
@@ -126,7 +143,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 				if isDelete {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
-						if v.Host == ipBox.CurrentTab().Text {
+						if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
 							for key, db := range v.Db {
 								if db == dbBox.CurrentTab().Text {
 									sourceMap[k].Db = append(v.Db[:key], v.Db[key+1:]...)
@@ -157,7 +174,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 					jsons, _ := json.Marshal(options)
 					if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
 						config.Setting = data
-						dialog.ShowInformation("操作", "保存成功", win)
+						//dialog.ShowInformation("操作", "保存成功", win)
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)
 					}
