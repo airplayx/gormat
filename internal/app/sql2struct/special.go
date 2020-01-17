@@ -1,7 +1,7 @@
 /*
 @Time : 2019/12/20 16:36
 @Software: GoLand
-@File : special_tab
+@File : special
 @Author : Bingo <airplayx@gmail.com>
 */
 package sql2struct
@@ -13,8 +13,8 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
-	"gormat/app/config"
-	"gormat/internal/Sql2struct"
+	"gormat/configs"
+	"gormat/pkg/Sql2struct"
 	"strings"
 )
 
@@ -32,8 +32,8 @@ func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
 			options.Tinyint2bool = autoBool.Checked
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
-				config.Setting = data
+			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
+				configs.Json = data
 				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

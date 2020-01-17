@@ -1,4 +1,4 @@
-package _app
+package app
 
 import (
 	"encoding/json"
@@ -8,25 +8,26 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
-	"gormat/app/config"
-	"gormat/app/json2struct"
-	"gormat/app/sql2struct"
-	"gormat/internal/Sql2struct"
+	"gormat/configs"
+	"gormat/internal/app/json2struct"
+	"gormat/internal/app/sql2struct"
+	"gormat/internal/pkg/icon"
+	"gormat/pkg/Sql2struct"
 	"net/url"
 )
 
 func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
-		widget.NewToolbarAction(config.Insert, func() {
+		widget.NewToolbarAction(icon.Insert, func() {
 			w := fyne.CurrentApp().NewWindow("添加连接")
 			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, nil)))
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.Option, func() {
+		widget.NewToolbarAction(icon.Option, func() {
 			w := fyne.CurrentApp().NewWindow("转换规则设置")
 			setting := widget.NewTabContainer(
 				widget.NewTabItem("基本", sql2struct.Option(w, options)),
@@ -35,38 +36,38 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.SQL, func() {
+		widget.NewToolbarAction(icon.SQL, func() {
 			w := fyne.CurrentApp().NewWindow("Sql语句转Struct")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(sql2struct.QuickScreen()),
 			))
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.JSON, func() {
+		widget.NewToolbarAction(icon.JSON, func() {
 			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(json2struct.Screen()),
 			))
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
 		}),
 		widget.NewToolbarSeparator(),
-		widget.NewToolbarAction(config.Bash, func() {
+		widget.NewToolbarAction(icon.Bash, func() {
 			w := fyne.CurrentApp().NewWindow("命令行相关工具")
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
@@ -74,13 +75,13 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 					layout.NewGridLayout(1),
 				)),
 			))
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.Edit, func() {
+		widget.NewToolbarAction(icon.Edit, func() {
 			w := fyne.CurrentApp().NewWindow("编辑连接")
 			sourceMap := options.SourceMap
 			var dbIndex []int
@@ -100,13 +101,13 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			} else {
 				w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, dbIndex)))
 			}
-			scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale")
+			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(config.GroupDelete, func() {
+		widget.NewToolbarAction(icon.GroupDelete, func() {
 			content := widget.NewEntry()
 			content.SetPlaceHolder("请输入 " + ipBox.CurrentTab().Text + " 确认删除当前组记录")
 			content.OnChanged = func(text string) {
@@ -119,8 +120,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 						}
 					}
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
-						config.Setting = data
+					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
+						configs.Json = data
 						dialog.ShowInformation("操作", "保存成功", win)
 						ipBox.RemoveIndex(ipBox.CurrentTabIndex())
 						if ipBox.CurrentTabIndex()-1 < 0 {
@@ -138,7 +139,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			}
 			dialog.ShowCustom("操作", "取消", content, win)
 		}),
-		widget.NewToolbarAction(config.Delete, func() {
+		widget.NewToolbarAction(icon.Delete, func() {
 			cnf := dialog.NewConfirm("操作", "确定删除当前 "+dbBox.CurrentTab().Text+" 库连接记录?", func(isDelete bool) {
 				if isDelete {
 					sourceMap := options.SourceMap
@@ -172,8 +173,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 					}
 				loop:
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
-						config.Setting = data
+					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
+						configs.Json = data
 						//dialog.ShowInformation("操作", "保存成功", win)
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)
@@ -185,7 +186,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			cnf.Show()
 		}),
 		widget.NewToolbarSpacer(),
-		widget.NewToolbarAction(config.Info, func() {
+		widget.NewToolbarAction(icon.Info, func() {
 			airPlayX, _ := url.Parse("http://airplayx.com/gopher-tool")
 			_ = fyne.CurrentApp().OpenURL(airPlayX)
 		}),

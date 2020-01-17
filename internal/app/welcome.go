@@ -4,18 +4,18 @@
 @File : welcome
 @Author : Bingo <airplayx@gmail.com>
 */
-package _app
+package app
 
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/app/config"
+	"gormat/internal/pkg/icon"
 )
 
 func WelcomeScreen() fyne.CanvasObject {
-	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", config.LogoBg))
+	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", icon.LogoBg))
 	logo.SetMinSize(fyne.NewSize(275, 470))
 
 	//airplayx, _ := url.Parse("http://github.com/airplayx")

@@ -1,7 +1,7 @@
 /*
 @Time : 2019/12/20 16:06
 @Software: GoLand
-@File : database_tab
+@File : database
 @Author : Bingo <airplayx@gmail.com>
 */
 package sql2struct
@@ -14,8 +14,8 @@ import (
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
-	"gormat/app/config"
-	"gormat/internal/Sql2struct"
+	"gormat/configs"
+	"gormat/pkg/Sql2struct"
 	"strings"
 	"time"
 	"xorm.io/core"
@@ -96,8 +96,8 @@ func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2s
 				//添加连接
 			}
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
-				config.Setting = data
+			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
+				configs.Json = data
 				if dbIndex != nil {
 					ipBox.CurrentTab().Text = host.Text + ":" + port.Text
 					dbBox.CurrentTab().Text = db.Text

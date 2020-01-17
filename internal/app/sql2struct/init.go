@@ -9,10 +9,10 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"gormat/app/config"
-	"gormat/internal/Sql2struct"
-	"gormat/internal/Sql2struct/quickly"
-	"gormat/internal/Sql2struct/sqlorm"
+	"gormat/internal/pkg/icon"
+	"gormat/pkg/Sql2struct"
+	"gormat/pkg/Sql2struct/quickly"
+	"gormat/pkg/Sql2struct/sqlorm"
 	"path/filepath"
 	"strings"
 	"time"
@@ -32,7 +32,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 	var currentTable = make(chan *widget.TabItem)
 	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
-			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, config.Table, widget.NewMultiLineEntry()))
+			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
 		go func(dbConf *Sql2struct.SourceMap) {
 			for {

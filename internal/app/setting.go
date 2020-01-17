@@ -4,7 +4,7 @@
 @File : setting
 @Author : Bingo <airplayx@gmail.com>
 */
-package _app
+package app
 
 import (
 	"fyne.io/fyne"
@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
-	"gormat/app/config"
+	"gormat/configs"
 )
 
 func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
@@ -25,7 +25,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			app.Settings().SetTheme(theme.LightTheme())
 		}
 	})
-	switch t, _ := jsonparser.GetString(config.Setting, "const", "theme"); t {
+	switch t, _ := jsonparser.GetString(configs.Json, "const", "theme"); t {
 	case "light":
 		theMe.SetSelected("白色")
 	default:
@@ -44,7 +44,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			win.Canvas().SetScale(1)
 		}
 	})
-	switch scale, _ := jsonparser.GetFloat(config.Setting, "const", "scale"); scale {
+	switch scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale"); scale {
 	case 1.0:
 		dpi.SetSelected("默认")
 	case 2.0:

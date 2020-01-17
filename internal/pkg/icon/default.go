@@ -1,10 +1,10 @@
 /*
 @Time : 2020/1/7 14:42
 @Software: GoLand
-@File : icons
+@File : icon
 @Author : Bingo <airplayx@gmail.com>
 */
-package config
+package icon
 
 import (
 	"fyne.io/fyne"

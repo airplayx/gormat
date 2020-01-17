@@ -14,8 +14,8 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	"github.com/chenhg5/collection"
-	"gormat/app/config"
-	"gormat/internal/Sql2struct"
+	"gormat/configs"
+	"gormat/pkg/Sql2struct"
 	"strings"
 )
 
@@ -97,8 +97,8 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			options.TryComplete = tryComplete.Selected == "是"
 
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(config.Setting, jsons, "sql2struct"); err == nil {
-				config.Setting = data
+			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
+				configs.Json = data
 				dialog.ShowInformation("成功", "保存成功", win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

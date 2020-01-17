@@ -9,7 +9,7 @@ package Sql2struct
 import (
 	"encoding/json"
 	"github.com/buger/jsonparser"
-	"gormat/app/config"
+	"gormat/configs"
 	"log"
 )
 
@@ -36,7 +36,7 @@ type SourceMap struct {
 }
 
 func Configs() (s2s *SQL2Struct) {
-	data, _, _, _ := jsonparser.Get(config.Setting, "sql2struct")
+	data, _, _, _ := jsonparser.Get(configs.Json, "sql2struct")
 	if err := json.Unmarshal([]byte(data), &s2s); err != nil {
 		log.Println(err.Error())
 	}

@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/format"
-	"gormat/internal/Sql2struct"
+	"gormat/pkg/Sql2struct"
 	"io"
 	"regexp"
 	"sort"

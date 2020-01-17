@@ -1,18 +1,18 @@
 /*
 @Time : 2019/12/23 10:24
 @Software: GoLand
-@File : aside
+@File : container
 @Author : Bingo <airplayx@gmail.com>
 */
-package _app
+package app
 
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/app/config"
-	"gormat/app/sql2struct"
-	"gormat/internal/Sql2struct"
+	"gormat/internal/app/sql2struct"
+	"gormat/internal/pkg/icon"
+	"gormat/pkg/Sql2struct"
 )
 
 func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
@@ -21,7 +21,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	for _, v := range options.SourceMap {
 		for _, curDb := range v.Db {
 			dbBox.Items = append(dbBox.Items, widget.NewTabItemWithIcon(
-				curDb, config.Database,
+				curDb, icon.Database,
 				sql2struct.Screen(win, &Sql2struct.SourceMap{
 					Driver:   v.Driver,
 					Host:     v.Host,
@@ -47,7 +47,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),
 		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
-		widget.NewTabItemWithIcon("", config.Store, s2sBox),
+		widget.NewTabItemWithIcon("", icon.Store, s2sBox),
 		//widget.NewTabItemWithIcon("", config.Daily, fyne.NewContainer()),
 		//widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),
 	)

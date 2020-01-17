@@ -20,8 +20,10 @@ type GenTool struct {
 
 func NewGenTool() *GenTool {
 	dir := Configs().TargetDir
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		log.Println(err.Error())
+	if Configs().AutoSave {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			log.Println(err.Error())
+		}
 	}
 	return &GenTool{
 		targetDir:   dir,
