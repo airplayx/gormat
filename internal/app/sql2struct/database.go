@@ -83,8 +83,8 @@ func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2s
 			win.Close()
 		},
 		OnSubmit: func() {
+			//排除相同连接
 			if dbIndex != nil {
-				//排除相同连接
 				currentLink := options.SourceMap[dbIndex[0]]
 				currentLink.Driver = driver.Selected
 				currentLink.Db[dbIndex[1]] = db.Text

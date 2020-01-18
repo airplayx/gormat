@@ -186,8 +186,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			cnf.Show()
 		}),
 		widget.NewToolbarSpacer(),
-		widget.NewToolbarAction(icon.Info, func() {
-			airPlayX, _ := url.Parse("http://airplayx.com/gopher-tool")
+		widget.NewToolbarAction(icon.Github, func() {
+			airPlayX, _ := url.Parse("https://github.com/airplayx/gormat")
 			_ = fyne.CurrentApp().OpenURL(airPlayX)
 		}),
 	)
