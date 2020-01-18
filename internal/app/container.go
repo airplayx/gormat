@@ -32,7 +32,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 				})))
 		}
 		dbBox.SetTabLocation(widget.TabLocationLeading)
-		ipBox.Items = append(ipBox.Items, widget.NewTabItem(v.Host+":"+v.Port, dbBox))
+		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, icon.Mysql, dbBox))
 	}
 	toolBar := ToolBar(win, ipBox, dbBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
