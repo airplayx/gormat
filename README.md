@@ -1,4 +1,4 @@
-# Gormat (跨平台Gopher辅助工具)
+# Gormat 跨平台Gopher辅助工具
 
 > 跨平台的界面化golang便捷转换器，支持数据库转Struct、Sql转Struct、Json转Struct等。
 
@@ -6,24 +6,24 @@
 
 ## Features 功能展示
 
--[x] 数据库转Struct
-    -[x] 数据引擎支持
-        -[x] Mysql
-        -[ ] PostgreSQL
-        -[ ] Sqlite3
-        -[ ] Mssql
-    -[x] 自动存文件
-    -[x] 标签支持
-        -[x] Gorm
-        -[x] Xrom
-        -[x] JSON
-    -[x] 排除列表
-    -[x] 数据映射
-    -[x] 自定义转型
--[x] Sql转Struct
--[x] Json转Struct
--[ ] 笔记（日记）功能
--[ ] 命令行功能
+- [x] 数据库转Struct
+    - [x] 数据引擎支持
+        - [x] Mysql
+        - [ ] PostgreSQL
+        - [ ] Sqlite3
+        - [ ] Mssql
+    - [x] 自动存文件
+    - [x] 标签支持
+        - [x] Gorm
+        - [x] Xrom
+        - [x] JSON
+    - [x] 排除列表
+    - [x] 数据映射
+    - [x] 自定义转型
+- [x] Sql转Struct
+- [x] Json转Struct
+- [ ] 笔记（日记）功能
+- [ ] 命令行功能
 
 ### Prerequisites 开发条件
 
