@@ -1,1 +1,105 @@
-# gormat
+# Gormat (跨平台Gopher辅助工具)
+
+> 跨平台的界面化golang便捷转换器，支持数据库转Struct、Sql转Struct、Json转Struct等。
+
+![image](assets/show_win.png)
+
+## Features 功能展示
+
+-[x] 数据库转Struct
+    -[x] 数据引擎支持
+        -[x] Mysql
+        -[ ] PostgreSQL
+        -[ ] Sqlite3
+        -[ ] Mssql
+    -[x] 自动存文件
+    -[x] 标签支持
+        -[x] Gorm
+        -[x] Xrom
+        -[x] JSON
+    -[x] 排除列表
+    -[x] 数据映射
+    -[x] 自定义转型
+-[x] Sql转Struct
+-[x] Json转Struct
+-[ ] 笔记（日记）功能
+-[ ] 命令行功能
+
+### Prerequisites 开发条件
+
+```
+golang >= 1.11
+```
+
+### Installation 安装
+
+不同平台需要安装额外的环境
+
+OS X & Linux:
+```sh
+OpenSSL
+```
+
+Windows:
+
+```sh
+Gcc
+```
+
+### Usage example 编译示例（windows）
+
+``` golang
+SET CGO_ENABLED=1
+SET CC=x86_64-w64-mingw32-gcc
+SET GOOS=windows
+SET GOARCH=amd64
+go build -o gormat.exe -ldflags="-H windowsgui"
+```
+
+本项目使用fyne开发，更多打包编译步骤参考: [https://fyne.io/develop/distribution.html](https://fyne.io/develop/distribution.html)
+
+## Contributing 开源支持
+
+    fyne.io/fyne
+	github.com/buger/jsonparser 
+	github.com/chenhg5/collection 
+	github.com/denisenkom/go-mssqldb 
+	github.com/fatih/astrewrite 
+	github.com/fatih/camelcase 
+	github.com/go-sql-driver/mysql 
+	github.com/lib/pq 
+	github.com/liudanking/gorm2sql
+	github.com/liudanking/goutil
+	github.com/mattn/go-sqlite3
+	github.com/pinzolo/casee
+	xorm.io/core
+	xorm.io/xorm
+	
+## Thanks 鸣谢
+
+    https://github.com/hsyan2008/gom
+    https://github.com/liudanking/gorm2sql
+    https://github.com/fatih/structtag
+    https://github.com/yujiahaol68/sql2struct
+    https://github.com/bashtian/jsonutils
+
+## Release History 版本历史
+
+* beta
+    * 测试开源版本
+* 0.0.1
+    * gormat lite
+
+## Authors 关于作者
+
+* **airplayx** - [http://airplayx.com](http://airplayx.com)
+
+在golang开发中，有很多时候需要手动敲结构体，并且需要手动入库。尽管gorm有自动迁移的功能，但并不能有效、理想化的形成数据库字段。
+网上也有很多开源的例子，但是都没有界面化并且方便管理的工具，所以我开始写这个项目，目的就是更高效的开发，转换即用。
+
+本项目借鉴了许多开源转换库的代码，并结合orm进行适度调整。在开发中遇到了很多的问题，fyne这个GUI开发框架也是有很多坑点的，现不赘述。不管是数据库转Struct，还是Struct转SQL语句，普遍还存在一些误差，所以转换结果仅供参考，
+实际项目请自行调整使用。
+
+## License 授权协议
+
+这个项目 MIT 协议， 请点击 [LICENSE](LICENSE) 了解更多细节。

@@ -7,16 +7,13 @@
 package test
 
 import (
-	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/widget"
 	"testing"
-	"time"
 )
 
 func Test_tabContainer(t *testing.T) {
-	current := make(chan string)
 	main := app.NewWithID("test")
 	w := main.NewWindow("test")
 	setting := widget.NewTabContainer(
@@ -24,19 +21,20 @@ func Test_tabContainer(t *testing.T) {
 		widget.NewTabItem("bbbbbb", fyne.NewContainer()),
 		widget.NewTabItem("cccccc", fyne.NewContainer()),
 	)
-	go func() {
-		for true {
-			current <- setting.CurrentTab().Text
-		}
-	}()
-	go func() {
-		for true {
-			time.Sleep(time.Microsecond * 200)
-			if <-current != setting.CurrentTab().Text {
-				fmt.Println(<-current)
-			}
-		}
-	}()
+	//current := make(chan string)
+	//go func() {
+	//	for true {
+	//		current <- setting.CurrentTab().Text
+	//	}
+	//}()
+	//go func() {
+	//	for true {
+	//		time.Sleep(time.Microsecond * 200)
+	//		if <-current != setting.CurrentTab().Text {
+	//			fmt.Println(<-current)
+	//		}
+	//	}
+	//}()
 	w.SetContent(setting)
 	w.Resize(fyne.Size{Width: 650, Height: 300})
 	w.CenterOnScreen()

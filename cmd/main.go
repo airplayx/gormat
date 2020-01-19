@@ -21,7 +21,7 @@ func main() {
 		}, []string{"const"})
 	main := app.NewWithID("Gopher")
 	main.SetIcon(icon.Ico)
-	window := main.NewWindow("Gopher工具箱")
+	window := main.NewWindow("Gormat - Tool For Gopher")
 	scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 	window.Canvas().SetScale(float32(scale))
 	window.CenterOnScreen()
