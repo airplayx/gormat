@@ -1,4 +1,4 @@
-# Gormat 跨平台Gopher辅助工具
+# Gormat - 跨平台Gopher辅助工具
 
 > 跨平台的界面化golang便捷转换器，支持数据库转Struct、Sql转Struct、Json转Struct等。
 
@@ -33,7 +33,9 @@ golang >= 1.11
 
 ### Installation 安装
 
-不同平台需要安装额外的环境
+安装使用不需要额外的环境，移步到[releases](https://github.com/airplayx/gormat/releases)下载。
+
+不同平台需要安装额外的开发环境
 
 OS X & Linux:
 ```sh
@@ -90,9 +92,9 @@ go build -o gormat.exe -ldflags="-H windowsgui"
 * 0.0.1
     * gormat lite
 
-## Authors 关于作者
+## About 关于
 
-* **airplayx** - [http://airplayx.com](http://airplayx.com)
+* **[airplayx](http://airplayx.com)**
 
 在golang开发中，有很多时候需要手动敲结构体，并且需要手动入库。尽管gorm有自动迁移的功能，但并不能有效、理想化的形成数据库字段。
 网上也有很多开源的例子，但是都没有界面化并且方便管理的工具，所以我开始写这个项目，目的就是更高效的开发，转换即用。
