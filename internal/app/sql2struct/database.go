@@ -129,7 +129,16 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 				} else {
 					newDbBox := widget.NewTabContainer(newDB)
 					newDbBox.SetTabLocation(widget.TabLocationLeading)
-					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, icon.Mysql, newDbBox))
+					i := icon.Mysql
+					switch strings.Title(driver.Selected) {
+					case "PostgreSQL":
+						i = icon.PostGreSQL
+					case "Sqlite3":
+						i = icon.SqLite
+					case "Mssql":
+						i = icon.Mssql
+					}
+					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
 					options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
 						Driver:   driver.Selected,
 						Host:     host.Text,

@@ -15,7 +15,7 @@ import (
 	"gormat/pkg/Sql2struct"
 )
 
-func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
+func Container(win fyne.Window) *widget.TabContainer {
 	var options = Sql2struct.Configs()
 	var ipBox = widget.NewTabContainer()
 	for _, v := range options.SourceMap {

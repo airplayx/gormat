@@ -26,7 +26,7 @@ func main() {
 	window.Canvas().SetScale(float32(scale))
 	window.CenterOnScreen()
 	window.Resize(fyne.Size{Width: 1366, Height: 650})
-	window.SetContent(_app.Container(main, window))
+	window.SetContent(_app.Container(window))
 	window.SetOnClosed(func() {
 		_ = ioutil.WriteFile(configs.CustomFile, configs.Json, os.ModePerm)
 	})
