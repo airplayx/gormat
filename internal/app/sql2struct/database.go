@@ -15,6 +15,7 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	"gormat/configs"
+	"gormat/internal/pkg/icon"
 	"gormat/pkg/Sql2struct"
 	"strings"
 	"time"
@@ -22,7 +23,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
+func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -35,6 +36,7 @@ func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2s
 	user := widget.NewEntry()
 	user.SetPlaceHolder("root")
 	db := widget.NewEntry()
+	driver.SetSelected("Mysql")
 	if dbIndex != nil {
 		currentLink := options.SourceMap[dbIndex[0]]
 		driver.SetSelected(strings.Title(currentLink.Driver))
@@ -83,9 +85,22 @@ func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2s
 			win.Close()
 		},
 		OnSubmit: func() {
-			//排除相同连接
+			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
+			sourceMap := options.SourceMap
+			oldHost := false
+			for _, v := range sourceMap {
+				if v.Host+":"+v.Port == host.Text+":"+port.Text {
+					for _, curDb := range v.Db {
+						if curDb == db.Text {
+							dialog.ShowError(errors.New("已存在相同的连接"), win)
+							return
+						}
+					}
+					oldHost = true
+				}
+			}
 			if dbIndex != nil {
-				currentLink := options.SourceMap[dbIndex[0]]
+				currentLink := sourceMap[dbIndex[0]]
 				currentLink.Driver = driver.Selected
 				currentLink.Db[dbIndex[1]] = db.Text
 				currentLink.User = user.Text
@@ -93,8 +108,39 @@ func DataBase(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2s
 				currentLink.Host = host.Text
 				currentLink.Port = port.Text
 			} else {
-				//添加连接
+				newDB := widget.NewTabItemWithIcon(
+					db.Text, icon.Database,
+					Screen(win, &Sql2struct.SourceMap{
+						Driver:   driver.Selected,
+						Host:     host.Text,
+						User:     user.Text,
+						Password: password.Text,
+						Port:     port.Text,
+						Db:       []string{db.Text},
+					}))
+				if oldHost {
+					for k, v := range sourceMap {
+						if v.Host+":"+v.Port == host.Text+":"+port.Text {
+							ipBox.SelectTabIndex(k)
+							dbBox.Append(newDB)
+							sourceMap[k].Db = append(v.Db, db.Text)
+						}
+					}
+				} else {
+					newDbBox := widget.NewTabContainer(newDB)
+					newDbBox.SetTabLocation(widget.TabLocationLeading)
+					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, icon.Mysql, newDbBox))
+					options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
+						Driver:   driver.Selected,
+						Host:     host.Text,
+						User:     user.Text,
+						Password: password.Text,
+						Port:     port.Text,
+						Db:       []string{db.Text},
+					})
+				}
 			}
+			ipBox.Refresh()
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data

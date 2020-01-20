@@ -16,11 +16,13 @@ import (
 	"net/url"
 )
 
-func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
+func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(icon.Insert, func() {
 			w := fyne.CurrentApp().NewWindow("添加连接")
-			w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, nil)))
+			w.SetContent(widget.NewScrollContainer(
+				sql2struct.DataBase(w, ipBox, options, nil)),
+			)
 			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
@@ -82,6 +84,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.Edit, func() {
+			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			w := fyne.CurrentApp().NewWindow("编辑连接")
 			sourceMap := options.SourceMap
 			var dbIndex []int
@@ -99,7 +102,8 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			if dbIndex == nil {
 				w.SetContent(widget.NewLabelWithStyle(`错误的连接参数`, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 			} else {
-				w.SetContent(widget.NewScrollContainer(sql2struct.DataBase(w, ipBox, dbBox, options, dbIndex)))
+				w.SetContent(widget.NewScrollContainer(
+					sql2struct.DataBase(w, ipBox, options, dbIndex)))
 			}
 			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
 			w.Canvas().SetScale(float32(scale))
@@ -131,7 +135,6 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 							return
 						}
 						ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
-						ipBox.Refresh()
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)
 					}
@@ -140,6 +143,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 			dialog.ShowCustom("操作", "取消", content, win)
 		}),
 		widget.NewToolbarAction(icon.Delete, func() {
+			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			cnf := dialog.NewConfirm("操作", "确定删除当前 "+dbBox.CurrentTab().Text+" 库连接记录?", func(isDelete bool) {
 				if isDelete {
 					sourceMap := options.SourceMap
@@ -151,6 +155,7 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 									if len(sourceMap[k].Db) == 0 {
 										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 									}
+
 									if dbBox.CurrentTabIndex() >= 0 && dbBox.CurrentTabIndex() < len(dbBox.Items)-1 {
 										dbBox.RemoveIndex(dbBox.CurrentTabIndex())
 										goto loop
@@ -165,8 +170,10 @@ func ToolBar(win fyne.Window, ipBox, dbBox *widget.TabContainer, options *Sql2st
 												ipBox.Hide()
 											}
 										}
+										ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
 										goto loop
 									}
+
 								}
 							}
 						}

@@ -79,11 +79,11 @@ go build -o gormat.exe -ldflags="-H windowsgui"
 	
 ## Thanks 鸣谢
 
-    https://github.com/hsyan2008/gom
-    https://github.com/liudanking/gorm2sql
-    https://github.com/fatih/structtag
-    https://github.com/yujiahaol68/sql2struct
-    https://github.com/bashtian/jsonutils
+    github.com/hsyan2008/gom
+    github.com/liudanking/gorm2sql
+    github.com/fatih/structtag
+    github.com/yujiahaol68/sql2struct
+    github.com/bashtian/jsonutils
 
 ## Release History 版本历史
 
