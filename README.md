@@ -63,24 +63,36 @@ go build -o gormat.exe -ldflags="-H windowsgui"
 ## Contributing 开源支持
 
     fyne.io/fyne
-	github.com/buger/jsonparser 
-	github.com/chenhg5/collection 
-	github.com/denisenkom/go-mssqldb 
-	github.com/fatih/astrewrite 
-	github.com/fatih/camelcase 
-	github.com/go-sql-driver/mysql 
-	github.com/lib/pq 
-	github.com/liudanking/gorm2sql
-	github.com/liudanking/goutil
-	github.com/mattn/go-sqlite3
-	github.com/pinzolo/casee
-	xorm.io/core
-	xorm.io/xorm
+   	github.com/Chronokeeper/anyxml
+   	github.com/CloudyKit/fastprinter
+   	github.com/CloudyKit/jet
+   	github.com/agrison/go-tablib
+   	github.com/agrison/mxj
+   	github.com/bndr/gotabulate
+   	github.com/buger/jsonparser
+   	github.com/chenhg5/collection
+   	github.com/denisenkom/go-mssqldb
+   	github.com/fatih/astrewrite
+   	github.com/fatih/camelcase
+   	github.com/fatih/structs
+   	github.com/go-sql-driver/mysql
+   	github.com/lib/pq
+   	github.com/liudanking/gorm2sql
+   	github.com/liudanking/goutil
+   	github.com/mattn/go-sqlite3
+   	github.com/pinzolo/casee
+   	github.com/tealeg/xlsx
+   	github.com/xormplus/builder
+   	github.com/xormplus/core
+   	github.com/xormplus/xorm
+   	golang.org/x/net
+   	golang.org/x/tools
+   	gopkg.in/flosch/pongo2.v3
+   	gopkg.in/yaml.v2
 	
 ## Thanks 鸣谢
 
     github.com/hsyan2008/gom
-    github.com/liudanking/gorm2sql
     github.com/fatih/structtag
     github.com/yujiahaol68/sql2struct
     github.com/bashtian/jsonutils

@@ -9,27 +9,28 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	"xorm.io/core"
-	"xorm.io/xorm"
+	"github.com/xormplus/core"
+	"github.com/xormplus/xorm"
 )
 
 var engine *xorm.Engine
 
 func InitDb(db *SourceMap) (err error) {
-	engine, err = xorm.NewEngine(
-		strings.ToLower(db.Driver),
-		fmt.Sprintf("%s:%s@(%s:%s)/%s",
-			db.User, db.Password, db.Host, db.Port, strings.Join(db.Db, "")))
+	switch strings.Title(db.Driver) {
+	case "PostgreSQL":
+		engine, err = xorm.NewPostgreSQL(fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", xorm.POSTGRESQL_DRIVER, db.Password, db.User, db.Host, db.Port, strings.Join(db.Db, "")))
+	case "Sqlite3":
+		engine, err = xorm.NewSqlite3(strings.Join(db.Db, ""))
+	case "Mssql":
+		engine, err = xorm.NewMSSQL(xorm.MSSQL_DRIVER, fmt.Sprintf("%s://%s:%s@%s/instance?database=%s", xorm.MSSQL_DRIVER, db.User, db.Password, db.Host, strings.Join(db.Db, "")))
+	default:
+		engine, err = xorm.NewMySQL(xorm.MYSQL_DRIVER, fmt.Sprintf("%s:%s@(%s:%s)/%s", db.User, db.Password, db.Host, db.Port, strings.Join(db.Db, "")))
+	}
 	if err != nil {
 		return
 	}
 	engine.SetLogLevel(core.LOG_WARNING)
-
-	if err = engine.Ping(); err != nil {
-		return fmt.Errorf("try to connect db faild: %s", err)
-	}
-
-	return nil
+	return engine.Ping()
 }
 
 func DB() *xorm.Engine {

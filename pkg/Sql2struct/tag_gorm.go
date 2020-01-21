@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"xorm.io/core"
+	"github.com/xormplus/core"
 )
 
 func GetGormTag(table *core.Table, col *core.Column) string {

@@ -3,12 +3,12 @@ package Sql2struct
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xormplus/core"
 	"go/format"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"xorm.io/core"
 )
 
 type GenTool struct {

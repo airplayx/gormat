@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"xorm.io/core"
+	"github.com/xormplus/core"
 )
 
 type model struct {

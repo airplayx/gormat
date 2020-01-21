@@ -1,8 +1,8 @@
 package Sql2struct
 
 import (
+	"github.com/xormplus/core"
 	"strings"
-	"xorm.io/core"
 )
 
 func InStringSlice(f string, a []string) bool {

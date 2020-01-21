@@ -13,6 +13,7 @@ import (
 	"gormat/internal/app/sql2struct"
 	"gormat/internal/pkg/icon"
 	"gormat/pkg/Sql2struct"
+	"strings"
 )
 
 func Container(win fyne.Window) *widget.TabContainer {
@@ -33,7 +34,16 @@ func Container(win fyne.Window) *widget.TabContainer {
 				})))
 		}
 		dbBox.SetTabLocation(widget.TabLocationLeading)
-		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, icon.Mysql, dbBox))
+		i := icon.Mysql
+		switch strings.Title(v.Driver) {
+		case "PostgreSQL":
+			i = icon.PostGreSQL
+		case "Sqlite3":
+			i = icon.SqLite
+		case "Mssql":
+			i = icon.Mssql
+		}
+		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
 	}
 	toolBar := ToolBar(win, ipBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
@@ -41,7 +51,7 @@ func Container(win fyne.Window) *widget.TabContainer {
 		toolBar,
 		WelcomeScreen(),
 	)
-	if len(ipBox.Items) > 0 {
+	if ipBox.Items != nil {
 		ipBox.SetTabLocation(widget.TabLocationLeading)
 		s2sBox.AddObject(ipBox)
 	}

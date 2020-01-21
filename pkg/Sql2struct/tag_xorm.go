@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"xorm.io/core"
+	"github.com/xormplus/core"
 )
 
 var created = []string{"created_at"}

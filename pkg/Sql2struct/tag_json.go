@@ -3,7 +3,7 @@ package Sql2struct
 import (
 	"fmt"
 
-	"xorm.io/core"
+	"github.com/xormplus/core"
 )
 
 func GetJsonTag(column *core.Column, isOmitempty bool) string {

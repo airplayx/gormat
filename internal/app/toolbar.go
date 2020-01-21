@@ -84,6 +84,9 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.Edit, func() {
+			if ipBox.Items == nil {
+				return
+			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			w := fyne.CurrentApp().NewWindow("编辑连接")
 			sourceMap := options.SourceMap
@@ -112,6 +115,9 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.GroupDelete, func() {
+			if ipBox.Items == nil {
+				return
+			}
 			content := widget.NewEntry()
 			content.SetPlaceHolder("请输入 " + ipBox.CurrentTab().Text + " 确认删除当前组记录")
 			content.OnChanged = func(text string) {
@@ -143,6 +149,9 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			dialog.ShowCustom("操作", "取消", content, win)
 		}),
 		widget.NewToolbarAction(icon.Delete, func() {
+			if ipBox.Items == nil {
+				return
+			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			cnf := dialog.NewConfirm("操作", "确定删除当前 "+dbBox.CurrentTab().Text+" 库连接记录?", func(isDelete bool) {
 				if isDelete {

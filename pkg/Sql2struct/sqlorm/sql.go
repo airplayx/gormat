@@ -9,10 +9,10 @@ package sqlorm
 import (
 	"errors"
 	"fmt"
+	"github.com/xormplus/core"
 	"go/ast"
 	"strconv"
 	"strings"
-	"xorm.io/core"
 
 	"gormat/pkg/Sql2struct/sqlorm/util"
 

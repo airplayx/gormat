@@ -9,7 +9,6 @@ package sql2struct
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/widget"
@@ -19,12 +18,10 @@ import (
 	"gormat/pkg/Sql2struct"
 	"strings"
 	"time"
-	"xorm.io/core"
-	"xorm.io/xorm"
 )
 
 func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
-	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
+	driver := widget.NewSelect([]string{"Mysql", "PostgreSQL", "Sqlite3", "Mssql"}, func(s string) {
 
 	})
 	host := widget.NewEntry()
@@ -59,32 +56,29 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			progressDialog.Hide()
 		}()
 		progressDialog.Show()
-		engine, err := xorm.NewEngine(
-			strings.ToLower(driver.Selected),
-			fmt.Sprintf("%s:%s@(%s:%s)/%s",
-				user.Text,
-				password.Text,
-				host.Text,
-				port.Text,
-				db.Text,
-			))
+		err := Sql2struct.InitDb(&Sql2struct.SourceMap{
+			Db:       []string{db.Text},
+			User:     user.Text,
+			Password: password.Text,
+			Host:     host.Text,
+			Port:     port.Text,
+			Driver:   driver.Selected,
+		})
 		if err != nil {
-			dialog.ShowError(errors.New(err.Error()), win)
-			return
-		}
-		engine.SetLogLevel(core.LOG_WARNING)
-		if err := engine.Ping(); err != nil {
 			dialog.ShowError(errors.New(err.Error()), win)
 		} else {
 			dialog.ShowInformation("成功", "连接成功", win)
+			_ = Sql2struct.DB().Close()
 		}
-		_ = engine.Close()
 	}))
 	return &widget.Form{
 		OnCancel: func() {
 			win.Close()
 		},
 		OnSubmit: func() {
+			if ipBox.Items == nil {
+				return
+			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			sourceMap := options.SourceMap
 			oldHost := false

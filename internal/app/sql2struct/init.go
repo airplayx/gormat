@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/liudanking/gorm2sql/program"
+	"github.com/xormplus/core"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -16,7 +17,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"xorm.io/core"
 )
 
 func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
