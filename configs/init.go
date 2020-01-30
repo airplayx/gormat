@@ -16,7 +16,7 @@ var (
   "const": {
     "font": "./miniHei.ttf",
     "theme": "light",
-    "scale": 1.0
+    "scale": "1.0"
   },
   "sql2struct": {
     "target_dir": "./models",

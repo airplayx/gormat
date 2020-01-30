@@ -3,7 +3,7 @@ module gormat
 go 1.13
 
 require (
-	fyne.io/fyne v1.2.1
+	fyne.io/fyne v1.2.2
 	github.com/Chronokeeper/anyxml v0.0.0-20160530174208-54457d8e98c6 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet v2.1.2+incompatible // indirect
@@ -28,6 +28,7 @@ require (
 	github.com/xormplus/xorm v0.0.0-20190926190243-42377f593eb1
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa // indirect
 	golang.org/x/tools v0.0.0-20200119215504-eb0d8dd85bcc // indirect
+	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4 // indirect
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

@@ -35,5 +35,5 @@ func ShowInformation(title, message string, parent fyne.Window) {
 // ShowError shows a dialog over the specified window for an application
 // error. The title and message are extracted from the provided error.
 func ShowError(err error, parent fyne.Window) {
-	createTextDialog("Error", err.Error(), theme.WarningIcon(), parent).Show()
+	createTextDialog("错误", err.Error(), theme.WarningIcon(), parent).Show()
 }

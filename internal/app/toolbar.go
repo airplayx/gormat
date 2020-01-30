@@ -23,8 +23,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.SetContent(widget.NewScrollContainer(
 				sql2struct.DataBase(w, ipBox, options, nil)),
 			)
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
@@ -38,8 +36,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()
@@ -50,8 +46,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(sql2struct.QuickScreen()),
 			))
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
@@ -62,8 +56,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(json2struct.Screen()),
 			))
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
@@ -77,8 +69,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					layout.NewGridLayout(1),
 				)),
 			))
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
@@ -108,8 +98,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				w.SetContent(widget.NewScrollContainer(
 					sql2struct.DataBase(w, ipBox, options, dbIndex)))
 			}
-			scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale")
-			w.Canvas().SetScale(float32(scale))
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
 			w.Show()

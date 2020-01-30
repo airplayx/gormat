@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-func Container(win fyne.Window) *widget.TabContainer {
+func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	var options = Sql2struct.Configs()
 	var ipBox = widget.NewTabContainer()
 	for _, v := range options.SourceMap {
@@ -57,7 +57,7 @@ func Container(win fyne.Window) *widget.TabContainer {
 	}
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),
-		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), _app.SettingScreen(app, win)),
+		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),
 		widget.NewTabItemWithIcon("", icon.Store, s2sBox),
 		//widget.NewTabItemWithIcon("", config.Daily, fyne.NewContainer()),
 		//widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),

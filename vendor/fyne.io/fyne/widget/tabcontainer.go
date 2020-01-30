@@ -387,7 +387,7 @@ func (b *tabButton) CreateRenderer() fyne.WidgetRenderer {
 	}
 
 	label := canvas.NewText(b.Text, theme.TextColor())
-	label.Alignment = fyne.TextAlignCenter
+	label.Alignment = fyne.TextAlignLeading
 
 	objects := []fyne.CanvasObject{label}
 	if icon != nil {
@@ -523,9 +523,8 @@ func (r *tabButtonRenderer) padding() fyne.Size {
 
 func (r *tabButtonRenderer) iconSize() int {
 	switch r.button.IconPosition {
-	case buttonIconTop:
+	//case buttonIconTop:
 		//return 2 * theme.IconInlineSize()
-		return theme.IconInlineSize()
 	default:
 		return theme.IconInlineSize()
 	}

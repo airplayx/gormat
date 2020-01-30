@@ -13,6 +13,7 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	"gormat/configs"
+	"os"
 )
 
 func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
@@ -37,11 +38,11 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 		//win.SetFullScreen(false)
 		switch s {
 		case "4K":
-			win.Canvas().SetScale(2)
+			_ = os.Setenv("FYNE_SCALE", "2.0")
 		//case "全屏":
 		//	win.SetFullScreen(true)
 		default:
-			win.Canvas().SetScale(1)
+			_ = os.Setenv("FYNE_SCALE", "1.0")
 		}
 	})
 	switch scale, _ := jsonparser.GetFloat(configs.Json, "const", "scale"); scale {

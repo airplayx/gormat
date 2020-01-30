@@ -12,15 +12,12 @@ type ShortcutHandler struct {
 }
 
 // TypedShortcut handle the registered shortcut
-func (sh *ShortcutHandler) TypedShortcut(shortcut Shortcut) bool {
-	if shortcut == nil {
-		return false
+func (sh *ShortcutHandler) TypedShortcut(shortcut Shortcut) {
+	if _, ok := sh.entry[shortcut.ShortcutName()]; !ok {
+		return
 	}
-	if sc, ok := sh.entry[shortcut.ShortcutName()]; ok {
-		sc(shortcut)
-		return true
-	}
-	return false
+
+	sh.entry[shortcut.ShortcutName()](shortcut)
 }
 
 // AddShortcut register an handler to be executed when the shortcut action is triggered
@@ -45,7 +42,7 @@ type ShortcutPaste struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutPaste) ShortcutName() string {
-	return "Paste"
+	return "粘贴"
 }
 
 // ShortcutCopy describes a shortcut copy action.
@@ -55,7 +52,7 @@ type ShortcutCopy struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutCopy) ShortcutName() string {
-	return "Copy"
+	return "复制"
 }
 
 // ShortcutCut describes a shortcut cut action.
@@ -65,7 +62,7 @@ type ShortcutCut struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutCut) ShortcutName() string {
-	return "Cut"
+	return "剪切"
 }
 
 // ShortcutSelectAll describes a shortcut selectAll action.
@@ -73,5 +70,5 @@ type ShortcutSelectAll struct{}
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutSelectAll) ShortcutName() string {
-	return "SelectAll"
+	return "选择全部"
 }
