@@ -97,17 +97,19 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			case "Mssql":
 				i = icon.Mssql
 			}
-			if ipBox.Hidden {
+			if len(ipBox.Items) == 0 {
 				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, dbBox))
 				ipBox.SetTabLocation(widget.TabLocationLeading)
-				ipBox.Show()
+				if ipBox.Hidden {
+					ipBox.Show()
+				}
 			}
 			sourceMap := options.SourceMap
 			oldHost := false
 			for _, v := range sourceMap {
 				if v.Host+":"+v.Port == host.Text+":"+port.Text {
 					for _, curDb := range v.Db {
-						if curDb == db.Text {
+						if curDb == db.Text && v.Password == password.Text {
 							dialog.ShowError(errors.New("已存在相同的连接"), win)
 							return
 						}
@@ -154,7 +156,9 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					ipBox.CurrentTab().Text = host.Text + ":" + port.Text
 					dbBox.CurrentTab().Text = db.Text
 				}
-				defer win.Close()
+				defer func() {
+					win.Close()
+				}()
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}

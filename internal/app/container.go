@@ -45,12 +45,12 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 		}
 		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
 	}
-	toolBar := ToolBar(win, ipBox, options)
-	if ipBox.Items == nil {
+	if len(ipBox.Items) == 0 {
 		ipBox.Hide()
 	} else {
 		ipBox.SetTabLocation(widget.TabLocationLeading)
 	}
+	toolBar := ToolBar(win, ipBox, options)
 	s2sBox := fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(toolBar, nil, nil, nil),
 		toolBar,
