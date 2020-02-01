@@ -46,15 +46,17 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
 	}
 	toolBar := ToolBar(win, ipBox, options)
+	if ipBox.Items == nil {
+		ipBox.Hide()
+	} else {
+		ipBox.SetTabLocation(widget.TabLocationLeading)
+	}
 	s2sBox := fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(toolBar, nil, nil, nil),
 		toolBar,
 		WelcomeScreen(),
+		ipBox,
 	)
-	if ipBox.Items != nil {
-		ipBox.SetTabLocation(widget.TabLocationLeading)
-		s2sBox.AddObject(ipBox)
-	}
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),
 		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),

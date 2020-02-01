@@ -29,7 +29,7 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 	port := widget.NewEntry()
 	port.SetPlaceHolder("3306")
 	password := widget.NewPasswordEntry()
-	password.SetPlaceHolder("Password")
+	password.SetPlaceHolder("******")
 	user := widget.NewEntry()
 	user.SetPlaceHolder("root")
 	db := widget.NewEntry()
@@ -76,10 +76,32 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			win.Close()
 		},
 		OnSubmit: func() {
-			if ipBox.Items == nil {
-				return
+			newDB := widget.NewTabItemWithIcon(
+				db.Text, icon.Database,
+				Screen(win, &Sql2struct.SourceMap{
+					Driver:   driver.Selected,
+					Host:     host.Text,
+					User:     user.Text,
+					Password: password.Text,
+					Port:     port.Text,
+					Db:       []string{db.Text},
+				}))
+			var dbBox = widget.NewTabContainer(newDB)
+			dbBox.SetTabLocation(widget.TabLocationLeading)
+			i := icon.Mysql
+			switch strings.Title(driver.Selected) {
+			case "PostgreSQL":
+				i = icon.PostGreSQL
+			case "Sqlite3":
+				i = icon.SqLite
+			case "Mssql":
+				i = icon.Mssql
 			}
-			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
+			if ipBox.Hidden {
+				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, dbBox))
+				ipBox.SetTabLocation(widget.TabLocationLeading)
+				ipBox.Show()
+			}
 			sourceMap := options.SourceMap
 			oldHost := false
 			for _, v := range sourceMap {
@@ -102,17 +124,8 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 				currentLink.Host = host.Text
 				currentLink.Port = port.Text
 			} else {
-				newDB := widget.NewTabItemWithIcon(
-					db.Text, icon.Database,
-					Screen(win, &Sql2struct.SourceMap{
-						Driver:   driver.Selected,
-						Host:     host.Text,
-						User:     user.Text,
-						Password: password.Text,
-						Port:     port.Text,
-						Db:       []string{db.Text},
-					}))
 				if oldHost {
+					dbBox = ipBox.CurrentTab().Content.(*widget.TabContainer)
 					for k, v := range sourceMap {
 						if v.Host+":"+v.Port == host.Text+":"+port.Text {
 							ipBox.SelectTabIndex(k)
@@ -123,15 +136,6 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 				} else {
 					newDbBox := widget.NewTabContainer(newDB)
 					newDbBox.SetTabLocation(widget.TabLocationLeading)
-					i := icon.Mysql
-					switch strings.Title(driver.Selected) {
-					case "PostgreSQL":
-						i = icon.PostGreSQL
-					case "Sqlite3":
-						i = icon.SqLite
-					case "Mssql":
-						i = icon.Mssql
-					}
 					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
 					options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
 						Driver:   driver.Selected,
@@ -143,7 +147,6 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					})
 				}
 			}
-			ipBox.Refresh()
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data
@@ -151,7 +154,7 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					ipBox.CurrentTab().Text = host.Text + ":" + port.Text
 					dbBox.CurrentTab().Text = db.Text
 				}
-				dialog.ShowInformation("成功", "保存成功", win)
+				defer win.Close()
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
