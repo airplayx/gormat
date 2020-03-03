@@ -32,7 +32,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 	var currentTable = make(chan *widget.TabItem)
 	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
-			tables.Items = append(tables.Items, widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
+			tables.Append(widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
 		go func(dbConf *Sql2struct.SourceMap) {
 			for {

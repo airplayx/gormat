@@ -13,7 +13,10 @@ import (
 	"gormat/internal/app/sql2struct"
 	"gormat/internal/pkg/icon"
 	"gormat/pkg/Sql2struct"
+	"log"
 	"net/url"
+	"os/exec"
+	"runtime"
 )
 
 func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
@@ -62,16 +65,33 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(icon.Bash, func() {
-			w := fyne.CurrentApp().NewWindow("命令行相关工具")
-			w.SetContent(fyne.NewContainerWithLayout(
-				layout.NewGridLayout(1),
-				widget.NewScrollContainer(fyne.NewContainerWithLayout(
-					layout.NewGridLayout(1),
-				)),
-			))
-			w.Resize(fyne.Size{Width: 1000, Height: 500})
-			w.CenterOnScreen()
-			w.Show()
+			switch runtime.GOOS {
+			case "darwin":
+				cmd := exec.Command(`osascript`, "-s", "h", "-e", `tell application "Terminal" to do script "echo test"`)
+				if err := cmd.Start(); err != nil {
+					log.Fatalln(err)
+				}
+			case "windows":
+				cmd := exec.Command("cmd", "/C", "start", "cmd.exe")
+				if err := cmd.Start(); err != nil {
+					log.Fatalln(err)
+				}
+			case "linux":
+				cmd := exec.Command("/bin/bash", "-c", `df -lh`)
+				if err := cmd.Start(); err != nil {
+					log.Fatalln(err)
+				}
+			}
+			//w := fyne.CurrentApp().NewWindow("命令行相关工具")
+			//w.SetContent(fyne.NewContainerWithLayout(
+			//	layout.NewGridLayout(1),
+			//	widget.NewScrollContainer(fyne.NewContainerWithLayout(
+			//		layout.NewGridLayout(1),
+			//	)),
+			//))
+			//w.Resize(fyne.Size{Width: 1000, Height: 500})
+			//w.CenterOnScreen()
+			//w.Show()
 		}),
 		widget.NewToolbarAction(icon.Edit, func() {
 			if ipBox.Items == nil {

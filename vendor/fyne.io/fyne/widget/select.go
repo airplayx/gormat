@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/theme"
 )
 
-const defaultPlaceHolder string = "请选择"
+const defaultPlaceHolder string = "(Select one)"
 
 type selectRenderer struct {
 	icon   *Icon

@@ -22,7 +22,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	for _, v := range options.SourceMap {
 		var dbBox = widget.NewTabContainer()
 		for _, curDb := range v.Db {
-			dbBox.Items = append(dbBox.Items, widget.NewTabItemWithIcon(
+			dbBox.Append(widget.NewTabItemWithIcon(
 				curDb, icon.Database,
 				sql2struct.Screen(win, &Sql2struct.SourceMap{
 					Driver:   v.Driver,
@@ -33,7 +33,9 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 					Db:       []string{curDb},
 				})))
 		}
-		dbBox.SetTabLocation(widget.TabLocationLeading)
+		if len(dbBox.Items) != 0 {
+			dbBox.SetTabLocation(widget.TabLocationLeading)
+		}
 		i := icon.Mysql
 		switch strings.Title(v.Driver) {
 		case "PostgreSQL":
@@ -43,7 +45,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 		case "Mssql":
 			i = icon.Mssql
 		}
-		ipBox.Items = append(ipBox.Items, widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
+		ipBox.Append(widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
 	}
 	if len(ipBox.Items) == 0 {
 		ipBox.Hide()

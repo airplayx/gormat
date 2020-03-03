@@ -1,4 +1,4 @@
-# fyne.io/fyne v1.2.2
+# fyne.io/fyne v1.2.3
 fyne.io/fyne
 fyne.io/fyne/app
 fyne.io/fyne/canvas
