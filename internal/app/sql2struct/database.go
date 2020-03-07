@@ -21,7 +21,7 @@ import (
 )
 
 func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
-	driver := widget.NewSelect([]string{"Mysql", "PostgreSQL", "Sqlite3", "Mssql"}, func(s string) {
+	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
 	host := widget.NewEntry()
@@ -97,13 +97,7 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			case "Mssql":
 				i = icon.Mssql
 			}
-			if len(ipBox.Items) == 0 {
-				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, dbBox))
-				ipBox.SetTabLocation(widget.TabLocationLeading)
-				if ipBox.Hidden {
-					ipBox.Show()
-				}
-			}
+
 			sourceMap := options.SourceMap
 			oldHost := false
 			for _, v := range sourceMap {
@@ -139,6 +133,7 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					newDbBox := widget.NewTabContainer(newDB)
 					newDbBox.SetTabLocation(widget.TabLocationLeading)
 					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
+					ipBox.SetTabLocation(widget.TabLocationLeading)
 					options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
 						Driver:   driver.Selected,
 						Host:     host.Text,
@@ -157,6 +152,10 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					dbBox.CurrentTab().Text = db.Text
 				}
 				defer func() {
+					if ipBox.Hidden {
+						ipBox.Show()
+					}
+					ipBox.Refresh()
 					win.Close()
 				}()
 			} else {

@@ -22,8 +22,6 @@
     - [x] 自定义转型
 - [x] Sql转Struct
 - [x] Json转Struct
-- [ ] 笔记（日记）功能
-- [ ] 命令行功能
 
 ### Prerequisites 开发条件
 
