@@ -387,7 +387,9 @@ func (b *tabButton) CreateRenderer() fyne.WidgetRenderer {
 	}
 
 	label := canvas.NewText(b.Text, theme.TextColor())
-	label.Alignment = fyne.TextAlignCenter
+	//label.Alignment = fyne.TextAlignCenter
+	label.Alignment = fyne.TextAlignLeading
+
 
 	objects := []fyne.CanvasObject{label}
 	if icon != nil {

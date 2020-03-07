@@ -43,4 +43,5 @@ vendor/fyne.io/fyne/dialog/information.go:12
 vendor/fyne.io/fyne/dialog/information.go:38
 vendor/fyne.io/fyne/shortcut.go:43
 vendor/fyne.io/fyne/widget/entry.go:526
+vendor/fyne.io/fyne/widget/tabcontainer.go:390
 */
