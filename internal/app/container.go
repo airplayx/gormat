@@ -60,11 +60,11 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 		ipBox,
 	)
 	c := widget.NewTabContainer(
-		//widget.NewTabItemWithIcon("", config.Home, WelcomeScreen()),
-		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),
+		//widget.NewTabItemWithIcon("", icon.Home, WelcomeScreen()),
 		widget.NewTabItemWithIcon("", icon.Store, s2sBox),
-		//widget.NewTabItemWithIcon("", config.Daily, fyne.NewContainer()),
-		//widget.NewTabItemWithIcon("", config.Video, fyne.NewContainer()),
+		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),
+		//widget.NewTabItemWithIcon("", icon.Daily, fyne.NewContainer()),
+		//widget.NewTabItemWithIcon("", icon.Video, fyne.NewContainer()),
 	)
 	c.SetTabLocation(widget.TabLocationBottom)
 	return c
