@@ -2,7 +2,7 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "Gormat - Tool For Gopher"
-#define MyAppVersion "beta"
+#define MyAppVersion "0.0.1"
 #define MyAppPublisher "airplayx"
 #define MyAppURL "http://airplayx.com/"
 #define MyAppExeName "gormat.exe"
@@ -19,14 +19,14 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName=D:\gormat_beta
+DefaultDirName=D:\gormat_{#MyAppVersion}
 DefaultGroupName=gormat
 DisableProgramGroupPage=yes
 ; 移除以下行，以在管理安装模式下运行（为所有用户安装）。
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
 OutputDir=C:\Users\Administrator\Desktop
-OutputBaseFilename=gormat_beta
+OutputBaseFilename=gormat_{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

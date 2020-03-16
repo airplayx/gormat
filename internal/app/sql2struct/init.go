@@ -27,7 +27,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 		)
 	}
 	resultBox := widget.NewMultiLineEntry()
-	resultBox.SetPlaceHolder(`准备就绪`)
+	resultBox.SetPlaceHolder(``)
 	var tables = widget.NewTabContainer()
 	var currentTable = make(chan *widget.TabItem)
 	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {

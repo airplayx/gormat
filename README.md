@@ -9,9 +9,6 @@
 - [x] 数据库转Struct
     - [x] 数据引擎支持
         - [x] Mysql
-        - [ ] PostgreSQL
-        - [ ] Sqlite3
-        - [ ] Mssql
     - [x] 自动存文件
     - [x] 标签支持
         - [x] Gorm

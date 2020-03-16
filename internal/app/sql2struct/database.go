@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
+func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -44,7 +44,7 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 		db.SetText(currentLink.Db[dbIndex[1]])
 	}
 	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
-		progressDialog := dialog.NewProgress("连接中", host.Text, win)
+		progressDialog := dialog.NewProgress("连接中", host.Text, currentWindow)
 		go func() {
 			num := 0.0
 			for num < 1.0 {
@@ -65,20 +65,23 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			Driver:   driver.Selected,
 		})
 		if err != nil {
-			dialog.ShowError(errors.New(err.Error()), win)
+			dialog.ShowError(errors.New(err.Error()), currentWindow)
 		} else {
-			dialog.ShowInformation("成功", "连接成功", win)
+			dialog.ShowInformation("成功", "连接成功", currentWindow)
 			_ = Sql2struct.DB().Close()
 		}
 	}))
 	return &widget.Form{
 		OnCancel: func() {
-			win.Close()
+			currentWindow.Close()
 		},
 		OnSubmit: func() {
+			defer func() {
+				window.Canvas().Refresh(ipBox)
+			}()
 			newDB := widget.NewTabItemWithIcon(
 				db.Text, icon.Database,
-				Screen(win, &Sql2struct.SourceMap{
+				Screen(currentWindow, &Sql2struct.SourceMap{
 					Driver:   driver.Selected,
 					Host:     host.Text,
 					User:     user.Text,
@@ -97,52 +100,51 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 			case "Mssql":
 				i = icon.Mssql
 			}
-
 			sourceMap := options.SourceMap
 			oldHost := false
 			for _, v := range sourceMap {
 				if v.Host+":"+v.Port == host.Text+":"+port.Text {
 					for _, curDb := range v.Db {
 						if curDb == db.Text && v.Password == password.Text {
-							dialog.ShowError(errors.New("已存在相同的连接"), win)
+							dialog.ShowError(errors.New("已存在相同的连接"), currentWindow)
 							return
 						}
 					}
 					oldHost = true
 				}
 			}
-			if dbIndex != nil {
-				currentLink := sourceMap[dbIndex[0]]
-				currentLink.Driver = driver.Selected
-				currentLink.Db[dbIndex[1]] = db.Text
-				currentLink.User = user.Text
-				currentLink.Password = password.Text
-				currentLink.Host = host.Text
-				currentLink.Port = port.Text
-			} else {
-				if oldHost {
-					dbBox = ipBox.CurrentTab().Content.(*widget.TabContainer)
-					for k, v := range sourceMap {
-						if v.Host+":"+v.Port == host.Text+":"+port.Text {
-							ipBox.SelectTabIndex(k)
-							dbBox.Append(newDB)
-							sourceMap[k].Db = append(v.Db, db.Text)
-						}
-					}
-				} else {
-					newDbBox := widget.NewTabContainer(newDB)
-					newDbBox.SetTabLocation(widget.TabLocationLeading)
-					ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
-					ipBox.SetTabLocation(widget.TabLocationLeading)
-					options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
-						Driver:   driver.Selected,
-						Host:     host.Text,
-						User:     user.Text,
-						Password: password.Text,
-						Port:     port.Text,
-						Db:       []string{db.Text},
-					})
+			if oldHost {
+				dbBox = ipBox.CurrentTab().Content.(*widget.TabContainer)
+				if dbIndex != nil {
+					currentLink := sourceMap[dbIndex[0]]
+					currentLink.Driver = driver.Selected
+					currentLink.Db[dbIndex[1]] = db.Text
+					currentLink.User = user.Text
+					currentLink.Password = password.Text
+					currentLink.Host = host.Text
+					currentLink.Port = port.Text
+					dbBox.RemoveIndex(dbBox.CurrentTabIndex())
 				}
+				for k, v := range sourceMap {
+					if v.Host+":"+v.Port == host.Text+":"+port.Text {
+						ipBox.SelectTabIndex(k)
+						dbBox.Append(newDB)
+						sourceMap[k].Db = Sql2struct.RmDuplicateElement(append(v.Db, db.Text))
+					}
+				}
+			} else {
+				newDbBox := widget.NewTabContainer(newDB)
+				newDbBox.SetTabLocation(widget.TabLocationLeading)
+				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
+				ipBox.SetTabLocation(widget.TabLocationLeading)
+				options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
+					Driver:   driver.Selected,
+					Host:     host.Text,
+					User:     user.Text,
+					Password: password.Text,
+					Port:     port.Text,
+					Db:       []string{db.Text},
+				})
 			}
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
@@ -155,11 +157,10 @@ func DataBase(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.S
 					if ipBox.Hidden {
 						ipBox.Show()
 					}
-					ipBox.Refresh()
-					win.Close()
+					currentWindow.Close()
 				}()
 			} else {
-				dialog.ShowError(errors.New(err.Error()), win)
+				dialog.ShowError(errors.New(err.Error()), currentWindow)
 			}
 		},
 		Items: []*widget.FormItem{

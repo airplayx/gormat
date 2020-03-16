@@ -24,7 +24,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 		widget.NewToolbarAction(icon.Insert, func() {
 			w := fyne.CurrentApp().NewWindow("添加连接")
 			w.SetContent(widget.NewScrollContainer(
-				sql2struct.DataBase(w, ipBox, options, nil)),
+				sql2struct.DataBase(win, w, ipBox, options, nil)),
 			)
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
@@ -116,7 +116,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				w.SetContent(widget.NewLabelWithStyle(`错误的连接参数`, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 			} else {
 				w.SetContent(widget.NewScrollContainer(
-					sql2struct.DataBase(w, ipBox, options, dbIndex)))
+					sql2struct.DataBase(win, w, ipBox, options, dbIndex)))
 			}
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
