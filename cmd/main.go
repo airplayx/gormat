@@ -25,7 +25,7 @@ func main() {
 	main.SetIcon(icon.Ico)
 	window := main.NewWindow("Gormat - Tool For Gopher")
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 1080, Height: 720})
+	window.Resize(fyne.Size{Width: 1200, Height: 720})
 	window.SetContent(_app.Container(main, window))
 	window.SetOnClosed(func() {
 		_ = ioutil.WriteFile(configs.CustomFile, configs.Json, os.ModePerm)
