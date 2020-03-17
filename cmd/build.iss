@@ -19,8 +19,8 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName=D:\gormat_{#MyAppVersion}
-DefaultGroupName=gormat
+DefaultDirName=D:\Gormat\{#MyAppVersion}
+DefaultGroupName=Gormat
 DisableProgramGroupPage=yes
 ; 移除以下行，以在管理安装模式下运行（为所有用户安装）。
 PrivilegesRequired=lowest

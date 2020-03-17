@@ -22,9 +22,19 @@ import (
 func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(icon.Insert, func() {
+			var dbIndex []int
+			if ipBox.Items != nil && ipBox.Visible() {
+				sourceMap := options.SourceMap
+				for k, v := range sourceMap {
+					if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
+						dbIndex = []int{k}
+						break
+					}
+				}
+			}
 			w := fyne.CurrentApp().NewWindow("添加连接")
 			w.SetContent(widget.NewScrollContainer(
-				sql2struct.DataBase(win, w, ipBox, options, nil)),
+				sql2struct.DataBase(win, w, ipBox, options, dbIndex)),
 			)
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
@@ -98,13 +108,14 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				return
 			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
+			win.Canvas().Refresh(dbBox)
 			w := fyne.CurrentApp().NewWindow("编辑连接")
 			sourceMap := options.SourceMap
 			var dbIndex []int
 			for k, v := range sourceMap {
 				if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
-					for key, db := range v.Db {
-						if db == dbBox.CurrentTab().Text {
+					for key := range v.Db {
+						if key == dbBox.CurrentTabIndex() {
 							dbIndex = []int{k, key}
 							goto loop
 						}
@@ -172,9 +183,9 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 									if len(sourceMap[k].Db) == 0 {
 										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 									}
-
 									if dbBox.CurrentTabIndex() >= 0 && dbBox.CurrentTabIndex() < len(dbBox.Items)-1 {
 										dbBox.RemoveIndex(dbBox.CurrentTabIndex())
+										dbBox.SelectTabIndex(dbBox.CurrentTabIndex())
 										goto loop
 									} else if dbBox.CurrentTabIndex() > 0 && dbBox.CurrentTabIndex() == len(dbBox.Items)-1 {
 										dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)

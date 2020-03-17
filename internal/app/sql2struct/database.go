@@ -41,7 +41,9 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 		port.SetText(currentLink.Port)
 		password.SetText(currentLink.Password)
 		user.SetText(currentLink.User)
-		db.SetText(currentLink.Db[dbIndex[1]])
+		if len(dbIndex) > 1 {
+			db.SetText(currentLink.Db[dbIndex[1]])
+		}
 	}
 	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
 		progressDialog := dialog.NewProgress("连接中", host.Text, currentWindow)
@@ -76,9 +78,6 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			currentWindow.Close()
 		},
 		OnSubmit: func() {
-			defer func() {
-				window.Canvas().Refresh(ipBox)
-			}()
 			newDB := widget.NewTabItemWithIcon(
 				db.Text, icon.Database,
 				Screen(currentWindow, &Sql2struct.SourceMap{
@@ -91,6 +90,10 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				}))
 			var dbBox = widget.NewTabContainer(newDB)
 			dbBox.SetTabLocation(widget.TabLocationLeading)
+			defer func() {
+				window.Canvas().Refresh(ipBox)
+				dbBox.SelectTab(newDB)
+			}()
 			i := icon.Mysql
 			switch strings.Title(driver.Selected) {
 			case "PostgreSQL":
@@ -101,7 +104,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				i = icon.Mssql
 			}
 			sourceMap := options.SourceMap
-			oldHost := false
+			oldIP := false
 			for _, v := range sourceMap {
 				if v.Host+":"+v.Port == host.Text+":"+port.Text {
 					for _, curDb := range v.Db {
@@ -110,12 +113,12 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 							return
 						}
 					}
-					oldHost = true
+					oldIP = true
 				}
 			}
-			if oldHost {
+			if oldIP {
 				dbBox = ipBox.CurrentTab().Content.(*widget.TabContainer)
-				if dbIndex != nil {
+				if dbIndex != nil && len(dbIndex) > 1 {
 					currentLink := sourceMap[dbIndex[0]]
 					currentLink.Driver = driver.Selected
 					currentLink.Db[dbIndex[1]] = db.Text
@@ -128,15 +131,15 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				for k, v := range sourceMap {
 					if v.Host+":"+v.Port == host.Text+":"+port.Text {
 						ipBox.SelectTabIndex(k)
-						dbBox.Append(newDB)
+						ipBox.CurrentTab().Content.(*widget.TabContainer).Append(newDB)
 						sourceMap[k].Db = Sql2struct.RmDuplicateElement(append(v.Db, db.Text))
+						break
 					}
 				}
 			} else {
-				newDbBox := widget.NewTabContainer(newDB)
-				newDbBox.SetTabLocation(widget.TabLocationLeading)
-				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, newDbBox))
+				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, dbBox))
 				ipBox.SetTabLocation(widget.TabLocationLeading)
+				ipBox.SelectTabIndex(len(ipBox.Items) - 1)
 				options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
 					Driver:   driver.Selected,
 					Host:     host.Text,
@@ -149,10 +152,6 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data
-				if dbIndex != nil {
-					ipBox.CurrentTab().Text = host.Text + ":" + port.Text
-					dbBox.CurrentTab().Text = db.Text
-				}
 				defer func() {
 					if ipBox.Hidden {
 						ipBox.Show()

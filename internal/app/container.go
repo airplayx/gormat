@@ -46,6 +46,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 			i = icon.Mssql
 		}
 		ipBox.Append(widget.NewTabItemWithIcon(v.Host+":"+v.Port, i, dbBox))
+		dbBox.SelectTabIndex(len(dbBox.Items) - 1)
 	}
 	if len(ipBox.Items) == 0 {
 		ipBox.Hide()
