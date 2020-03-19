@@ -78,6 +78,10 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			currentWindow.Close()
 		},
 		OnSubmit: func() {
+			if db.Text == "" {
+				dialog.ShowError(errors.New("数据库不能为空"), currentWindow)
+				return
+			}
 			newDB := widget.NewTabItemWithIcon(
 				db.Text, icon.Database,
 				Screen(currentWindow, &Sql2struct.SourceMap{

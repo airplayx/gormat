@@ -25,8 +25,8 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			var dbIndex []int
 			if ipBox.Items != nil && ipBox.Visible() {
 				sourceMap := options.SourceMap
-				for k, v := range sourceMap {
-					if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
+				for k := range sourceMap {
+					if k == ipBox.CurrentTabIndex() {
 						dbIndex = []int{k}
 						break
 					}
@@ -92,16 +92,6 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					log.Fatalln(err)
 				}
 			}
-			//w := fyne.CurrentApp().NewWindow("命令行相关工具")
-			//w.SetContent(fyne.NewContainerWithLayout(
-			//	layout.NewGridLayout(1),
-			//	widget.NewScrollContainer(fyne.NewContainerWithLayout(
-			//		layout.NewGridLayout(1),
-			//	)),
-			//))
-			//w.Resize(fyne.Size{Width: 1000, Height: 500})
-			//w.CenterOnScreen()
-			//w.Show()
 		}),
 		widget.NewToolbarAction(icon.Edit, func() {
 			if ipBox.Items == nil {
@@ -113,7 +103,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			sourceMap := options.SourceMap
 			var dbIndex []int
 			for k, v := range sourceMap {
-				if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
+				if k == ipBox.CurrentTabIndex() {
 					for key := range v.Db {
 						if key == dbBox.CurrentTabIndex() {
 							dbIndex = []int{k, key}
@@ -140,10 +130,11 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			content := widget.NewEntry()
 			content.SetPlaceHolder("请输入 " + ipBox.CurrentTab().Text + " 确认删除当前组记录")
 			content.OnChanged = func(text string) {
+				defer ipBox.SelectTabIndex(ipBox.CurrentTabIndex())
 				if text == ipBox.CurrentTab().Text {
 					sourceMap := options.SourceMap
-					for k, v := range sourceMap {
-						if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
+					for k := range sourceMap {
+						if k == ipBox.CurrentTabIndex() {
 							options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 							break
 						}
@@ -176,9 +167,9 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				if isDelete {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
-						if v.Host+":"+v.Port == ipBox.CurrentTab().Text {
-							for key, db := range v.Db {
-								if db == dbBox.CurrentTab().Text {
+						if k == ipBox.CurrentTabIndex() {
+							for key := range v.Db {
+								if key == dbBox.CurrentTabIndex() {
 									sourceMap[k].Db = append(v.Db[:key], v.Db[key+1:]...)
 									if len(sourceMap[k].Db) == 0 {
 										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
@@ -197,20 +188,20 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 											if len(ipBox.Items) == 0 {
 												ipBox.Hide()
 											}
+											goto loop
 										}
 										ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
 										goto loop
 									}
-
 								}
 							}
 						}
 					}
 				loop:
+					defer win.Canvas().Refresh(ipBox)
 					jsons, _ := json.Marshal(options)
 					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 						configs.Json = data
-						//dialog.ShowInformation("操作", "保存成功", win)
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)
 					}
