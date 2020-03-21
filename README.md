@@ -1,4 +1,4 @@
-# Gormat - Cross platform gopher Tool
+# Gormat - Cross platform gopher tool
            
 > The golang convenient converter supports Database to Struct, SQL to Struct, and JSON to Struct.
 
