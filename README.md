@@ -1,44 +1,44 @@
-# Gormat - 跨平台Gopher辅助工具
+# Gormat - Cross platform gopher Tool
+           
+> The golang convenient converter supports Database to Struct, SQL to Struct, and JSON to Struct.
 
-> 跨平台的界面化golang便捷转换器，支持数据库转Struct、Sql转Struct、Json转Struct等。
+[中文说明](README_zh.md)
 
 ![image](assets/show_win.png)
 
-## Features 功能展示
+## Features
 
-- [x] 数据库转Struct
-    - [x] 数据引擎支持
+- [x] Database to Struct
+    - [x] Data engine
         - [x] Mysql
-    - [x] 自动存文件
-    - [x] 标签支持
+    - [x] Auto save file
+    - [x] Tags
         - [x] Gorm
         - [x] Xrom
         - [x] JSON
-    - [x] 排除列表
-    - [x] 数据映射
-    - [x] 自定义转型
-- [x] Sql转Struct
-- [x] Json转Struct
+    - [x] Exclude list
+    - [x] Data mapping
+    - [x] Custom transformation
+- [x] SQL to Struct
+- [x] JSON to Struct
 
-## About 说明
+## About
 
-在golang开发中，有很多时候需要手动敲结构体，并且需要手动入库。尽管gorm有自动迁移的功能，但并不能有效、理想化的形成数据库字段。
-网上也有很多开源的例子，但是都没有界面化并且方便管理的工具，所以我开始写这个项目，目的就是更高效的开发，转换即用。
+In golang development, there are times when you need to tap the structure manually and store it manually.Although Gorm has the ability to migrate automatically, it does not form database fields effectively and ideally.There are also many open source examples on the web, but there are no user-friendly and easy-to-manage tools, so I started this project with the goal of more efficient development, conversion and ready-to-use.
 
-本项目借鉴了许多开源转换库的代码，并结合orm进行适度调整。在开发中遇到了很多的问题，fyne这个GUI开发框架也是有很多坑点的，现不赘述。不管是数据库转Struct，还是Struct转SQL语句，普遍还存在一些误差，所以转换结果仅供参考，
-实际项目请自行调整使用。
+This project borrows a lot of code from open source conversion libraries and makes some adjustments in conjunction with orm.There are many problems encountered in the development, and Fyne is a GUI development framework with many pits, which should not be further discussed.Whether it is a database to Struct or a Struct to SQL statement, there are still some errors, so the conversion results are only for reference, please adjust the use of the actual project.
 
-### Prerequisites 开发条件
+### Prerequisites 
 
 ```
 golang >= 1.11
 ```
 
-### Installation 安装
+### Installation 
 
-安装使用不需要额外的环境，移步到[releases](https://github.com/airplayx/gormat/releases)下载。
+No additional environment is required for installation and use, move to [releases](https://github.com/airplayx/gormat/releases) to download.
 
-不同平台需要安装额外的开发环境
+Different platforms need to install additional development environments.
 
 OS X & Linux:
 ```sh
@@ -51,7 +51,7 @@ Windows:
 Gcc
 ```
 
-### Usage example 编译示例（windows）
+### Usage example
 
 ``` golang
 SET CGO_ENABLED=1
@@ -61,9 +61,9 @@ SET GOARCH=amd64
 go build -o gormat.exe -ldflags="-H windowsgui"
 ```
 
-本项目使用fyne开发，更多打包编译步骤参考: [https://fyne.io/develop/distribution.html](https://fyne.io/develop/distribution.html)
+In this project, Fyne is used for development. For more steps of packaging and compiling, please refer to [https://fyne.io/develop/distribution.html](https://fyne.io/develop/distribution.html)
 
-## Contributing 开源支持
+## Contributing
 
     fyne.io/fyne
    	github.com/Chronokeeper/anyxml
@@ -93,19 +93,13 @@ go build -o gormat.exe -ldflags="-H windowsgui"
    	gopkg.in/flosch/pongo2.v3
    	gopkg.in/yaml.v2
 	
-## Thanks 鸣谢
+## Thanks
 
     github.com/hsyan2008/gom
     github.com/fatih/structtag
     github.com/yujiahaol68/sql2struct
     github.com/bashtian/jsonutils
 
-## Release History 版本历史
+## License
+For the MIT agreement of this project, please click [LICENSE](LICENSE) for more details.
 
-* beta
-    * 测试开源版本
-* 0.0.1
-    * gormat lite
-## License 授权协议
-
-这个项目 MIT 协议， 请点击 [LICENSE](LICENSE) 了解更多细节。
