@@ -10,6 +10,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"gormat/configs"
 	"gormat/internal/pkg/icon"
 	"gormat/pkg/Sql2struct"
 	"gormat/pkg/Sql2struct/quickly"
@@ -95,7 +96,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 			widget.NewLabel(err.Error()),
 		)
 	}
-	tableBox := widget.NewGroupWithScroller("表结构")
+	tableBox := widget.NewGroupWithScroller(configs.Text("table"))
 	if len(tables.Items) > 0 {
 		go func() {
 			currentTable <- &widget.TabItem{}

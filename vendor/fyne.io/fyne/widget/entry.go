@@ -524,19 +524,19 @@ func (e *Entry) selectAll() {
 //
 // Opens the PopUpMenu with `Paste` item to paste text from the clipboard.
 func (e *Entry) TappedSecondary(pe *fyne.PointEvent) {
-	cutItem := fyne.NewMenuItem("剪切", func() {
+	cutItem := fyne.NewMenuItem("Cut", func() {
 		clipboard := fyne.CurrentApp().Driver().AllWindows()[0].Clipboard()
 		e.cutToClipboard(clipboard)
 	})
-	copyItem := fyne.NewMenuItem("复制", func() {
+	copyItem := fyne.NewMenuItem("Copy", func() {
 		clipboard := fyne.CurrentApp().Driver().AllWindows()[0].Clipboard()
 		e.copyToClipboard(clipboard)
 	})
-	pasteItem := fyne.NewMenuItem("粘贴", func() {
+	pasteItem := fyne.NewMenuItem("Paste", func() {
 		clipboard := fyne.CurrentApp().Driver().AllWindows()[0].Clipboard()
 		e.pasteFromClipboard(clipboard)
 	})
-	selectAllItem := fyne.NewMenuItem("选择全部", e.selectAll)
+	selectAllItem := fyne.NewMenuItem("Select all", e.selectAll)
 
 	super := e.super()
 	entryPos := fyne.CurrentApp().Driver().AbsolutePositionForObject(super)

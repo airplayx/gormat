@@ -45,8 +45,8 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			db.SetText(currentLink.Db[dbIndex[1]])
 		}
 	}
-	testDb := widget.NewHBox(widget.NewButton("测试连接", func() {
-		progressDialog := dialog.NewProgress("连接中", host.Text, currentWindow)
+	testDb := widget.NewHBox(widget.NewButton(configs.Text("connection test"), func() {
+		progressDialog := dialog.NewProgress(configs.Text("testing"), host.Text, currentWindow)
 		go func() {
 			num := 0.0
 			for num < 1.0 {
@@ -69,7 +69,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 		if err != nil {
 			dialog.ShowError(errors.New(err.Error()), currentWindow)
 		} else {
-			dialog.ShowInformation("成功", "连接成功", currentWindow)
+			dialog.ShowInformation(configs.Text("info"), configs.Text("connection successful"), currentWindow)
 			_ = Sql2struct.DB().Close()
 		}
 	}))
@@ -79,7 +79,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 		},
 		OnSubmit: func() {
 			if db.Text == "" {
-				dialog.ShowError(errors.New("数据库不能为空"), currentWindow)
+				dialog.ShowError(errors.New(configs.Text("the database can not be empty")), currentWindow)
 				return
 			}
 			newDB := widget.NewTabItemWithIcon(
@@ -113,7 +113,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				if v.Host+":"+v.Port == host.Text+":"+port.Text {
 					for _, curDb := range v.Db {
 						if curDb == db.Text && v.Password == password.Text {
-							dialog.ShowError(errors.New("已存在相同的连接"), currentWindow)
+							dialog.ShowError(errors.New(configs.Text("duplicate links")), currentWindow)
 							return
 						}
 					}
@@ -167,12 +167,12 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			}
 		},
 		Items: []*widget.FormItem{
-			{Text: "引擎", Widget: driver},
-			{Text: "主机地址", Widget: host},
-			{Text: "端口", Widget: port},
-			{Text: "用户名", Widget: user},
-			{Text: "密码", Widget: password},
-			{Text: "数据库", Widget: db},
+			{Text: configs.Text("engine"), Widget: driver},
+			{Text: configs.Text("host"), Widget: host},
+			{Text: configs.Text("port"), Widget: port},
+			{Text: configs.Text("user"), Widget: user},
+			{Text: configs.Text("password"), Widget: password},
+			{Text: configs.Text("database"), Widget: db},
 			{Text: "", Widget: testDb},
 		},
 	}

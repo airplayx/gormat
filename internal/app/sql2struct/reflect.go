@@ -30,13 +30,13 @@ func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data
-				dialog.ShowInformation("成功", "保存成功", win)
+				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
 		},
 		Items: []*widget.FormItem{
-			{Text: "数据类型转换", Widget: dataType},
+			{Text: configs.Text("type conversion"), Widget: dataType},
 		},
 	}
 }

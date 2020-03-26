@@ -32,7 +32,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					}
 				}
 			}
-			w := fyne.CurrentApp().NewWindow("添加连接")
+			w := fyne.CurrentApp().NewWindow(configs.Text("add link"))
 			w.SetContent(widget.NewScrollContainer(
 				sql2struct.DataBase(win, w, ipBox, options, dbIndex)),
 			)
@@ -41,11 +41,11 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.Option, func() {
-			w := fyne.CurrentApp().NewWindow("转换规则设置")
+			w := fyne.CurrentApp().NewWindow(configs.Text("rules"))
 			setting := widget.NewTabContainer(
-				widget.NewTabItem("基本", sql2struct.Option(w, options)),
-				widget.NewTabItem("映射", sql2struct.Reflect(w, options)),
-				widget.NewTabItem("特殊转型", sql2struct.Special(w, options)),
+				widget.NewTabItem(configs.Text("base"), sql2struct.Option(w, options)),
+				widget.NewTabItem(configs.Text("mapping"), sql2struct.Reflect(w, options)),
+				widget.NewTabItem(configs.Text("special"), sql2struct.Special(w, options)),
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
@@ -54,7 +54,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.SQL, func() {
-			w := fyne.CurrentApp().NewWindow("Sql语句转Struct")
+			w := fyne.CurrentApp().NewWindow(configs.Text("sql to struct"))
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(sql2struct.QuickScreen()),
@@ -64,7 +64,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.JSON, func() {
-			w := fyne.CurrentApp().NewWindow("Json语句转Struct")
+			w := fyne.CurrentApp().NewWindow(configs.Text("json to struct"))
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(json2struct.Screen()),
@@ -99,7 +99,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
 			win.Canvas().Refresh(dbBox)
-			w := fyne.CurrentApp().NewWindow("编辑连接")
+			w := fyne.CurrentApp().NewWindow(configs.Text("edit link"))
 			sourceMap := options.SourceMap
 			var dbIndex []int
 			for k, v := range sourceMap {
@@ -114,7 +114,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			}
 		loop:
 			if dbIndex == nil {
-				w.SetContent(widget.NewLabelWithStyle(`错误的连接参数`, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+				w.SetContent(widget.NewLabelWithStyle(configs.Text("bad link parameters"), fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 			} else {
 				w.SetContent(widget.NewScrollContainer(
 					sql2struct.DataBase(win, w, ipBox, options, dbIndex)))
@@ -128,7 +128,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 				return
 			}
 			content := widget.NewEntry()
-			content.SetPlaceHolder("请输入 " + ipBox.CurrentTab().Text + " 确认删除当前组记录")
+			content.SetPlaceHolder(configs.Text("Please input %s to delete the current group record", ipBox.CurrentTab().Text))
 			content.OnChanged = func(text string) {
 				defer ipBox.SelectTabIndex(ipBox.CurrentTabIndex())
 				if text == ipBox.CurrentTab().Text {
@@ -142,7 +142,7 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					jsons, _ := json.Marshal(options)
 					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 						configs.Json = data
-						dialog.ShowInformation("操作", "保存成功", win)
+						dialog.ShowInformation(configs.Text("action"), configs.Text("save ok"), win)
 						ipBox.RemoveIndex(ipBox.CurrentTabIndex())
 						if ipBox.CurrentTabIndex()-1 < 0 {
 							if len(ipBox.Items) == 0 {
@@ -156,14 +156,14 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					}
 				}
 			}
-			dialog.ShowCustom("操作", "取消", content, win)
+			dialog.ShowCustom(configs.Text("action"), configs.Text("cancel"), content, win)
 		}),
 		widget.NewToolbarAction(icon.Delete, func() {
 			if ipBox.Items == nil {
 				return
 			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
-			cnf := dialog.NewConfirm("操作", "确定删除当前 "+dbBox.CurrentTab().Text+" 库连接记录?", func(isDelete bool) {
+			cnf := dialog.NewConfirm(configs.Text("action"), configs.Text("Please confirm to delete the current: %s ?", dbBox.CurrentTab().Text), func(isDelete bool) {
 				if isDelete {
 					sourceMap := options.SourceMap
 					for k, v := range sourceMap {
@@ -207,8 +207,8 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 					}
 				}
 			}, win)
-			cnf.SetDismissText("否")
-			cnf.SetConfirmText("是")
+			cnf.SetDismissText(configs.Text("no"))
+			cnf.SetConfirmText(configs.Text("yes"))
 			cnf.Show()
 		}),
 		widget.NewToolbarSpacer(),

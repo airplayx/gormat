@@ -21,7 +21,7 @@ import (
 func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
 	specialData.SetText(strings.ReplaceAll(options.Special, ",", ",\n"))
-	autoBool := widget.NewCheck("is_开头的字段自动转bool", func(bool) {})
+	autoBool := widget.NewCheck(configs.Text("the fields starting with is_ are automatically converted to bool"), func(bool) {})
 	autoBool.SetChecked(options.Tinyint2bool)
 
 	return &widget.Form{
@@ -34,14 +34,14 @@ func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data
-				dialog.ShowInformation("成功", "保存成功", win)
+				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
 		},
 		Items: []*widget.FormItem{
-			{Text: "布尔选型", Widget: autoBool},
-			{Text: "指定字段转型", Widget: specialData},
+			{Text: configs.Text("bool"), Widget: autoBool},
+			{Text: configs.Text("specified fields transformation"), Widget: specialData},
 		},
 	}
 }

@@ -9,6 +9,7 @@ package app
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
+	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"gormat/internal/app/sql2struct"
 	"gormat/internal/pkg/icon"
@@ -63,7 +64,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", icon.Home, WelcomeScreen()),
 		widget.NewTabItemWithIcon("", icon.Store, s2sBox),
-		//widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),
+		widget.NewTabItemWithIcon("", theme.SettingsIcon(), SettingScreen(app, win)),
 		//widget.NewTabItemWithIcon("", icon.Daily, fyne.NewContainer()),
 		//widget.NewTabItemWithIcon("", icon.Video, fyne.NewContainer()),
 	)

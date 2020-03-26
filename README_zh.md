@@ -4,7 +4,7 @@
 
 [English](README.md)
 
-![image](assets/show_win.png)
+![image](assets/show_win_zh.png)
 
 ## 功能展示
 

@@ -42,7 +42,7 @@ type ShortcutPaste struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutPaste) ShortcutName() string {
-	return "粘贴"
+	return "Paste"
 }
 
 // ShortcutCopy describes a shortcut copy action.
@@ -52,7 +52,7 @@ type ShortcutCopy struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutCopy) ShortcutName() string {
-	return "复制"
+	return "Copy"
 }
 
 // ShortcutCut describes a shortcut cut action.
@@ -62,7 +62,7 @@ type ShortcutCut struct {
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutCut) ShortcutName() string {
-	return "剪切"
+	return "Cut"
 }
 
 // ShortcutSelectAll describes a shortcut selectAll action.
@@ -70,5 +70,5 @@ type ShortcutSelectAll struct{}
 
 // ShortcutName returns the shortcut name
 func (se *ShortcutSelectAll) ShortcutName() string {
-	return "选择全部"
+	return "SelectAll"
 }

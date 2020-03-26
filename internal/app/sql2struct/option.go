@@ -22,14 +22,14 @@ import (
 func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	targetDir := widget.NewEntry()
 	targetDir.SetText(options.TargetDir)
-	autoSave := widget.NewRadio([]string{"是", "否"}, func(s string) {
+	autoSave := widget.NewRadio([]string{configs.Text("yes"), configs.Text("no")}, func(s string) {
 
 	})
 	autoSave.Horizontal = true
 	if options.AutoSave {
-		autoSave.SetSelected("是")
+		autoSave.SetSelected(configs.Text("yes"))
 	} else {
-		autoSave.SetSelected("否")
+		autoSave.SetSelected(configs.Text("no"))
 	}
 
 	gorm := widget.NewCheck("gorm", func(bool) {})
@@ -41,13 +41,13 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	beegoOrm := widget.NewCheck("beegoOrm", func(bool) {})
 	beegoOrm.SetChecked(collection.Collect(options.Tags).Contains("beegoOrm"))
 
-	jsonType := widget.NewSelect([]string{"仅生成", "生成并包含 omitempty"}, func(s string) {
+	jsonType := widget.NewSelect([]string{configs.Text("build only"), configs.Text("build and include omitempty")}, func(s string) {
 
 	})
 	if options.JsonOmitempty {
-		jsonType.SetSelected("生成并包含 omitempty")
+		jsonType.SetSelected(configs.Text("build and include omitempty"))
 	} else {
-		jsonType.SetSelected("仅生成")
+		jsonType.SetSelected(configs.Text("build only"))
 	}
 
 	jsonT := widget.NewCheck("json", func(on bool) {
@@ -61,16 +61,16 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	jsonT.SetChecked(!jsonType.Hidden)
 
 	excludeTables := widget.NewMultiLineEntry()
-	excludeTables.SetPlaceHolder("多个数据表以回车换行")
+	excludeTables.SetPlaceHolder(configs.Text("carriage return"))
 	excludeTables.SetText(strings.Join(options.ExcludeTables, "\n"))
-	tryComplete := widget.NewRadio([]string{"是", "否"}, func(s string) {
+	tryComplete := widget.NewRadio([]string{configs.Text("yes"), configs.Text("no")}, func(s string) {
 
 	})
 	tryComplete.Horizontal = true
 	if options.TryComplete {
-		tryComplete.SetSelected("是")
+		tryComplete.SetSelected(configs.Text("yes"))
 	} else {
-		tryComplete.SetSelected("否")
+		tryComplete.SetSelected(configs.Text("no"))
 	}
 	return &widget.Form{
 		OnCancel: func() {
@@ -78,7 +78,7 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 		},
 		OnSubmit: func() {
 			options.TargetDir = targetDir.Text
-			options.AutoSave = autoSave.Selected == "是"
+			options.AutoSave = autoSave.Selected == configs.Text("yes")
 			options.Tags = []string{}
 			if gorm.Checked {
 				options.Tags = append(options.Tags, "gorm")
@@ -92,28 +92,28 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			if jsonT.Checked {
 				options.Tags = append(options.Tags, "json")
 			}
-			options.JsonOmitempty = jsonType.Selected == "生成并包含 omitempty"
+			options.JsonOmitempty = jsonType.Selected == configs.Text("build and include omitempty")
 			options.ExcludeTables = strings.Split(excludeTables.Text, "\n")
-			options.TryComplete = tryComplete.Selected == "是"
+			options.TryComplete = tryComplete.Selected == configs.Text("yes")
 
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
 				configs.Json = data
-				dialog.ShowInformation("成功", "保存成功", win)
+				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)
 			}
 		},
 		Items: []*widget.FormItem{
-			{Text: "输出文件夹", Widget: targetDir},
-			{Text: "自动存文件", Widget: autoSave},
-			{Text: "标签选择", Widget: gorm},
+			{Text: configs.Text("auto save files"), Widget: autoSave},
+			{Text: configs.Text("output folder"), Widget: targetDir},
+			{Text: configs.Text("tags"), Widget: gorm},
 			//{Text: "", Widget: beegoOrm},
 			{Text: "", Widget: xorm},
 			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
-			{Text: "排除表", Widget: excludeTables},
-			{Text: "始终执行", Widget: tryComplete},
+			{Text: configs.Text("exclusion table"), Widget: excludeTables},
+			{Text: configs.Text("always execute"), Widget: tryComplete},
 		},
 	}
 }

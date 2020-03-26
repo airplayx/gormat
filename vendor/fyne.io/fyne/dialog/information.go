@@ -9,7 +9,7 @@ import (
 func createTextDialog(title, message string, icon fyne.Resource, parent fyne.Window) Dialog {
 	d := newDialog(title, message, icon, nil, parent)
 
-	d.dismiss = &widget.Button{Text: "确定",
+	d.dismiss = &widget.Button{Text: "OK",
 		OnTapped: func() {
 			d.response <- false
 		},
@@ -35,5 +35,5 @@ func ShowInformation(title, message string, parent fyne.Window) {
 // ShowError shows a dialog over the specified window for an application
 // error. The title and message are extracted from the provided error.
 func ShowError(err error, parent fyne.Window) {
-	createTextDialog("错误", err.Error(), theme.WarningIcon(), parent).Show()
+	createTextDialog("Error", err.Error(), theme.WarningIcon(), parent).Show()
 }

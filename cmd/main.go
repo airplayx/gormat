@@ -15,7 +15,9 @@ func main() {
 	jsonparser.EachKey(configs.Json,
 		func(i int, bytes []byte, valueType jsonparser.ValueType, e error) {
 			font, _ := jsonparser.GetString(bytes, "font")
-			_ = os.Setenv("FYNE_FONT", font)
+			if font != "" {
+				_ = os.Setenv("FYNE_FONT", font)
+			}
 			theme, _ := jsonparser.GetString(bytes, "theme")
 			_ = os.Setenv("FYNE_THEME", theme)
 			scale, _ := jsonparser.GetString(bytes, "scale")
@@ -23,7 +25,7 @@ func main() {
 		}, []string{"const"})
 	main := app.NewWithID("Gopher")
 	main.SetIcon(icon.Ico)
-	window := main.NewWindow("Gormat - Tool For Gopher")
+	window := main.NewWindow("Gormat")
 	window.CenterOnScreen()
 	window.Resize(fyne.Size{Width: 1200, Height: 720})
 	window.SetContent(_app.Container(main, window))
@@ -44,4 +46,5 @@ vendor/fyne.io/fyne/dialog/information.go:38
 vendor/fyne.io/fyne/shortcut.go:43
 vendor/fyne.io/fyne/widget/entry.go:526
 vendor/fyne.io/fyne/widget/tabcontainer.go:390
+vendor/fyne.io/fyne/dialog/confirm.go:28
 */
