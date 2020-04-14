@@ -165,6 +165,9 @@ func (m *Model) print(fu func(map[string]interface{}), templData string) {
 	var ma map[string]interface{}
 	switch v := m.Data.(type) {
 	case []interface{}:
+		if len(v) == 0 {
+			return
+		}
 		ma = v[0].(map[string]interface{})
 		printTempl(m.Writer, templData, m.Name, true)
 		//fmt.Fprintf(m.Writer, array, m.Name)

@@ -18,19 +18,13 @@ func Screen() *fyne.Container {
 	result := widget.NewMultiLineEntry()
 	data := widget.NewMultiLineEntry()
 	data.OnChanged = func(s string) {
-		if data.Text == "" {
-			result.SetText(data.Text)
+		if s == "" {
+			result.SetText(s)
 			return
 		}
-		f, err := Json2struct.ParseJson([]byte(data.Text))
+		f, err := Json2struct.ParseJson([]byte(s))
 		if err != nil {
 			result.SetText(err.Error())
-			return
-		}
-		switch f.(type) {
-		case map[string]interface{}:
-		default:
-			result.SetText("bad data")
 			return
 		}
 		bytes, _ := Json2struct.PrintGo(f, "YourStruct")
