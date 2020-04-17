@@ -1,4 +1,6 @@
-module "github.com/xormplus/builder"
+module github.com/xormplus/builder
+
+go 1.14
 
 require (
 	github.com/go-xorm/sqlfiddle v0.0.0-20180821085327-62ce714f951a

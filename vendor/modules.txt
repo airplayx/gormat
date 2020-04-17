@@ -1,4 +1,4 @@
-# fyne.io/fyne v1.2.3
+# fyne.io/fyne v1.2.4
 fyne.io/fyne
 fyne.io/fyne/app
 fyne.io/fyne/canvas
@@ -28,13 +28,15 @@ github.com/CloudyKit/jet
 github.com/agrison/go-tablib
 # github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4
 github.com/agrison/mxj
+# github.com/bashtian/jsonutils v0.0.0-20170422180242-5bf643ef4d9b
+github.com/bashtian/jsonutils
 # github.com/bndr/gotabulate v1.1.2
 github.com/bndr/gotabulate
 # github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 github.com/buger/jsonparser
 # github.com/chenhg5/collection v0.0.0-20191118032303-cb21bccce4c3
 github.com/chenhg5/collection
-# github.com/denisenkom/go-mssqldb v0.0.0-20191128021309-1d7a30a10f73
+# github.com/denisenkom/go-mssqldb v0.0.0-20200206145737-bbfc9a55622e
 github.com/denisenkom/go-mssqldb
 github.com/denisenkom/go-mssqldb/internal/cp
 github.com/denisenkom/go-mssqldb/internal/decimal
@@ -47,12 +49,24 @@ github.com/fatih/camelcase
 github.com/fatih/structs
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
+# github.com/fyne-io/mobile v0.0.1
+github.com/fyne-io/mobile/app
+github.com/fyne-io/mobile/app/internal/callfn
+github.com/fyne-io/mobile/event/key
+github.com/fyne-io/mobile/event/lifecycle
+github.com/fyne-io/mobile/event/paint
+github.com/fyne-io/mobile/event/size
+github.com/fyne-io/mobile/event/touch
+github.com/fyne-io/mobile/exp/f32
+github.com/fyne-io/mobile/geom
+github.com/fyne-io/mobile/gl
+github.com/fyne-io/mobile/internal/mobileinit
 # github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7
 github.com/go-gl/gl/v3.1/gles2
 github.com/go-gl/gl/v3.2-core/gl
 # github.com/go-gl/glfw v0.0.0-20181213070059-819e8ce5125f
 github.com/go-gl/glfw/v3.2/glfw
-# github.com/go-sql-driver/mysql v1.4.1
+# github.com/go-sql-driver/mysql v1.5.0
 github.com/go-sql-driver/mysql
 # github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff
 github.com/goki/freetype
@@ -66,9 +80,9 @@ github.com/lib/pq/oid
 github.com/lib/pq/scram
 # github.com/liudanking/gorm2sql v0.0.0-20180430122841-1fe6dd257bc8
 github.com/liudanking/gorm2sql/program
-# github.com/liudanking/goutil v0.0.0-20190930035630-6830c8a1be22
+# github.com/liudanking/goutil v0.0.0-20200127132615-2ec32bb80620
 github.com/liudanking/goutil/logutil
-# github.com/mattn/go-sqlite3 v2.0.2+incompatible
+# github.com/mattn/go-sqlite3 v2.0.3+incompatible
 github.com/mattn/go-sqlite3
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
@@ -78,56 +92,32 @@ github.com/nfnt/resize
 github.com/pinzolo/casee
 # github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24
 github.com/shopspring/decimal
-# github.com/srwiley/oksvg v0.0.0-20190829233741-58e08c8fe40e
+# github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564
 github.com/srwiley/oksvg
 # github.com/srwiley/rasterx v0.0.0-20181219215540-696f7edb7a7e
 github.com/srwiley/rasterx
 # github.com/tealeg/xlsx v1.0.5
 github.com/tealeg/xlsx
-# github.com/xormplus/builder v0.0.0-20190724032102-0ee351fedce9
+# github.com/xormplus/builder v0.0.0-20200306092541-e066fb7511c8
 github.com/xormplus/builder
-# github.com/xormplus/core v0.0.0-20190724072625-00f5a85ad6e0
+# github.com/xormplus/core v0.0.0-20200308074340-f3bce19d5f31
 github.com/xormplus/core
-# github.com/xormplus/xorm v0.0.0-20190926190243-42377f593eb1
+# github.com/xormplus/xorm v0.0.0-20200312060401-935be4f0f832
 github.com/xormplus/xorm
 # golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 golang.org/x/crypto/md4
-# golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8
-golang.org/x/exp/shiny/driver/gldriver
-golang.org/x/exp/shiny/driver/internal/drawer
-golang.org/x/exp/shiny/driver/internal/errscreen
-golang.org/x/exp/shiny/driver/internal/event
-golang.org/x/exp/shiny/driver/internal/lifecycler
-golang.org/x/exp/shiny/driver/internal/win32
-golang.org/x/exp/shiny/driver/internal/x11key
-golang.org/x/exp/shiny/screen
 # golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 golang.org/x/image/colornames
 golang.org/x/image/font
-golang.org/x/image/math/f64
 golang.org/x/image/math/fixed
 golang.org/x/image/vector
-# golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028
-golang.org/x/mobile/app
-golang.org/x/mobile/app/internal/callfn
-golang.org/x/mobile/event/key
-golang.org/x/mobile/event/lifecycle
-golang.org/x/mobile/event/mouse
-golang.org/x/mobile/event/paint
-golang.org/x/mobile/event/size
-golang.org/x/mobile/event/touch
-golang.org/x/mobile/exp/f32
-golang.org/x/mobile/geom
-golang.org/x/mobile/gl
-golang.org/x/mobile/internal/mobileinit
-# golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
+# golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
 # golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb
 golang.org/x/sys/unix
-golang.org/x/sys/windows
-# golang.org/x/text v0.3.2
+# golang.org/x/text v0.3.0
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
@@ -138,21 +128,17 @@ golang.org/x/text/encoding/korean
 golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/encoding/traditionalchinese
 golang.org/x/text/encoding/unicode
-golang.org/x/text/internal/language
-golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
 golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
-# golang.org/x/tools v0.0.0-20200119215504-eb0d8dd85bcc
+# golang.org/x/tools v0.0.0-20200313205530-4303120df7d8
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/buildutil
 golang.org/x/tools/go/internal/cgo
 golang.org/x/tools/go/loader
-# google.golang.org/appengine v1.6.5
-google.golang.org/appengine/cloudsql
 # gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4
 gopkg.in/flosch/pongo2.v3
-# gopkg.in/yaml.v2 v2.2.7
+# gopkg.in/yaml.v2 v2.2.8
 gopkg.in/yaml.v2

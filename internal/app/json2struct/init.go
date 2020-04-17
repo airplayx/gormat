@@ -17,6 +17,10 @@ import (
 func Screen() *fyne.Container {
 	result := widget.NewMultiLineEntry()
 	data := widget.NewMultiLineEntry()
+	data.SetPlaceHolder(`{"a":"b"}`)
+	result.SetPlaceHolder(`type YourStruct struct {
+    A string ` + "`" + `json:"a"` + "`" + ` // b
+}`)
 	data.OnChanged = func(s string) {
 		if s == "" {
 			result.SetText(s)
@@ -27,13 +31,14 @@ func Screen() *fyne.Container {
 			result.SetText(err.Error())
 			return
 		}
-		bytes, _ := Json2struct.PrintGo(f, "YourStruct")
+		bytes, err := Json2struct.PrintGo(f, "YourStruct")
+		if err != nil {
+			result.SetText(err.Error())
+			return
+		}
 		result.SetText(strings.ReplaceAll(string(bytes), "\t", "    "))
 	}
-	data.SetPlaceHolder(`{"a":"b"}`)
-	result.SetPlaceHolder(`type YourStruct struct {
-    A string ` + "`" + `json:"a"` + "`" + ` // b
-}`)
+
 	return fyne.NewContainerWithLayout(
 		layout.NewGridLayoutWithRows(1),
 		widget.NewScrollContainer(data),

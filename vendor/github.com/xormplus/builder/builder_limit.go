@@ -34,7 +34,7 @@ func (b *Builder) limitWriteTo(w Writer) error {
 			b.selects = append(selects, "ROWNUM RN")
 
 			var wb *Builder
-			if b.optype == unionType {
+			if b.optype == setOpType {
 				wb = Dialect(b.dialect).Select("at.*", "ROWNUM RN").
 					From(b, "at")
 			} else {
@@ -55,7 +55,7 @@ func (b *Builder) limitWriteTo(w Writer) error {
 			return final.WriteTo(ow)
 		case SQLITE, MYSQL, POSTGRES:
 			// if type UNION, we need to write previous content back to current writer
-			if b.optype == unionType {
+			if b.optype == setOpType {
 				if err := b.WriteTo(ow); err != nil {
 					return err
 				}
@@ -77,7 +77,7 @@ func (b *Builder) limitWriteTo(w Writer) error {
 				b.selects[1:]...), "ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS RN")
 
 			var wb *Builder
-			if b.optype == unionType {
+			if b.optype == setOpType {
 				wb = Dialect(b.dialect).Select("*", "ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS RN").
 					From(b, "at")
 			} else {

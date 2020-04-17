@@ -19,7 +19,7 @@ import (
 	"runtime"
 )
 
-func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
+func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(icon.Insert, func() {
 			var dbIndex []int
@@ -40,12 +40,13 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 			w.CenterOnScreen()
 			w.Show()
 		}),
-		widget.NewToolbarAction(icon.Option, func() {
+		widget.NewToolbarAction(icon.Setting, func() {
 			w := fyne.CurrentApp().NewWindow(configs.Text("rules"))
 			setting := widget.NewTabContainer(
 				widget.NewTabItem(configs.Text("base"), sql2struct.Option(w, options)),
 				widget.NewTabItem(configs.Text("mapping"), sql2struct.Reflect(w, options)),
 				widget.NewTabItem(configs.Text("special"), sql2struct.Special(w, options)),
+				widget.NewTabItem(configs.Text("others"), SettingScreen(app, w)),
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
@@ -174,23 +175,25 @@ func ToolBar(win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQ
 									if len(sourceMap[k].Db) == 0 {
 										options.SourceMap = append(sourceMap[:k], sourceMap[k+1:]...)
 									}
-									if dbBox.CurrentTabIndex() >= 0 && dbBox.CurrentTabIndex() < len(dbBox.Items)-1 {
+									if dbBox.CurrentTabIndex() >= 0 && dbBox.CurrentTabIndex() < len(dbBox.Items)-1 { //delete the 0~n db
 										dbBox.RemoveIndex(dbBox.CurrentTabIndex())
 										dbBox.SelectTabIndex(dbBox.CurrentTabIndex())
 										goto loop
-									} else if dbBox.CurrentTabIndex() > 0 && dbBox.CurrentTabIndex() == len(dbBox.Items)-1 {
+									} else if dbBox.CurrentTabIndex() > 0 && dbBox.CurrentTabIndex() == len(dbBox.Items)-1 { //delete the last db
 										dbBox.SelectTabIndex(dbBox.CurrentTabIndex() - 1)
 										dbBox.RemoveIndex(dbBox.CurrentTabIndex() + 1)
 										goto loop
-									} else if dbBox.CurrentTabIndex() == 0 && len(dbBox.Items) == 1 {
+									} else if dbBox.CurrentTabIndex() == 0 && len(dbBox.Items) == 1 { //delete only one db
 										ipBox.RemoveIndex(ipBox.CurrentTabIndex())
-										if ipBox.CurrentTabIndex()-1 < 0 {
-											if len(ipBox.Items) == 0 {
-												ipBox.Hide()
+										if len(ipBox.Items) == 0 {
+											ipBox.Hide()
+										} else {
+											if ipBox.CurrentTabIndex() >= len(ipBox.Items) {
+												ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
+											} else {
+												ipBox.SelectTabIndex(ipBox.CurrentTabIndex())
 											}
-											goto loop
 										}
-										ipBox.SelectTabIndex(ipBox.CurrentTabIndex() - 1)
 										goto loop
 									}
 								}

@@ -35,6 +35,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 		for _, t := range tbs {
 			tables.Append(widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
+		tables.SelectTabIndex(0)
 		go func(dbConf *Sql2struct.SourceMap) {
 			for {
 				time.Sleep(time.Microsecond * 50)

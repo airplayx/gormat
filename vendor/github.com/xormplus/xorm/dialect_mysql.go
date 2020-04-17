@@ -345,9 +345,9 @@ func (db *mysql) GetColumns(tableName string) ([]string, map[string]*core.Column
 
 		if colDefault != nil {
 			col.Default = *colDefault
-			if col.Default == "" {
-				col.DefaultIsEmpty = true
-			}
+			col.DefaultIsEmpty = false
+		} else {
+			col.DefaultIsEmpty = true
 		}
 
 		cts := strings.Split(colType, "(")
@@ -411,13 +411,11 @@ func (db *mysql) GetColumns(tableName string) ([]string, map[string]*core.Column
 			col.IsAutoIncrement = true
 		}
 
-		if col.SQLType.IsText() || col.SQLType.IsTime() {
-			if col.Default != "" {
+		if !col.DefaultIsEmpty {
+			if col.SQLType.IsText() {
 				col.Default = "'" + col.Default + "'"
-			} else {
-				if col.DefaultIsEmpty {
-					col.Default = "''"
-				}
+			} else if col.SQLType.IsTime() && col.Default != "CURRENT_TIMESTAMP" {
+				col.Default = "'" + col.Default + "'"
 			}
 		}
 		cols[col.Name] = col
@@ -521,11 +519,12 @@ func (db *mysql) CreateIndexSql(tableName string, index *core.Index) string {
 }
 
 func (db *mysql) CreateTableSql(table *core.Table, tableName, storeEngine, charset string) string {
-	var sql string
-	sql = "CREATE TABLE IF NOT EXISTS "
+	var sql = "CREATE TABLE IF NOT EXISTS "
 	if tableName == "" {
 		tableName = table.Name
 	}
+
+	quotes := db.Quote("")
 
 	sql += db.Quote(tableName)
 	sql += " ("
@@ -549,7 +548,7 @@ func (db *mysql) CreateTableSql(table *core.Table, tableName, storeEngine, chars
 
 		if len(pkList) > 1 {
 			sql += "PRIMARY KEY ( "
-			sql += db.Quote(strings.Join(pkList, db.Quote(",")))
+			sql += db.Quote(strings.Join(pkList, fmt.Sprintf("%c,%c", quotes[1], quotes[0])))
 			sql += " ), "
 		}
 

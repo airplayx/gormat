@@ -94,11 +94,22 @@ func (engine *Engine) BufferSize(size int) *Session {
 }
 
 // CondDeleted returns the conditions whether a record is soft deleted.
-func (engine *Engine) CondDeleted(colName string) builder.Cond {
-	if engine.dialect.DBType() == core.MSSQL {
-		return builder.IsNull{colName}
+func (engine *Engine) CondDeleted(col *core.Column) builder.Cond {
+	var cond = builder.NewCond()
+	if col.SQLType.IsNumeric() {
+		cond = builder.Eq{col.Name: 0}
+	} else {
+		// FIXME: mssql: The conversion of a nvarchar data type to a datetime data type resulted in an out-of-range value.
+		if engine.dialect.DBType() != core.MSSQL {
+			cond = builder.Eq{col.Name: zeroTime1}
+		}
 	}
-	return builder.IsNull{colName}.Or(builder.Eq{colName: zeroTime1})
+
+	if col.Nullable {
+		cond = cond.Or(builder.IsNull{col.Name})
+	}
+
+	return cond
 }
 
 // ShowSQL show SQL statement or not on logger if log level is great than INFO
@@ -193,14 +204,14 @@ func (engine *Engine) Quote(value string) string {
 		return value
 	}
 
-	buf := builder.StringBuilder{}
+	buf := strings.Builder{}
 	engine.QuoteTo(&buf, value)
 
 	return buf.String()
 }
 
 // QuoteTo quotes string and writes into the buffer
-func (engine *Engine) QuoteTo(buf *builder.StringBuilder, value string) {
+func (engine *Engine) QuoteTo(buf *strings.Builder, value string) {
 	if buf == nil {
 		return
 	}
@@ -210,25 +221,46 @@ func (engine *Engine) QuoteTo(buf *builder.StringBuilder, value string) {
 		return
 	}
 
-	quotePair := engine.dialect.Quote("")
+	quoteTo(buf, engine.dialect.Quote(""), value)
+}
 
-	if value[0] == '`' || len(quotePair) < 2 || value[0] == quotePair[0] { // no quote
+func quoteTo(buf *strings.Builder, quotePair string, value string) {
+	if len(quotePair) < 2 { // no quote
 		_, _ = buf.WriteString(value)
 		return
-	} else {
-		prefix, suffix := quotePair[0], quotePair[1]
+	}
 
-		_ = buf.WriteByte(prefix)
-		for i := 0; i < len(value); i++ {
-			if value[i] == '.' {
-				_ = buf.WriteByte(suffix)
-				_ = buf.WriteByte('.')
-				_ = buf.WriteByte(prefix)
+	prefix, suffix := quotePair[0], quotePair[1]
+
+	i := 0
+	for i < len(value) {
+		// start of a token; might be already quoted
+		if value[i] == '.' {
+			_ = buf.WriteByte('.')
+			i++
+		} else if value[i] == prefix || value[i] == '`' {
+			// Has quotes; skip/normalize `name` to prefix+name+sufix
+			var ch byte
+			if value[i] == prefix {
+				ch = suffix
 			} else {
+				ch = '`'
+			}
+			i++
+			_ = buf.WriteByte(prefix)
+			for ; i < len(value) && value[i] != ch; i++ {
 				_ = buf.WriteByte(value[i])
 			}
+			_ = buf.WriteByte(suffix)
+			i++
+		} else {
+			// Requires quotes
+			_ = buf.WriteByte(prefix)
+			for ; i < len(value) && value[i] != '.'; i++ {
+				_ = buf.WriteByte(value[i])
+			}
+			_ = buf.WriteByte(suffix)
 		}
-		_ = buf.WriteByte(suffix)
 	}
 }
 
@@ -333,7 +365,7 @@ func (engine *Engine) Ping() error {
 	return session.Ping()
 }
 
-// logging sql
+// logSQL save sql
 func (engine *Engine) logSQL(session *Session, sqlStr string, sqlArgs ...interface{}) {
 	if engine.showSQL && !engine.showExecTime {
 		if len(sqlArgs) > 0 {
@@ -386,6 +418,32 @@ func (engine *Engine) NoAutoCondition(no ...bool) *Session {
 	return session.NoAutoCondition(no...)
 }
 
+func (engine *Engine) loadTableInfo(table *core.Table) error {
+	colSeq, cols, err := engine.dialect.GetColumns(table.Name)
+	if err != nil {
+		return err
+	}
+	for _, name := range colSeq {
+		table.AddColumn(cols[name])
+	}
+	indexes, err := engine.dialect.GetIndexes(table.Name)
+	if err != nil {
+		return err
+	}
+	table.Indexes = indexes
+
+	for _, index := range indexes {
+		for _, name := range index.Cols {
+			if col := table.GetColumn(name); col != nil {
+				col.Indexes[index.Name] = index.Type
+			} else {
+				return fmt.Errorf("Unknown col %s in index %v of table %v, columns %v", name, index.Name, table.Name, table.ColumnsSeq())
+			}
+		}
+	}
+	return nil
+}
+
 // DBMetas Retrieve all tables, columns, indexes' informations from database.
 func (engine *Engine) DBMetas() ([]*core.Table, error) {
 	tables, err := engine.dialect.GetTables()
@@ -394,27 +452,8 @@ func (engine *Engine) DBMetas() ([]*core.Table, error) {
 	}
 
 	for _, table := range tables {
-		colSeq, cols, err := engine.dialect.GetColumns(table.Name)
-		if err != nil {
+		if err = engine.loadTableInfo(table); err != nil {
 			return nil, err
-		}
-		for _, name := range colSeq {
-			table.AddColumn(cols[name])
-		}
-		indexes, err := engine.dialect.GetIndexes(table.Name)
-		if err != nil {
-			return nil, err
-		}
-		table.Indexes = indexes
-
-		for _, index := range indexes {
-			for _, name := range index.Cols {
-				if col := table.GetColumn(name); col != nil {
-					col.Indexes[index.Name] = index.Type
-				} else {
-					return nil, fmt.Errorf("Unknown col %s in index %v of table %v, columns %v", name, index.Name, table.Name, table.ColumnsSeq())
-				}
-			}
 		}
 	}
 	return tables, nil
@@ -738,7 +777,7 @@ func (engine *Engine) Decr(column string, args ...interface{}) *Session {
 }
 
 // SetExpr provides a update string like "column = {expression}"
-func (engine *Engine) SetExpr(column string, expression string) *Session {
+func (engine *Engine) SetExpr(column string, expression interface{}) *Session {
 	session := engine.NewSession()
 	session.isAutoClose = true
 	return session.SetExpr(column, expression)
@@ -902,7 +941,7 @@ func (engine *Engine) mapType(v reflect.Value) (*core.Table, error) {
 	t := v.Type()
 	table := core.NewEmptyTable()
 	table.Type = t
-	table.Name = engine.tbNameForMap(v)
+	table.Name = getTableName(engine.TableMapper, v)
 
 	var idFieldColName string
 	var hasCacheTag, hasNoCacheTag bool
@@ -916,8 +955,15 @@ func (engine *Engine) mapType(v reflect.Value) (*core.Table, error) {
 		fieldType := fieldValue.Type()
 
 		if ormTagStr != "" {
-			col = &core.Column{FieldName: t.Field(i).Name, Nullable: true, IsPrimaryKey: false,
-				IsAutoIncrement: false, MapType: core.TWOSIDES, Indexes: make(map[string]int)}
+			col = &core.Column{
+				FieldName:       t.Field(i).Name,
+				Nullable:        true,
+				IsPrimaryKey:    false,
+				IsAutoIncrement: false,
+				MapType:         core.TWOSIDES,
+				Indexes:         make(map[string]int),
+				DefaultIsEmpty:  true,
+			}
 			tags := splitTag(ormTagStr)
 
 			if len(tags) > 0 {
@@ -1610,7 +1656,7 @@ func (engine *Engine) formatTime(sqlTypeName string, t time.Time) (v interface{}
 		v = s[11:19]
 	case core.Date:
 		v = t.Format("2006-01-02")
-	case core.DateTime, core.TimeStamp:
+	case core.DateTime, core.TimeStamp, core.Varchar: // !DarthPestilane! format time when sqlTypeName is core.Varchar.
 		v = t.Format("2006-01-02 15:04:05.999")
 		if engine.dialect.DBType() == "sqlite3" {
 			v = t.UTC().Format("2006-01-02 15:04:05.999")

@@ -223,21 +223,31 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 	}
 
 	// for update action to like "column = column + ?"
-	incColumns := session.statement.getInc()
-	for _, v := range incColumns {
-		colNames = append(colNames, session.engine.Quote(v.colName)+" = "+session.engine.Quote(v.colName)+" + ?")
-		args = append(args, v.arg)
+	incColumns := session.statement.incrColumns
+	for i, colName := range incColumns.colNames {
+		colNames = append(colNames, session.engine.Quote(colName)+" = "+session.engine.Quote(colName)+" + ?")
+		args = append(args, incColumns.args[i])
 	}
 	// for update action to like "column = column - ?"
-	decColumns := session.statement.getDec()
-	for _, v := range decColumns {
-		colNames = append(colNames, session.engine.Quote(v.colName)+" = "+session.engine.Quote(v.colName)+" - ?")
-		args = append(args, v.arg)
+	decColumns := session.statement.decrColumns
+	for i, colName := range decColumns.colNames {
+		colNames = append(colNames, session.engine.Quote(colName)+" = "+session.engine.Quote(colName)+" - ?")
+		args = append(args, decColumns.args[i])
 	}
 	// for update action to like "column = expression"
-	exprColumns := session.statement.getExpr()
-	for _, v := range exprColumns {
-		colNames = append(colNames, session.engine.Quote(v.colName)+" = "+v.expr)
+	exprColumns := session.statement.exprColumns
+	for i, colName := range exprColumns.colNames {
+		switch tp := exprColumns.args[i].(type) {
+		case string:
+			colNames = append(colNames, session.engine.Quote(colName)+" = "+tp)
+		case *builder.Builder:
+			subQuery, subArgs, err := builder.ToSQL(tp)
+			if err != nil {
+				return 0, err
+			}
+			colNames = append(colNames, session.engine.Quote(colName)+" = ("+subQuery+")")
+			args = append(args, subArgs...)
+		}
 	}
 
 	if err = session.statement.processIDParam(); err != nil {
@@ -271,7 +281,7 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 
 		if !condBeanIsStruct && table != nil {
 			if col := table.DeletedColumn(); col != nil && !session.statement.unscoped { // tag "deleted" is enabled
-				autoCond1 := session.engine.CondDeleted(session.engine.Quote(col.Name))
+				autoCond1 := session.engine.CondDeleted(col)
 
 				if autoCond == nil {
 					autoCond = autoCond1
@@ -284,21 +294,26 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 
 	st := &session.statement
 
-	var sqlStr string
-	var condArgs []interface{}
-	var condSQL string
-	cond := session.statement.cond.And(autoCond)
+	var (
+		sqlStr   string
+		condArgs []interface{}
+		condSQL  string
+		cond     = session.statement.cond.And(autoCond)
 
-	var doIncVer = (table != nil && table.Version != "" && session.statement.checkVersion)
-	var verValue *reflect.Value
+		doIncVer = isStruct && (table != nil && table.Version != "" && session.statement.checkVersion)
+		verValue *reflect.Value
+	)
+
 	if doIncVer {
 		verValue, err = table.VersionColumn().ValueOf(bean)
 		if err != nil {
 			return 0, err
 		}
 
-		cond = cond.And(builder.Eq{session.engine.Quote(table.Version): verValue.Interface()})
-		colNames = append(colNames, session.engine.Quote(table.Version)+" = "+session.engine.Quote(table.Version)+" + 1")
+		if verValue != nil {
+			cond = cond.And(builder.Eq{session.engine.Quote(table.Version): verValue.Interface()})
+			colNames = append(colNames, session.engine.Quote(table.Version)+" = "+session.engine.Quote(table.Version)+" + 1")
+		}
 	}
 
 	condSQL, condArgs, err = builder.ToSQL(cond)
@@ -317,11 +332,12 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 	var tableName = session.statement.TableName()
 	// TODO: Oracle support needed
 	var top string
-	if st.LimitN > 0 {
+	if st.LimitN != nil {
+		limitValue := *st.LimitN
 		if st.Engine.dialect.DBType() == core.MYSQL {
-			condSQL = condSQL + fmt.Sprintf(" LIMIT %d", st.LimitN)
+			condSQL = condSQL + fmt.Sprintf(" LIMIT %d", limitValue)
 		} else if st.Engine.dialect.DBType() == core.SQLITE {
-			tempCondSQL := condSQL + fmt.Sprintf(" LIMIT %d", st.LimitN)
+			tempCondSQL := condSQL + fmt.Sprintf(" LIMIT %d", limitValue)
 			cond = cond.And(builder.Expr(fmt.Sprintf("rowid IN (SELECT rowid FROM %v %v)",
 				session.engine.Quote(tableName), tempCondSQL), condArgs...))
 			condSQL, condArgs, err = builder.ToSQL(cond)
@@ -332,7 +348,7 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 				condSQL = "WHERE " + condSQL
 			}
 		} else if st.Engine.dialect.DBType() == core.POSTGRES {
-			tempCondSQL := condSQL + fmt.Sprintf(" LIMIT %d", st.LimitN)
+			tempCondSQL := condSQL + fmt.Sprintf(" LIMIT %d", limitValue)
 			cond = cond.And(builder.Expr(fmt.Sprintf("CTID IN (SELECT CTID FROM %v %v)",
 				session.engine.Quote(tableName), tempCondSQL), condArgs...))
 			condSQL, condArgs, err = builder.ToSQL(cond)
@@ -347,7 +363,7 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 			if st.OrderStr != "" && st.Engine.dialect.DBType() == core.MSSQL &&
 				table != nil && len(table.PrimaryKeys) == 1 {
 				cond = builder.Expr(fmt.Sprintf("%s IN (SELECT TOP (%d) %s FROM %v%v)",
-					table.PrimaryKeys[0], st.LimitN, table.PrimaryKeys[0],
+					table.PrimaryKeys[0], limitValue, table.PrimaryKeys[0],
 					session.engine.Quote(tableName), condSQL), condArgs...)
 
 				condSQL, condArgs, err = builder.ToSQL(cond)
@@ -358,7 +374,7 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 					condSQL = "WHERE " + condSQL
 				}
 			} else {
-				top = fmt.Sprintf("TOP (%d) ", st.LimitN)
+				top = fmt.Sprintf("TOP (%d) ", limitValue)
 			}
 		}
 	}
@@ -367,10 +383,23 @@ func (session *Session) Update(bean interface{}, condiBean ...interface{}) (int6
 		return 0, errors.New("No content found to be updated")
 	}
 
-	sqlStr = fmt.Sprintf("UPDATE %v%v SET %v %v",
+	var tableAlias = session.engine.Quote(tableName)
+	var fromSQL string
+	if session.statement.TableAlias != "" {
+		switch session.engine.dialect.DBType() {
+		case core.MSSQL:
+			fromSQL = fmt.Sprintf("FROM %s %s ", tableAlias, session.statement.TableAlias)
+			tableAlias = session.statement.TableAlias
+		default:
+			tableAlias = fmt.Sprintf("%s AS %s", tableAlias, session.statement.TableAlias)
+		}
+	}
+
+	sqlStr = fmt.Sprintf("UPDATE %v%v SET %v %v%v",
 		top,
-		session.engine.Quote(tableName),
+		tableAlias,
 		strings.Join(colNames, ", "),
+		fromSQL,
 		condSQL)
 
 	res, err := session.exec(sqlStr, append(args, condArgs...)...)
@@ -468,19 +497,21 @@ func (session *Session) genUpdateColumns(bean interface{}) ([]string, []interfac
 			continue
 		}
 
-		if len(session.statement.columnMap) > 0 {
-			if !session.statement.columnMap.contain(col.Name) {
-				continue
-			} else if _, ok := session.statement.incrColumns[col.Name]; ok {
-				continue
-			} else if _, ok := session.statement.decrColumns[col.Name]; ok {
-				continue
-			}
+		// if only update specify columns
+		if len(session.statement.columnMap) > 0 && !session.statement.columnMap.contain(col.Name) {
+			continue
+		}
+		if session.statement.incrColumns.isColExist(col.Name) {
+			continue
+		} else if session.statement.decrColumns.isColExist(col.Name) {
+			continue
+		} else if session.statement.exprColumns.isColExist(col.Name) {
+			continue
 		}
 
 		// !evalphobia! set fieldValue as nil when column is nullable and zero-value
 		if _, ok := getFlagForColumn(session.statement.nullableMap, col); ok {
-			if col.Nullable && isZero(fieldValue.Interface()) {
+			if col.Nullable && isZeroValue(fieldValue) {
 				var nilValue *int
 				fieldValue = reflect.ValueOf(nilValue)
 			}

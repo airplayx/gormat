@@ -46,7 +46,6 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 		if data, err := jsonparser.Set(configs.Json, []byte("\""+scale+"\""), "const", "scale"); err == nil {
 			configs.Json = data
 		}
-		dialog.ShowInformation(configs.Text("info"), configs.Text("effective after restart"), win)
 	})
 	switch scale, _ := jsonparser.GetString(configs.Json, "const", "scale"); scale {
 	case "1.0":
@@ -75,29 +74,26 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 	}
 	language.Horizontal = true
 
-	return fyne.NewContainerWithLayout(
-		layout.NewGridLayoutWithColumns(1),
-		widget.NewTabContainer(
-			widget.NewTabItem(configs.Text("base"), widget.NewVBox(
-				//widget.NewGroup(configs.Text("theme")",
-				//	fyne.NewContainerWithLayout(
-				//		layout.NewHBoxLayout(),
-				//		theMe,
-				//	),
-				//),
-				widget.NewGroup(configs.Text("screen"),
-					fyne.NewContainerWithLayout(
-						layout.NewHBoxLayout(),
-						dpi,
-					),
-				),
-				widget.NewGroup(configs.Text("language"),
-					fyne.NewContainerWithLayout(
-						layout.NewHBoxLayout(),
-						language,
-					),
-				),
-			)),
-		),
-	)
+	return &widget.Form{
+		OnCancel: func() {
+			win.Close()
+		},
+		OnSubmit: func() {
+			dialog.ShowInformation(configs.Text("info"), configs.Text("effective after restart"), win)
+		},
+		Items: []*widget.FormItem{
+			{Text: configs.Text("screen"), Widget: fyne.NewContainerWithLayout(
+				layout.NewHBoxLayout(),
+				dpi,
+			)},
+			{Text: configs.Text("language"), Widget: fyne.NewContainerWithLayout(
+				layout.NewHBoxLayout(),
+				language,
+			)},
+			//{Text: configs.Text("theme"), Widget: fyne.NewContainerWithLayout(
+			//	layout.NewHBoxLayout(),
+			//	theMe,
+			//)},
+		},
+	}
 }

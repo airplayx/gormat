@@ -20,7 +20,7 @@ type Statement struct {
 	RefTable        *core.Table
 	Engine          *Engine
 	Start           int
-	LimitN          int
+	LimitN          *int
 	idParam         *core.PK
 	OrderStr        string
 	JoinStr         string
@@ -52,9 +52,9 @@ type Statement struct {
 	omitColumnMap   columnMap
 	mustColumnMap   map[string]bool
 	nullableMap     map[string]bool
-	incrColumns     map[string]incrParam
-	decrColumns     map[string]decrParam
-	exprColumns     map[string]exprParam
+	incrColumns     exprParams
+	decrColumns     exprParams
+	exprColumns     exprParams
 	cond            builder.Cond
 	bufferSize      int
 	context         ContextCache
@@ -65,7 +65,7 @@ type Statement struct {
 func (statement *Statement) Init() {
 	statement.RefTable = nil
 	statement.Start = 0
-	statement.LimitN = 0
+	statement.LimitN = nil
 	statement.OrderStr = ""
 	statement.UseCascade = true
 	statement.JoinStr = ""
@@ -94,9 +94,9 @@ func (statement *Statement) Init() {
 	statement.nullableMap = make(map[string]bool)
 	statement.checkVersion = true
 	statement.unscoped = false
-	statement.incrColumns = make(map[string]incrParam)
-	statement.decrColumns = make(map[string]decrParam)
-	statement.exprColumns = make(map[string]exprParam)
+	statement.incrColumns = exprParams{}
+	statement.decrColumns = exprParams{}
+	statement.exprColumns = exprParams{}
 	statement.cond = builder.NewCond()
 	statement.bufferSize = 0
 	statement.context = nil
@@ -163,8 +163,12 @@ func (statement *Statement) And(query interface{}, args ...interface{}) *Stateme
 			statement.cond = statement.cond.And(cond)
 		}
 	case map[string]interface{}:
-		cond := builder.Eq(query.(map[string]interface{}))
-		statement.cond = statement.cond.And(cond)
+		queryMap := query.(map[string]interface{})
+		newMap := make(map[string]interface{})
+		for k, v := range queryMap {
+			newMap[statement.Engine.Quote(k)] = v
+		}
+		statement.cond = statement.cond.And(builder.Eq(newMap))
 	case builder.Cond:
 		cond := query.(builder.Cond)
 		statement.cond = statement.cond.And(cond)
@@ -271,7 +275,7 @@ func (statement *Statement) buildUpdates(bean interface{},
 		if !includeVersion && col.IsVersion {
 			continue
 		}
-		if col.IsCreated {
+		if col.IsCreated && !columnMap.contain(col.Name) {
 			continue
 		}
 		if !includeUpdated && col.IsUpdated {
@@ -291,6 +295,14 @@ func (statement *Statement) buildUpdates(bean interface{},
 		}
 
 		if col.MapType == core.ONLYFROMDB {
+			continue
+		}
+
+		if statement.incrColumns.isColExist(col.Name) {
+			continue
+		} else if statement.decrColumns.isColExist(col.Name) {
+			continue
+		} else if statement.exprColumns.isColExist(col.Name) {
 			continue
 		}
 
@@ -562,46 +574,28 @@ func (statement *Statement) ID(id interface{}) *Statement {
 
 // Incr Generate  "Update ... Set column = column + arg" statement
 func (statement *Statement) Incr(column string, arg ...interface{}) *Statement {
-	k := strings.ToLower(column)
 	if len(arg) > 0 {
-		statement.incrColumns[k] = incrParam{column, arg[0]}
+		statement.incrColumns.addParam(column, arg[0])
 	} else {
-		statement.incrColumns[k] = incrParam{column, 1}
+		statement.incrColumns.addParam(column, 1)
 	}
 	return statement
 }
 
 // Decr Generate  "Update ... Set column = column - arg" statement
 func (statement *Statement) Decr(column string, arg ...interface{}) *Statement {
-	k := strings.ToLower(column)
 	if len(arg) > 0 {
-		statement.decrColumns[k] = decrParam{column, arg[0]}
+		statement.decrColumns.addParam(column, arg[0])
 	} else {
-		statement.decrColumns[k] = decrParam{column, 1}
+		statement.decrColumns.addParam(column, 1)
 	}
 	return statement
 }
 
 // SetExpr Generate  "Update ... Set column = {expression}" statement
-func (statement *Statement) SetExpr(column string, expression string) *Statement {
-	k := strings.ToLower(column)
-	statement.exprColumns[k] = exprParam{column, expression}
+func (statement *Statement) SetExpr(column string, expression interface{}) *Statement {
+	statement.exprColumns.addParam(column, expression)
 	return statement
-}
-
-// Generate  "Update ... Set column = column + arg" statement
-func (statement *Statement) getInc() map[string]incrParam {
-	return statement.incrColumns
-}
-
-// Generate  "Update ... Set column = column - arg" statement
-func (statement *Statement) getDec() map[string]decrParam {
-	return statement.decrColumns
-}
-
-// Generate  "Update ... Set column = {expression}" statement
-func (statement *Statement) getExpr() map[string]exprParam {
-	return statement.exprColumns
 }
 
 func (statement *Statement) col2NewColsWithQuote(columns ...string) []string {
@@ -705,7 +699,9 @@ func (statement *Statement) Top(limit int) *Statement {
 
 // Limit generate LIMIT start, limit statement
 func (statement *Statement) Limit(limit int, start ...int) *Statement {
-	statement.LimitN = limit
+	if limit > 0 {
+		statement.LimitN = &limit
+	}
 	if len(start) > 0 {
 		statement.Start = start[0]
 	}
@@ -723,7 +719,7 @@ func (statement *Statement) OrderBy(order string) *Statement {
 
 // Desc generate `ORDER BY xx DESC`
 func (statement *Statement) Desc(colNames ...string) *Statement {
-	var buf builder.StringBuilder
+	var buf strings.Builder
 	if len(statement.OrderStr) > 0 {
 		fmt.Fprint(&buf, statement.OrderStr, ", ")
 	}
@@ -735,7 +731,7 @@ func (statement *Statement) Desc(colNames ...string) *Statement {
 
 // Asc provide asc order by query condition, the input parameters are columns.
 func (statement *Statement) Asc(colNames ...string) *Statement {
-	var buf builder.StringBuilder
+	var buf strings.Builder
 	if len(statement.OrderStr) > 0 {
 		fmt.Fprint(&buf, statement.OrderStr, ", ")
 	}
@@ -764,7 +760,7 @@ func (statement *Statement) Table(tableNameOrBean interface{}) *Statement {
 
 // Join The joinOP should be one of INNER, LEFT OUTER, CROSS etc - this will be prepended to JOIN
 func (statement *Statement) Join(joinOP string, tablename interface{}, condition string, args ...interface{}) *Statement {
-	var buf builder.StringBuilder
+	var buf strings.Builder
 	if len(statement.JoinStr) > 0 {
 		fmt.Fprintf(&buf, "%v %v JOIN ", statement.JoinStr, joinOP)
 	} else {
@@ -829,7 +825,7 @@ func (statement *Statement) genColumnStr() string {
 		return ""
 	}
 
-	var buf builder.StringBuilder
+	var buf strings.Builder
 	columns := statement.RefTable.Columns()
 
 	for _, col := range columns {
@@ -1103,9 +1099,11 @@ func (statement *Statement) genSelectSQL(columnStr, condSQL string, needLimit, n
 		fromStr = fmt.Sprintf("%v %v", fromStr, statement.JoinStr)
 	}
 
+	pLimitN := statement.LimitN
 	if dialect.DBType() == core.MSSQL {
-		if statement.LimitN > 0 {
-			top = fmt.Sprintf("TOP %d ", statement.LimitN)
+		if pLimitN != nil {
+			LimitNValue := *pLimitN
+			top = fmt.Sprintf("TOP %d ", LimitNValue)
 		}
 		if statement.Start > 0 {
 			var column string
@@ -1144,7 +1142,7 @@ func (statement *Statement) genSelectSQL(columnStr, condSQL string, needLimit, n
 		}
 	}
 
-	var buf builder.StringBuilder
+	var buf strings.Builder
 	fmt.Fprintf(&buf, "SELECT %v%v%v%v%v", distinct, top, columnStr, fromStr, whereStr)
 	if len(mssqlCondi) > 0 {
 		if len(whereStr) > 0 {
@@ -1166,12 +1164,16 @@ func (statement *Statement) genSelectSQL(columnStr, condSQL string, needLimit, n
 	if needLimit {
 		if dialect.DBType() != core.MSSQL && dialect.DBType() != core.ORACLE {
 			if statement.Start > 0 {
-				fmt.Fprintf(&buf, " LIMIT %v OFFSET %v", statement.LimitN, statement.Start)
-			} else if statement.LimitN > 0 {
-				fmt.Fprint(&buf, " LIMIT ", statement.LimitN)
+				if pLimitN != nil {
+					fmt.Fprintf(&buf, " LIMIT %v OFFSET %v", *pLimitN, statement.Start)
+				} else {
+					fmt.Fprintf(&buf, "LIMIT 0 OFFSET %v", statement.Start)
+				}
+			} else if pLimitN != nil {
+				fmt.Fprint(&buf, " LIMIT ", *pLimitN)
 			}
 		} else if dialect.DBType() == core.ORACLE {
-			if statement.Start != 0 || statement.LimitN != 0 {
+			if statement.Start != 0 || pLimitN != nil {
 				oldString := buf.String()
 				buf.Reset()
 				rawColStr := columnStr
@@ -1179,7 +1181,7 @@ func (statement *Statement) genSelectSQL(columnStr, condSQL string, needLimit, n
 					rawColStr = "at.*"
 				}
 				fmt.Fprintf(&buf, "SELECT %v FROM (SELECT %v,ROWNUM RN FROM (%v) at WHERE ROWNUM <= %d) aat WHERE RN > %d",
-					columnStr, rawColStr, oldString, statement.Start+statement.LimitN, statement.Start)
+					columnStr, rawColStr, oldString, statement.Start+*pLimitN, statement.Start)
 			}
 		}
 	}
@@ -1236,8 +1238,9 @@ func (statement *Statement) convertIDSQL(sqlStr string) string {
 		}
 
 		var top string
-		if statement.LimitN > 0 && statement.Engine.dialect.DBType() == core.MSSQL {
-			top = fmt.Sprintf("TOP %d ", statement.LimitN)
+		pLimitN := statement.LimitN
+		if pLimitN != nil && statement.Engine.dialect.DBType() == core.MSSQL {
+			top = fmt.Sprintf("TOP %d ", *pLimitN)
 		}
 
 		newsql := fmt.Sprintf("SELECT %s%s FROM %v", top, colstrs, sqls[1])

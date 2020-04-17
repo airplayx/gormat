@@ -37,14 +37,9 @@ func main() {
 }
 
 /**
-vendor/fyne.io/fyne/widget/tabcontainer.go:526
-vendor/fyne.io/fyne/widget/tabcontainer.go:185
-vendor/fyne.io/fyne/widget/form.go:88
-vendor/fyne.io/fyne/widget/form.go:91
-vendor/fyne.io/fyne/dialog/information.go:12
-vendor/fyne.io/fyne/dialog/information.go:38
-vendor/fyne.io/fyne/shortcut.go:43
-vendor/fyne.io/fyne/widget/entry.go:526
-vendor/fyne.io/fyne/widget/tabcontainer.go:390
+vendor/fyne.io/fyne/widget/tabcontainer.go:547
+vendor/fyne.io/fyne/widget/tabcontainer.go:193
+vendor/fyne.io/fyne/widget/tabcontainer.go:411
+vendor/fyne.io/fyne/widget/form.go:94
 vendor/fyne.io/fyne/dialog/confirm.go:28
 */

@@ -2,8 +2,10 @@ package widget
 
 import (
 	"fyne.io/fyne"
+	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/internal/cache"
 	"fyne.io/fyne/layout"
+	//"fyne.io/fyne/theme"
 )
 
 // FormItem provides the details for a row in a form
@@ -67,6 +69,12 @@ func (f *Form) AppendItem(item *FormItem) {
 func (f *Form) MinSize() fyne.Size {
 	f.ExtendBaseWidget(f)
 	return f.BaseWidget.MinSize()
+}
+
+// Refresh updates the widget state when requested.
+func (f *Form) Refresh() {
+	f.BaseWidget.Refresh()
+	canvas.Refresh(f) // refresh ourselves for BG color - the above updates the content
 }
 
 // CreateRenderer is a private method to Fyne which links this widget to its renderer

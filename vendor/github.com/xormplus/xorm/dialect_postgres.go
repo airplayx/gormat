@@ -901,7 +901,7 @@ func (db *postgres) TableCheckSql(tableName string) (string, []interface{}) {
 }
 
 func (db *postgres) ModifyColumnSql(tableName string, col *core.Column) string {
-	if len(db.Schema) == 0 {
+	if len(db.Schema) == 0 || strings.Contains(tableName, ".") {
 		return fmt.Sprintf("alter table %s ALTER COLUMN %s TYPE %s",
 			tableName, col.Name, db.SqlType(col))
 	}
@@ -928,17 +928,23 @@ func (db *postgres) CreateIndexSql(tableName string, index *core.Index) string {
 
 func (db *postgres) DropIndexSql(tableName string, index *core.Index) string {
 	quote := db.Quote
-	var idxName string
-	if index.IsRegular {
-		idxName = index.XName(tableName)
-	} else {
-		idxName = index.Name
-	}
+	idxName := index.Name
 
+	tableParts := strings.Split(strings.Replace(tableName, `"`, "", -1), ".")
+	tableName = tableParts[len(tableParts)-1]
+
+	if !strings.HasPrefix(idxName, "UQE_") &&
+		!strings.HasPrefix(idxName, "IDX_") {
+		if index.Type == core.UniqueType {
+			idxName = fmt.Sprintf("UQE_%v_%v", tableName, index.Name)
+		} else {
+			idxName = fmt.Sprintf("IDX_%v_%v", tableName, index.Name)
+		}
+	}
 	if db.Uri.Schema != "" {
 		idxName = db.Uri.Schema + "." + idxName
 	}
-	return fmt.Sprintf("DROP INDEX %v ON %s", quote(idxName), quote(tableName))
+	return fmt.Sprintf("DROP INDEX %v", quote(idxName))
 }
 
 func (db *postgres) IsColumnExist(tableName, colName string) (bool, error) {
@@ -963,7 +969,7 @@ func (db *postgres) IsColumnExist(tableName, colName string) (bool, error) {
 
 func (db *postgres) GetColumns(tableName string) ([]string, map[string]*core.Column, error) {
 	args := []interface{}{tableName}
-	s := `SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, numeric_precision, numeric_precision_radix ,
+	s := `SELECT column_name, column_default, is_nullable, data_type, character_maximum_length, 
     CASE WHEN p.contype = 'p' THEN true ELSE false END AS primarykey,
     CASE WHEN p.contype = 'u' THEN true ELSE false END AS uniquekey
 FROM pg_attribute f
@@ -998,14 +1004,14 @@ WHERE c.relkind = 'r'::char AND c.relname = $1%s AND f.attnum > 0 ORDER BY f.att
 		col.Indexes = make(map[string]int)
 
 		var colName, isNullable, dataType string
-		var maxLenStr, colDefault, numPrecision, numRadix *string
+		var maxLenStr, colDefault *string
 		var isPK, isUnique bool
-		err = rows.Scan(&colName, &colDefault, &isNullable, &dataType, &maxLenStr, &numPrecision, &numRadix, &isPK, &isUnique)
+		err = rows.Scan(&colName, &colDefault, &isNullable, &dataType, &maxLenStr, &isPK, &isUnique)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		// fmt.Println(args, colName, isNullable, dataType, maxLenStr, colDefault, numPrecision, numRadix, isPK, isUnique)
+		// fmt.Println(args, colName, isNullable, dataType, maxLenStr, colDefault, isPK, isUnique)
 		var maxLen int
 		if maxLenStr != nil {
 			maxLen, err = strconv.Atoi(*maxLenStr)
@@ -1016,16 +1022,18 @@ WHERE c.relkind = 'r'::char AND c.relname = $1%s AND f.attnum > 0 ORDER BY f.att
 
 		col.Name = strings.Trim(colName, `" `)
 
-		if colDefault != nil || isPK {
-			if isPK {
-				col.IsPrimaryKey = true
-			} else {
-				col.Default = *colDefault
+		if colDefault != nil {
+			col.Default = *colDefault
+			col.DefaultIsEmpty = false
+			if strings.HasPrefix(col.Default, "nextval(") {
+				col.IsAutoIncrement = true
 			}
+		} else {
+			col.DefaultIsEmpty = true
 		}
 
-		if colDefault != nil && strings.HasPrefix(*colDefault, "nextval(") {
-			col.IsAutoIncrement = true
+		if isPK {
+			col.IsPrimaryKey = true
 		}
 
 		col.Nullable = (isNullable == "YES")
@@ -1054,12 +1062,16 @@ WHERE c.relkind = 'r'::char AND c.relname = $1%s AND f.attnum > 0 ORDER BY f.att
 
 		col.Length = maxLen
 
-		if col.SQLType.IsText() || col.SQLType.IsTime() {
-			if col.Default != "" {
-				col.Default = "'" + col.Default + "'"
-			} else {
-				if col.DefaultIsEmpty {
-					col.Default = "''"
+		if !col.DefaultIsEmpty {
+			if col.SQLType.IsText() {
+				if strings.HasSuffix(col.Default, "::character varying") {
+					col.Default = strings.TrimRight(col.Default, "::character varying")
+				} else if !strings.HasPrefix(col.Default, "'") {
+					col.Default = "'" + col.Default + "'"
+				}
+			} else if col.SQLType.IsTime() {
+				if strings.HasSuffix(col.Default, "::timestamp without time zone") {
+					col.Default = strings.TrimRight(col.Default, "::timestamp without time zone")
 				}
 			}
 		}
