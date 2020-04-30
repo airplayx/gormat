@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/pkg/Json2struct"
+	"github.com/airplayx/json2go"
 	"strings"
 )
 
@@ -26,17 +26,17 @@ func Screen() *fyne.Container {
 			result.SetText(s)
 			return
 		}
-		f, err := Json2struct.ParseJson([]byte(s))
+		bytes, err := json2go.New([]byte(s), "test")
 		if err != nil {
 			result.SetText(err.Error())
 			return
 		}
-		bytes, err := Json2struct.PrintGo(f, "YourStruct")
-		if err != nil {
+		if b, err := bytes.WriteGo(); err != nil {
 			result.SetText(err.Error())
 			return
+		} else {
+			result.SetText(strings.ReplaceAll(string(b), "\t", "    "))
 		}
-		result.SetText(strings.ReplaceAll(string(bytes), "\t", "    "))
 	}
 
 	return fyne.NewContainerWithLayout(

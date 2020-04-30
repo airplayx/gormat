@@ -9,6 +9,7 @@ require (
 	github.com/CloudyKit/jet v2.1.2+incompatible // indirect
 	github.com/agrison/go-tablib v0.0.0-20160310143025-4930582c22ee // indirect
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
+	github.com/airplayx/json2go v0.0.0-20200430025514-cdea1809a7cb
 	github.com/bndr/gotabulate v1.1.2 // indirect
 	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929
 	github.com/chenhg5/collection v0.0.0-20191118032303-cb21bccce4c3

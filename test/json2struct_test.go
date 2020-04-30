@@ -9,14 +9,14 @@ package test
 
 import (
 	"fmt"
-	"gormat/pkg/Json2struct"
+	"github.com/airplayx/json2go"
 	"log"
 	"strings"
 	"testing"
 )
 
 func Test_json2struct(t *testing.T) {
-	f, err := Json2struct.ParseJson([]byte(`[{
+	bytes, err := json2go.New([]byte(`[{
     "input_index": 0,
     "candidate_index": 0,
     "delivery_line_1": "1 N Rosedale St",
@@ -101,11 +101,34 @@ func Test_json2struct(t *testing.T) {
       "dpv_vacant": "N",
       "active": "Y"
     }
-  }]`))
+  }]`), "YourStruct")
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	bytes, _ := Json2struct.PrintGo(f, "YourStruct")
-	fmt.Println(strings.ReplaceAll(string(bytes), "\t", "    "))
+	b, err := bytes.WriteGo()
+	fmt.Println(strings.ReplaceAll(string(b), "\t", "    "), err)
+}
+
+func Test_json2struct_more(t *testing.T) {
+	bytes, err := json2go.New([]byte(`[
+		[
+			{
+				"id": 123
+			},
+			[
+				{
+					"test": false,
+					"hello": "abc",
+					"msg": []
+				}
+			]
+		]
+	]`), "YourStruct")
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	b, err := bytes.WriteGo()
+	fmt.Println(strings.ReplaceAll(string(b), "\t", "    "), err)
 }
