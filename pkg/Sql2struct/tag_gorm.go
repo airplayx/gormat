@@ -23,8 +23,15 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 	if col.IsPrimaryKey {
 		res = append(res, "primary_key")
 	}
-	if col.Default != "" && !strings.EqualFold(col.Default, "'NULL'") {
-		res = append(res, "default:'"+strings.Trim(col.Default, "'")+"'")
+	if col.Default != "" {
+		if strings.Trim(col.Default, "'") == "" {
+			res = append(res, "default:''")
+		} else if strings.EqualFold(col.Default, "'NULL'") ||
+			strings.EqualFold(col.Default, "NULL") {
+			res = append(res, "default:NULL")
+		} else {
+			res = append(res, "default:'"+strings.Trim(col.Default, "'")+"'")
+		}
 	}
 	if col.IsAutoIncrement {
 		res = append(res, "AUTO_INCREMENT")
@@ -52,7 +59,7 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 			}
 		}
 		res = append(res, s)
-		result := []string{}
+		var result []string
 		tempMap := map[string]byte{}
 		for _, e := range res {
 			l := len(tempMap)
@@ -64,15 +71,15 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 		res = result
 	}
 
-	nstr := "type:" + strings.ToLower(col.SQLType.Name)
+	s := "type:" + strings.ToLower(col.SQLType.Name)
 	if col.Length != 0 {
 		if col.Length2 != 0 {
-			nstr += fmt.Sprintf("(%v,%v)", col.Length, col.Length2)
+			s += fmt.Sprintf("(%v,%v)", col.Length, col.Length2)
 		} else {
-			nstr += fmt.Sprintf("(%v)", col.Length)
+			s += fmt.Sprintf("(%v)", col.Length)
 		}
 	} else if len(col.EnumOptions) > 0 { //enum
-		nstr += "("
+		s += "("
 		opts := ""
 
 		enumOptions := make([]string, 0, len(col.EnumOptions))
@@ -84,10 +91,10 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 		for _, v := range enumOptions {
 			opts += fmt.Sprintf(",'%v'", v)
 		}
-		nstr += strings.TrimLeft(opts, ",")
-		nstr += ")"
+		s += strings.TrimLeft(opts, ",")
+		s += ")"
 	} else if len(col.SetOptions) > 0 { //enum
-		nstr += "("
+		s += "("
 		opts := ""
 
 		setOptions := make([]string, 0, len(col.SetOptions))
@@ -99,14 +106,14 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 		for _, v := range setOptions {
 			opts += fmt.Sprintf(",'%v'", v)
 		}
-		nstr += strings.TrimLeft(opts, ",")
-		nstr += ")"
+		s += strings.TrimLeft(opts, ",")
+		s += ")"
 	}
 	if col.Comment != "" {
 		res = append(res, "comment:'"+col.Comment+"'")
 	}
 	if !isNameId {
-		res = append(res, nstr)
+		res = append(res, s)
 	}
 
 	if len(res) > 0 {

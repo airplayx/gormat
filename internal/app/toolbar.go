@@ -125,7 +125,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			w.Show()
 		}),
 		widget.NewToolbarAction(icon.GroupDelete, func() {
-			if ipBox.Items == nil {
+			if ipBox.Items == nil || ipBox.CurrentTab() == nil {
 				return
 			}
 			content := widget.NewEntry()
@@ -160,10 +160,13 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			dialog.ShowCustom(configs.Text("action"), configs.Text("cancel"), content, win)
 		}),
 		widget.NewToolbarAction(icon.Delete, func() {
-			if ipBox.Items == nil {
+			if ipBox.Items == nil || ipBox.CurrentTab() == nil {
 				return
 			}
 			dbBox := ipBox.CurrentTab().Content.(*widget.TabContainer)
+			if dbBox.Items == nil || dbBox.CurrentTab() == nil {
+				return
+			}
 			cnf := dialog.NewConfirm(configs.Text("action"), configs.Text("Please confirm to delete the current: %s ?", dbBox.CurrentTab().Text), func(isDelete bool) {
 				if isDelete {
 					sourceMap := options.SourceMap

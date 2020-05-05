@@ -21,14 +21,14 @@ import (
 )
 
 func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
+	resultBox := widget.NewMultiLineEntry()
+	resultBox.SetPlaceHolder(``)
 	if err := Sql2struct.InitDb(dbConf); err != nil {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
 			widget.NewLabel(err.Error()),
 		)
 	}
-	resultBox := widget.NewMultiLineEntry()
-	resultBox.SetPlaceHolder(``)
 	var tables = widget.NewTabContainer()
 	var currentTable = make(chan *widget.TabItem)
 	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
