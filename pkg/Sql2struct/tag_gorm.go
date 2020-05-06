@@ -112,10 +112,8 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 	if col.Comment != "" {
 		res = append(res, "comment:'"+col.Comment+"'")
 	}
-	if !isNameId {
-		res = append(res, s)
-	}
 
+	res = append(res, s)
 	if len(res) > 0 {
 		return "gorm:\"" + strings.Join(res, ";") + "\""
 	}

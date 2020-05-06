@@ -72,6 +72,11 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 			keys = append(keys, columnName)
 			indices["idx_"+t.Name+"_"+sqlSettings["COLUMN"]] = keys
 		}
+		if idxName, ok := sqlSettings["UNIQUE"]; ok {
+			keys := uniqInd[idxName]
+			keys = append(keys, columnName)
+			uniqInd["uIdx_"+t.Name+"_"+sqlSettings["COLUMN"]] = keys
+		}
 		if idxName, ok := sqlSettings["UNIQUE_INDEX"]; ok {
 			keys := uniqInd[idxName]
 			keys = append(keys, columnName)
@@ -150,13 +155,10 @@ func generateSqlTag(field *ast.Field) (string, error) {
 	var err error
 
 	sqlSettings := ParseTagSetting(util.GetFieldTag(field, "gorm").Name)
-	if _, found := sqlSettings["NOT NULL"]; !found { // default: not null
-		sqlSettings["NOT NULL"] = ""
-	}
+	additionalType := sqlSettings["NOT NULL"]
 
-	additionalType := sqlSettings["NOT NULL"] + " " + sqlSettings["UNIQUE"]
 	if value, ok := sqlSettings["DEFAULT"]; ok {
-		additionalType = additionalType + " DEFAULT " + value
+		additionalType += " DEFAULT " + value
 	}
 
 	if value, ok := sqlSettings["COMMENT"]; ok {
@@ -169,21 +171,20 @@ func generateSqlTag(field *ast.Field) (string, error) {
 
 	if value, ok := sqlSettings["TYPE"]; ok {
 		sqlType = value
+		if value == "timestamp" {
+			sqlType += " NULL"
+		}
 	}
 
-	if sqlType == "" {
-		var size = 128
+	if sqlType == "" || sqlSettings["PRIMARY_KEY"] != "" {
+		var size = 255
 
 		if value, ok := sqlSettings["SIZE"]; ok {
 			size, _ = strconv.Atoi(value)
 		}
 
 		_, autoIncrease := sqlSettings["AUTO_INCREMENT"]
-		if isPrimaryKey(field) {
-			autoIncrease = true
-		}
-
-		sqlType, err = mysqlTag(field, size, autoIncrease)
+		sqlType, err = mysqlTag(field, sqlType, size, autoIncrease)
 		if err != nil {
 			log.Printf("get mysql field tag failed:%v", err)
 			return "", err
@@ -214,20 +215,22 @@ func getColumnName(field *ast.Field) string {
 
 func isPrimaryKey(field *ast.Field) bool {
 	tagStr := util.GetFieldTag(field, "gorm").Name
-	gormSettings := ParseTagSetting(tagStr)
-	if _, ok := gormSettings["PRIMARY_KEY"]; ok {
+	if _, ok := ParseTagSetting(tagStr)["PRIMARY_KEY"]; ok {
 		return true
 	}
-
-	if len(field.Names) > 0 && strings.ToUpper(field.Names[0].Name) == "ID" {
-		return true
-	}
-
 	return false
 }
 
-func mysqlTag(field *ast.Field, size int, autoIncrease bool) (string, error) {
-	typeName := ""
+func mysqlTag(field *ast.Field, sqlType string, size int, autoIncrease bool) (s string, err error) {
+	defer func() {
+		if sqlType != "" {
+			s = sqlType + " " + strings.Join(strings.Split(s, " ")[1:], " ")
+		}
+		if autoIncrease {
+			s += " AUTO_INCREMENT"
+		}
+	}()
+	var typeName string
 	switch t := field.Type.(type) {
 	case *ast.Ident:
 		typeName = t.Name
@@ -236,29 +239,16 @@ func mysqlTag(field *ast.Field, size int, autoIncrease bool) (string, error) {
 	default:
 		return "", errors.New(fmt.Sprintf("field %s not supported", util.GetFieldName(field)))
 	}
-
 	switch typeName {
 	case "bool":
 		return "boolean", nil
 	case "uint":
-		if autoIncrease {
-			return "int unsigned AUTO_INCREMENT", nil
-		}
 		return "int unsigned", nil
 	case "int", "int8", "int16", "int32", "uint8", "uint16", "uint32", "uintptr":
-		if autoIncrease {
-			return "int AUTO_INCREMENT", nil
-		}
 		return "int", nil
 	case "int64":
-		if autoIncrease {
-			return "bigint AUTO_INCREMENT", nil
-		}
 		return "bigint", nil
 	case "uint64":
-		if autoIncrease {
-			return "bigint unsigned AUTO_INCREMENT", nil
-		}
 		return "bigint unsigned", nil
 	case "float32", "float64":
 		return "double", nil
@@ -267,7 +257,7 @@ func mysqlTag(field *ast.Field, size int, autoIncrease bool) (string, error) {
 			return fmt.Sprintf("varchar(%d)", size), nil
 		}
 		return "longtext", nil
-	case "Time":
+	case "time":
 		return "datetime", nil
 	default:
 		return "", errors.New(fmt.Sprintf("type %s not supported", typeName))
@@ -280,10 +270,14 @@ func ParseTagSetting(str string) map[string]string {
 	setting := map[string]string{}
 	for _, value := range tags {
 		v := strings.Split(value, ":")
+		if len(v) == 0 {
+			continue
+		}
 		k := strings.TrimSpace(strings.ToUpper(v[0]))
-		if len(v) == 2 {
-			setting[k] = v[1]
-		} else {
+		switch len(v) {
+		case 1:
+			setting[k] = k
+		default:
 			setting[k] = strings.Join(v[1:], ":")
 		}
 	}
