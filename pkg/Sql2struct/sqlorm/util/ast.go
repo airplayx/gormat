@@ -1,10 +1,9 @@
 package util
 
 import (
+	log "github.com/liudanking/goutil/logutil"
 	"go/ast"
 	"strconv"
-
-	log "github.com/liudanking/goutil/logutil"
 )
 
 func GetFieldTag(field *ast.Field, key string) *Tag {

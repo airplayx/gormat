@@ -41,18 +41,17 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 	var tags []string
 	var primaryKeys []string
 	indices := map[string][]string{}
-	uniqIndces := map[string][]string{}
+	uniqInd := map[string][]string{}
 	for _, field := range ms.getStructFieds(ms.modelType) {
+		tag, err := generateSqlTag(field)
 		switch t := field.Type.(type) {
 		case *ast.Ident:
-			tag, err := generateSqlTag(field)
 			if err != nil {
 				log.Printf("generateSqlTag [%s] failed:%v", t.Name, err)
 			} else {
 				tags = append(tags, fmt.Sprintf("%s %s", getColumnName(field), tag))
 			}
 		case *ast.SelectorExpr:
-			tag, err := generateSqlTag(field)
 			if err != nil {
 				log.Printf("generateSqlTag [%s] failed:%v", t.Sel.Name, err)
 			} else {
@@ -74,9 +73,9 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 			indices["idx_"+t.Name+"_"+sqlSettings["COLUMN"]] = keys
 		}
 		if idxName, ok := sqlSettings["UNIQUE_INDEX"]; ok {
-			keys := uniqIndces[idxName]
+			keys := uniqInd[idxName]
 			keys = append(keys, columnName)
-			uniqIndces["uIdx_"+t.Name+"_"+sqlSettings["COLUMN"]] = keys
+			uniqInd["uIdx_"+t.Name+"_"+sqlSettings["COLUMN"]] = keys
 		}
 	}
 
@@ -85,15 +84,15 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 		primaryKeyStr = fmt.Sprintf("PRIMARY KEY (%v)", strings.Join(primaryKeys, ", "))
 	}
 
-	indicesStrs := []string{}
+	var indicesStrs []string
 	for idxName, keys := range indices {
 		for _, v := range keys {
 			indicesStrs = append(indicesStrs, fmt.Sprintf("KEY `%s` (%s)", idxName, v))
 		}
 	}
 
-	uniqIndicesStrs := []string{}
-	for idxName, keys := range uniqIndces {
+	var uniqIndicesStrs []string
+	for idxName, keys := range uniqInd {
 		for _, v := range keys {
 			uniqIndicesStrs = append(uniqIndicesStrs, fmt.Sprintf("UNIQUE KEY `%s` (%s)", idxName, v))
 		}
@@ -151,7 +150,6 @@ func generateSqlTag(field *ast.Field) (string, error) {
 	var err error
 
 	sqlSettings := ParseTagSetting(util.GetFieldTag(field, "gorm").Name)
-
 	if _, found := sqlSettings["NOT NULL"]; !found { // default: not null
 		sqlSettings["NOT NULL"] = ""
 	}
@@ -286,7 +284,7 @@ func ParseTagSetting(str string) map[string]string {
 		if len(v) == 2 {
 			setting[k] = v[1]
 		} else {
-			setting[k] = k
+			setting[k] = strings.Join(v[1:], ":")
 		}
 	}
 	return setting

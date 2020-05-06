@@ -63,7 +63,7 @@ func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
 	)
 	c := widget.NewTabContainer(
 		//widget.NewTabItemWithIcon("", icon.Home, WelcomeScreen()),
-		widget.NewTabItemWithIcon("", icon.Branch, s2sBox),
+		widget.NewTabItemWithIcon("", icon.Stack, s2sBox),
 		//widget.NewTabItemWithIcon("", icon.Test, fyne.NewContainer()),
 		//widget.NewTabItemWithIcon("", icon.Video, fyne.NewContainer()),
 	)
