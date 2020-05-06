@@ -28,7 +28,7 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 			res = append(res, "default:''")
 		} else if strings.EqualFold(col.Default, "'NULL'") ||
 			strings.EqualFold(col.Default, "NULL") {
-			res = append(res, "default:NULL")
+			res = append(res, "default:null")
 		} else {
 			res = append(res, "default:'"+strings.Trim(col.Default, "'")+"'")
 		}

@@ -171,7 +171,7 @@ func generateSqlTag(field *ast.Field) (string, error) {
 
 	if value, ok := sqlSettings["TYPE"]; ok {
 		sqlType = value
-		if value == "timestamp" {
+		if value == "timestamp" && sqlSettings["NOT NULL"] == "" {
 			sqlType += " NULL"
 		}
 	}
