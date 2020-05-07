@@ -2,7 +2,9 @@
            
 > The golang convenient converter supports Database to Struct, SQL to Struct, and JSON to Struct.
 
-![Go](https://github.com/airplayx/gormat/workflows/Go/badge.svg) [中文说明](README_ZH.md)
+ ![Go](https://github.com/airplayx/gormat/workflows/Go/badge.svg)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/airplayx/gormat)](https://goreportcard.com/report/github.com/airplayx/gormat)
+ [中文说明](README_ZH.md)
 
 ![image](assets/show_win.png)
 
