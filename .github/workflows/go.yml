@@ -42,7 +42,5 @@ jobs:
     - name: Test
       run: cd test && go test -v .
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
