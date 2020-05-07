@@ -4,6 +4,7 @@
 
  ![Go](https://github.com/airplayx/gormat/workflows/Go/badge.svg)
  [![Go Report Card](https://goreportcard.com/badge/github.com/airplayx/gormat)](https://goreportcard.com/report/github.com/airplayx/gormat)
+ [![codecov](https://codecov.io/gh/airplayx/gormat/branch/master/graph/badge.svg)](https://codecov.io/gh/airplayx/gormat)
  [中文说明](README_ZH.md)
 
 ![image](assets/show_win.png)
