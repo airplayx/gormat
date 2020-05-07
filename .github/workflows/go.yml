@@ -31,7 +31,15 @@ jobs:
         fi
 
     - name: Set up xorg-dev
-      run: sudo apt-get install xorg-dev
+      run:
+       sudo apt-get install xorg-dev
+       sudo apt-get install libXi-devel
+       sudo apt-get install libXi
+       sudo apt-get install libGL libGL-devel
+       sudo apt-get install libgl
+       sudo apt-get install build-essential libgl1-mesa-dev
+       sudo apt-get install freeglut3-dev
+       sudo apt-get install libglew-dev libsdl2-dev libsdl2-image-dev libglm-dev libfreetype6-dev
 
     - name: Build
       run: cd cmd && go build -v .
