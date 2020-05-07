@@ -2,7 +2,7 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "Gormat - Tool For Gopher"
-#define MyAppVersion "0.0.3"
+#define MyAppVersion "0.0.4"
 #define MyAppPublisher "airplayx"
 #define MyAppURL "http://airplayx.com/"
 #define MyAppExeName "gormat.exe"
