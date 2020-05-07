@@ -33,7 +33,7 @@ jobs:
     - name: Set up xorg-dev
       run:
         sudo apt-get install xorg-dev
-        && sudo apt-get install libXi-devel
+        #&& sudo apt-get install libXi-devel
         && sudo apt-get install libXi
         && sudo apt-get install libGL libGL-devel
         && sudo apt-get install libgl
