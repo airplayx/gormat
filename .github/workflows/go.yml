@@ -40,4 +40,4 @@ jobs:
       run: cd cmd && go build -v .
 
     - name: Test
-      run: cd ../ && go test -v test
+      run: cd ../ && go test -v ./test

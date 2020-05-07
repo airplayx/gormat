@@ -2,7 +2,7 @@
 
 > golang便捷转换器，支持数据库转Struct、Sql转Struct、Json转Struct
 
-[English](README.md)
+![Go](https://github.com/airplayx/gormat/workflows/Go/badge.svg) [English](README.md)
 
 ![image](assets/show_win_zh.png)
 
