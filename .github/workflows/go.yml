@@ -30,6 +30,10 @@ jobs:
             dep ensure
         fi
 
+    - name: Set up libx11
+      #run: sudo apt-get libx11-dev && sudo apt-get libxinerama-dev
+      run: sudo apt-get xorg-dev
+
     - name: Build
       run: cd cmd && go build -v .
 
