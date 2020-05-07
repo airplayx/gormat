@@ -39,7 +39,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "E:\gormat\cmd\gormat.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\gormat\miniHei.ttf"; DestDir: "{app}"; Flags: ignoreversion
 ; 注意: 不要在任何共享系统文件上使用“Flags: ignoreversion”
 
 [Icons]

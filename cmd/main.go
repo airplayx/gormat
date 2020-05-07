@@ -1,23 +1,47 @@
+//go:generate statik -src=../assets/fonts
+//go:generate go fmt statik/statik.go
 package main
 
 import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"github.com/buger/jsonparser"
+	"github.com/rakyll/statik/fs"
+	_ "gormat/cmd/statik"
 	"gormat/configs"
 	_app "gormat/internal/app"
 	"gormat/internal/pkg/icon"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
+var tmpFile, _ = ioutil.TempFile("", "*")
+
+func init() {
+	fileSystem, err := fs.New()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	file, err := fileSystem.Open("/miniHei.ttf")
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	_, _ = tmpFile.Write(content)
+}
+
 func main() {
+	defer func() {
+		_ = tmpFile.Close()
+		_ = os.Remove(tmpFile.Name())
+	}()
 	jsonparser.EachKey(configs.Json,
 		func(i int, bytes []byte, valueType jsonparser.ValueType, e error) {
-			font, _ := jsonparser.GetString(bytes, "font")
-			if font != "" {
-				_ = os.Setenv("FYNE_FONT", font)
-			}
+			_ = os.Setenv("FYNE_FONT", tmpFile.Name())
 			theme, _ := jsonparser.GetString(bytes, "theme")
 			_ = os.Setenv("FYNE_THEME", theme)
 			scale, _ := jsonparser.GetString(bytes, "scale")
@@ -27,7 +51,7 @@ func main() {
 	main.SetIcon(icon.Ico)
 	window := main.NewWindow("Gormat")
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 1200, Height: 720})
+	window.Resize(fyne.Size{Width: 1300, Height: 700})
 	window.SetContent(_app.Container(main, window))
 	window.SetOnClosed(func() {
 		_ = ioutil.WriteFile(configs.CustomFile, configs.Json, os.ModePerm)

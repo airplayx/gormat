@@ -25,6 +25,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pinzolo/casee v0.0.0-20191019093852-17765ba5eb57
+	github.com/rakyll/statik v0.1.7
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/xormplus/builder v0.0.0-20200306092541-e066fb7511c8 // indirect
 	github.com/xormplus/core v0.0.0-20200308074340-f3bce19d5f31
