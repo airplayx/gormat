@@ -31,8 +31,8 @@ jobs:
         fi
 
     - name: Set up libx11
-      #run: sudo apt-get libx11-dev && sudo apt-get libxinerama-dev
-      run: sudo apt-get xorg-dev
+      #run: sudo apt-get install libx11-dev && sudo apt-get install libxinerama-dev
+      run: sudo apt-get install libx11-dev
 
     - name: Build
       run: cd cmd && go build -v .
