@@ -1,4 +1,4 @@
-/*
+/*Package sql2struct ...
 @Time : 2019/12/20 16:40
 @Software: GoLand
 @File : option
@@ -15,11 +15,12 @@ import (
 	"github.com/buger/jsonparser"
 	"github.com/chenhg5/collection"
 	"gormat/configs"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"strings"
 )
 
-func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
+//Option ...
+func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 	targetDir := widget.NewEntry()
 	targetDir.SetText(options.TargetDir)
 	autoSave := widget.NewRadio([]string{configs.Text("yes"), configs.Text("no")}, func(s string) {
@@ -44,7 +45,7 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 	jsonType := widget.NewSelect([]string{configs.Text("build only"), configs.Text("build and include omitempty")}, func(s string) {
 
 	})
-	if options.JsonOmitempty {
+	if options.JSONOmitempty {
 		jsonType.SetSelected(configs.Text("build and include omitempty"))
 	} else {
 		jsonType.SetSelected(configs.Text("build only"))
@@ -92,13 +93,13 @@ func Option(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			if jsonT.Checked {
 				options.Tags = append(options.Tags, "json")
 			}
-			options.JsonOmitempty = jsonType.Selected == configs.Text("build and include omitempty")
+			options.JSONOmitempty = jsonType.Selected == configs.Text("build and include omitempty")
 			options.ExcludeTables = strings.Split(excludeTables.Text, "\n")
 			options.TryComplete = tryComplete.Selected == configs.Text("yes")
 
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-				configs.Json = data
+			if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+				configs.JSON = data
 				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

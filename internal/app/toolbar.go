@@ -10,16 +10,17 @@ import (
 	"github.com/buger/jsonparser"
 	"gormat/configs"
 	"gormat/internal/app/json2struct"
-	"gormat/internal/app/sql2struct"
+	s2s "gormat/internal/app/sql2struct"
 	"gormat/internal/pkg/icon"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"log"
 	"net/url"
 	"os/exec"
 	"runtime"
 )
 
-func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct) *widget.Toolbar {
+//ToolBar the main toolbar
+func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options *sql2struct.SQL2Struct) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(icon.Insert, func() {
 			var dbIndex []int
@@ -34,7 +35,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			}
 			w := fyne.CurrentApp().NewWindow(configs.Text("add link"))
 			w.SetContent(widget.NewScrollContainer(
-				sql2struct.DataBase(win, w, ipBox, options, dbIndex)),
+				s2s.DataBase(win, w, ipBox, options, dbIndex)),
 			)
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
@@ -43,9 +44,9 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 		widget.NewToolbarAction(icon.Setting, func() {
 			w := fyne.CurrentApp().NewWindow(configs.Text("rules"))
 			setting := widget.NewTabContainer(
-				widget.NewTabItem(configs.Text("base"), sql2struct.Option(w, options)),
-				widget.NewTabItem(configs.Text("mapping"), sql2struct.Reflect(w, options)),
-				widget.NewTabItem(configs.Text("special"), sql2struct.Special(w, options)),
+				widget.NewTabItem(configs.Text("base"), s2s.Option(w, options)),
+				widget.NewTabItem(configs.Text("mapping"), s2s.Reflect(w, options)),
+				widget.NewTabItem(configs.Text("special"), s2s.Special(w, options)),
 				widget.NewTabItem(configs.Text("others"), SettingScreen(app, w)),
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
@@ -58,7 +59,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			w := fyne.CurrentApp().NewWindow(configs.Text("sql to struct"))
 			w.SetContent(fyne.NewContainerWithLayout(
 				layout.NewGridLayout(1),
-				widget.NewScrollContainer(sql2struct.QuickScreen()),
+				widget.NewScrollContainer(s2s.QuickScreen()),
 			))
 			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
@@ -118,7 +119,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 				w.SetContent(widget.NewLabelWithStyle(configs.Text("bad link parameters"), fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 			} else {
 				w.SetContent(widget.NewScrollContainer(
-					sql2struct.DataBase(win, w, ipBox, options, dbIndex)))
+					s2s.DataBase(win, w, ipBox, options, dbIndex)))
 			}
 			w.Resize(fyne.Size{Width: 650, Height: 300})
 			w.CenterOnScreen()
@@ -141,8 +142,8 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 						}
 					}
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-						configs.Json = data
+					if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+						configs.JSON = data
 						dialog.ShowInformation(configs.Text("action"), configs.Text("save ok"), win)
 						ipBox.RemoveIndex(ipBox.CurrentTabIndex())
 						if ipBox.CurrentTabIndex()-1 < 0 {
@@ -206,8 +207,8 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 				loop:
 					defer win.Canvas().Refresh(ipBox)
 					jsons, _ := json.Marshal(options)
-					if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-						configs.Json = data
+					if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+						configs.JSON = data
 					} else {
 						dialog.ShowError(errors.New(err.Error()), win)
 					}

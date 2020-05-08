@@ -1,4 +1,4 @@
-package Sql2struct
+package sql2struct
 
 import (
 	"encoding/json"
@@ -7,15 +7,17 @@ import (
 	"github.com/xormplus/core"
 )
 
-type model struct {
+//Model ...
+type Model struct {
 	StructName string
 	TableName  string
 	Imports    map[string]string
-	Fields     []modelField
+	Fields     []ModelField
 	Comment    string
 }
 
-type modelField struct {
+//ModelField ...
+type ModelField struct {
 	FieldName  string
 	ColumnName string
 	Type       string
@@ -24,27 +26,11 @@ type modelField struct {
 	Comment    string
 }
 
-func NewModel(table *core.Table, maps string) (m model) {
-	m = model{
-		StructName: core.LintGonicMapper.Table2Obj(table.Name),
-		TableName:  table.Name,
-		Imports:    map[string]string{},
-		Comment:    table.Comment,
-	}
-	for _, column := range table.Columns() {
-		f := NewModelField(table, column, maps)
-		for k, v := range f.Imports {
-			m.Imports[k] = v
-		}
-		m.Fields = append(m.Fields, f)
-	}
-	return
-}
-
-func NewModelField(table *core.Table, column *core.Column, maps string) (f modelField) {
+//NewModelField ...
+func NewModelField(table *core.Table, column *core.Column, maps string) (f *ModelField) {
 	var reflect, special map[string]string
 	_ = json.Unmarshal([]byte(maps), &reflect)
-	f = modelField{
+	f = &ModelField{
 		FieldName:  core.LintGonicMapper.Table2Obj(column.Name),
 		ColumnName: column.Name,
 		Type:       reflect[strings.ToLower(column.SQLType.Name)],
@@ -67,7 +53,7 @@ func NewModelField(table *core.Table, column *core.Column, maps string) (f model
 	for _, v := range Configs().Tags {
 		switch v {
 		case "json":
-			tags = append(tags, GetJsonTag(column, Configs().JsonOmitempty))
+			tags = append(tags, GetJSONTag(column, Configs().JSONOmitempty))
 		case "xorm":
 			tags = append(tags, GetXormTag(table, column))
 		case "gorm":

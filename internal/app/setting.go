@@ -1,4 +1,4 @@
-/*
+/*Package app ...
 @Time : 2019/12/26 11:02
 @Software: GoLand
 @File : setting
@@ -17,6 +17,7 @@ import (
 	"os"
 )
 
+//SettingScreen ...
 func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 	theMe := widget.NewRadio([]string{configs.Text("black"), configs.Text("light")}, func(s string) {
 		switch s {
@@ -28,7 +29,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 		}
 	})
 
-	switch t, _ := jsonparser.GetString(configs.Json, "const", "theme"); t {
+	switch t, _ := jsonparser.GetString(configs.JSON, "const", "theme"); t {
 	case configs.Text("light"):
 		theMe.SetSelected(configs.Text("light"))
 	default:
@@ -43,11 +44,11 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			scale = "2.0"
 		}
 		_ = os.Setenv("FYNE_SCALE", scale)
-		if data, err := jsonparser.Set(configs.Json, []byte("\""+scale+"\""), "const", "scale"); err == nil {
-			configs.Json = data
+		if data, err := jsonparser.Set(configs.JSON, []byte("\""+scale+"\""), "const", "scale"); err == nil {
+			configs.JSON = data
 		}
 	})
-	switch scale, _ := jsonparser.GetString(configs.Json, "const", "scale"); scale {
+	switch scale, _ := jsonparser.GetString(configs.JSON, "const", "scale"); scale {
 	case "1.0":
 		dpi.SetSelected(configs.Text("default"))
 	case "2.0":
@@ -62,11 +63,11 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 		case "中文":
 			lang = "zh"
 		}
-		if data, err := jsonparser.Set(configs.Json, []byte("\""+lang+"\""), "const", "language"); err == nil {
-			configs.Json = data
+		if data, err := jsonparser.Set(configs.JSON, []byte("\""+lang+"\""), "const", "language"); err == nil {
+			configs.JSON = data
 		}
 	})
-	l, _ := jsonparser.GetString(configs.Json, "const", "language")
+	l, _ := jsonparser.GetString(configs.JSON, "const", "language")
 	if l == "zh" {
 		language.SetSelected("中文")
 	} else {

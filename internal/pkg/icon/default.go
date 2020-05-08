@@ -1,4 +1,4 @@
-/*
+/*Package icon ...
 @Time : 2020/1/7 14:42
 @Software: GoLand
 @File : icon
@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+//some icon ...
 var (
 	Ico = &fyne.StaticResource{
 		StaticName:    "ico.ico",
@@ -120,6 +121,7 @@ var (
 	}
 )
 
+//File2Bytes make file to bytes
 func File2Bytes(file string) (resp string, err error) {
 	bytes, errors := ioutil.ReadFile(file)
 	s := make([]string, len(bytes))

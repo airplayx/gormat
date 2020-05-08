@@ -1,4 +1,4 @@
-/*
+/*Package app ...
 @Time : 2019/12/23 10:24
 @Software: GoLand
 @File : container
@@ -10,21 +10,22 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"gormat/internal/app/sql2struct"
+	s2s "gormat/internal/app/sql2struct"
 	"gormat/internal/pkg/icon"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"strings"
 )
 
+//Container the main container
 func Container(app fyne.App, win fyne.Window) *widget.TabContainer {
-	var options = Sql2struct.Configs()
+	var options = sql2struct.Configs()
 	var ipBox = widget.NewTabContainer()
 	for _, v := range options.SourceMap {
 		var dbBox = widget.NewTabContainer()
 		for _, curDb := range v.Db {
 			dbBox.Append(widget.NewTabItemWithIcon(
 				curDb, icon.Database,
-				sql2struct.Screen(win, &Sql2struct.SourceMap{
+				s2s.Screen(win, &sql2struct.SourceMap{
 					Driver:   v.Driver,
 					Host:     v.Host,
 					User:     v.User,

@@ -1,4 +1,4 @@
-/*
+/*Package sql2struct ...
 @Time : 2019/12/20 16:36
 @Software: GoLand
 @File : reflect
@@ -14,11 +14,12 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	"gormat/configs"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"strings"
 )
 
-func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
+//Reflect ...
+func Reflect(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 	dataType := widget.NewMultiLineEntry()
 	dataType.SetText(strings.ReplaceAll(options.Reflect, ",", ",\n"))
 	return &widget.Form{
@@ -28,8 +29,8 @@ func Reflect(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 		OnSubmit: func() {
 			options.Reflect = strings.ReplaceAll(dataType.Text, ",\n", ",")
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-				configs.Json = data
+			if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+				configs.JSON = data
 				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

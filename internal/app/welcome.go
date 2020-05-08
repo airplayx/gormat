@@ -1,4 +1,4 @@
-/*
+/*Package app ...
 @Time : 2019/12/20 16:04
 @Software: GoLand
 @File : welcome
@@ -14,6 +14,7 @@ import (
 	"gormat/internal/pkg/icon"
 )
 
+//WelcomeScreen ...
 func WelcomeScreen() fyne.CanvasObject {
 	logo := canvas.NewImageFromResource(fyne.NewStaticResource("logo", icon.LogoBg))
 	logo.SetMinSize(fyne.NewSize(275, 470))

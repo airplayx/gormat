@@ -26,13 +26,14 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pinzolo/casee v0.0.0-20191019093852-17765ba5eb57
 	github.com/rakyll/statik v0.1.7
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/xormplus/builder v0.0.0-20200306092541-e066fb7511c8 // indirect
 	github.com/xormplus/core v0.0.0-20200308074340-f3bce19d5f31
 	github.com/xormplus/xorm v0.0.0-20200312060401-935be4f0f832
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
-	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8 // indirect
+	golang.org/x/tools v0.0.0-20200507205054-480da3ebd79c // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/flosch/pongo2.v3 v3.0.0-20141028000813-5e81b817a0c4 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect

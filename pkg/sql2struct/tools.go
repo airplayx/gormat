@@ -1,4 +1,4 @@
-package Sql2struct
+package sql2struct
 
 import (
 	"github.com/xormplus/core"
@@ -15,6 +15,7 @@ func getTypeAndImports(column *core.Column) (t string) {
 	return
 }
 
+//RmDuplicateElement ...
 func RmDuplicateElement(keywords []string) []string {
 	result := make([]string, 0, len(keywords))
 	temp := map[string]struct{}{}
@@ -27,7 +28,7 @@ func RmDuplicateElement(keywords []string) []string {
 	return result
 }
 
-func InStringSlice(f string, a []string) bool {
+func inStringSlice(f string, a []string) bool {
 	for _, s := range a {
 		if f == s {
 			return true

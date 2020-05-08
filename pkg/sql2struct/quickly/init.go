@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/format"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"io"
 	"regexp"
 	"sort"
@@ -24,7 +24,7 @@ var (
 	colDecl   = regexp.MustCompile(`\w.+`)
 
 	upperDict map[string]struct{}
-	metaTag   = Sql2struct.Configs().Tags
+	metaTag   = sql2struct.Configs().Tags
 )
 
 type column struct {
@@ -32,7 +32,8 @@ type column struct {
 	Constraint []byte
 }
 
-type langT struct {
+//LangT ...
+type LangT struct {
 	Name   string
 	Fields map[int]field
 }
@@ -67,7 +68,8 @@ func (f field) String() string {
 	return fmt.Sprintf("%s %s `%s`", fieldName, f.FieldType, strings.Join(meta, " "))
 }
 
-func (t langT) GenType() ([]byte, error) {
+//GenType ...
+func (t LangT) GenType() ([]byte, error) {
 	str := fmt.Sprintln("type", t.Name, "struct {")
 	sortedMap(t.Fields, func(k int, v field) {
 		str += fmt.Sprintln(v)
@@ -94,7 +96,7 @@ func newField(name, constraint []byte) (f field) {
 	}
 	col := strings.ToUpper(string(constraint))
 	f.FieldType, _ = scanType(name, strings.ToLower(strings.Split(col, " ")[0]))
-	for _, v := range Sql2struct.Configs().Tags {
+	for _, v := range sql2struct.Configs().Tags {
 		switch v {
 		case "gorm":
 			tag := []string{"column:" + string(name) + ";"}
@@ -113,7 +115,7 @@ func newField(name, constraint []byte) (f field) {
 			tag = append(tag, "type:"+strings.ToLower(strings.Split(col, " ")[0]))
 			f.MetaInfo[v] = tag
 		case "json":
-			if Sql2struct.Configs().JsonOmitempty {
+			if sql2struct.Configs().JSONOmitempty {
 				f.MetaInfo[v] = []string{string(name), ",omitempty"}
 			} else {
 				f.MetaInfo[v] = []string{string(name)}
@@ -134,9 +136,9 @@ func toCamel(s []byte) string {
 
 func scanType(name []byte, tag string) (s string, haveType bool) {
 	var reflect, special map[string]string
-	_ = json.Unmarshal([]byte(Sql2struct.Configs().Reflect), &reflect)
+	_ = json.Unmarshal([]byte(sql2struct.Configs().Reflect), &reflect)
 	s = reflect[strings.Split(tag, "(")[0]]
-	_ = json.Unmarshal([]byte(Sql2struct.Configs().Special), &special)
+	_ = json.Unmarshal([]byte(sql2struct.Configs().Special), &special)
 	for key, val := range special {
 		if string(name) == key {
 			s = val
@@ -146,6 +148,7 @@ func scanType(name []byte, tag string) (s string, haveType bool) {
 	return
 }
 
+//MatchStmt ...
 func MatchStmt(r io.Reader) (byte [][][]byte, err error) {
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(r)
@@ -153,7 +156,8 @@ func MatchStmt(r io.Reader) (byte [][][]byte, err error) {
 	return
 }
 
-func HandleStmtBlock(s [][]byte) (t langT) {
+//HandleStmtBlock ...
+func HandleStmtBlock(s [][]byte) (t LangT) {
 	block := s[0]
 	leftTrimIdx := 0
 	rightTrimIdx := len(block) - 1

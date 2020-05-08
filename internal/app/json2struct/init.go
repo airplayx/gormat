@@ -1,4 +1,4 @@
-/*
+/*Package json2struct ...
 @Time : 2020/1/3 14:28
 @Software: GoLand
 @File : init
@@ -14,6 +14,7 @@ import (
 	"strings"
 )
 
+//Screen the json2struct Screen
 func Screen() *fyne.Container {
 	result := widget.NewMultiLineEntry()
 	data := widget.NewMultiLineEntry()
@@ -33,7 +34,6 @@ func Screen() *fyne.Container {
 		}
 		if b, err := bytes.WriteGo(); err != nil {
 			result.SetText(err.Error())
-			return
 		} else {
 			result.SetText(strings.ReplaceAll(string(b), "\t", "    "))
 		}

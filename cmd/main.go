@@ -39,7 +39,7 @@ func main() {
 		_ = tmpFile.Close()
 		_ = os.Remove(tmpFile.Name())
 	}()
-	jsonparser.EachKey(configs.Json,
+	jsonparser.EachKey(configs.JSON,
 		func(i int, bytes []byte, valueType jsonparser.ValueType, e error) {
 			_ = os.Setenv("FYNE_FONT", tmpFile.Name())
 			theme, _ := jsonparser.GetString(bytes, "theme")
@@ -54,7 +54,7 @@ func main() {
 	window.Resize(fyne.Size{Width: 1300, Height: 700})
 	window.SetContent(_app.Container(main, window))
 	window.SetOnClosed(func() {
-		_ = ioutil.WriteFile(configs.CustomFile, configs.Json, os.ModePerm)
+		_ = ioutil.WriteFile(configs.CustomFile, configs.JSON, os.ModePerm)
 	})
 	window.SetMaster()
 	window.ShowAndRun()

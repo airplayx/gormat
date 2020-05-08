@@ -1,10 +1,10 @@
-/*
+/*Package sql2struct ...
 @Time : 2020/1/3 13:58
 @Software: GoLand
 @File : init
 @Author : https://github.com/hsyan2008/gom
 */
-package Sql2struct
+package sql2struct
 
 import (
 	"encoding/json"
@@ -13,10 +13,11 @@ import (
 	"log"
 )
 
+//SQL2Struct ...
 type SQL2Struct struct {
 	AutoSave      bool        `json:"auto_save"`
 	ExcludeTables []string    `json:"exclude_tables"`
-	JsonOmitempty bool        `json:"json_omitempty"`
+	JSONOmitempty bool        `json:"json_omitempty"`
 	Reflect       string      `json:"reflect"`
 	SourceMap     []SourceMap `json:"sourceMap"`
 	Special       string      `json:"special"`
@@ -26,6 +27,7 @@ type SQL2Struct struct {
 	TryComplete   bool        `json:"try_complete"`
 }
 
+//SourceMap ...
 type SourceMap struct {
 	Db       []string `json:"db"`
 	Driver   string   `json:"driver"`
@@ -35,8 +37,9 @@ type SourceMap struct {
 	User     string   `json:"user"`
 }
 
+//Configs ...
 func Configs() (s2s *SQL2Struct) {
-	data, _, _, _ := jsonparser.Get(configs.Json, "sql2struct")
+	data, _, _, _ := jsonparser.Get(configs.JSON, "sql2struct")
 	if err := json.Unmarshal([]byte(data), &s2s); err != nil {
 		log.Println(err.Error())
 	}

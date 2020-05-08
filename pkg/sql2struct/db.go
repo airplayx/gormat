@@ -1,10 +1,10 @@
-package Sql2struct
+package sql2struct
 
 import (
 	"fmt"
 	"log"
 	"strings"
-
+	//load some db pkg
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -15,6 +15,7 @@ import (
 
 var engine *xorm.Engine
 
+//InitDb ...
 func InitDb(db *SourceMap) (err error) {
 	switch strings.Title(db.Driver) {
 	case "PostgreSQL":
@@ -33,10 +34,12 @@ func InitDb(db *SourceMap) (err error) {
 	return engine.Ping()
 }
 
+//DB ...
 func DB() *xorm.Engine {
 	return engine
 }
 
+//DBMetas ...
 func DBMetas(t []string, et []string, tryComplete bool) (tables []*core.Table, err error) {
 	tmpTables, err := DB().Dialect().GetTables()
 	if err != nil {
@@ -44,11 +47,11 @@ func DBMetas(t []string, et []string, tryComplete bool) (tables []*core.Table, e
 	}
 	for _, v := range tmpTables {
 		if len(t) > 0 {
-			if !InStringSlice(v.Name, t) {
+			if !inStringSlice(v.Name, t) {
 				continue
 			}
 		} else if len(et) > 0 {
-			if InStringSlice(v.Name, et) {
+			if inStringSlice(v.Name, et) {
 				continue
 			}
 		}

@@ -12,18 +12,19 @@ import (
 	"go/token"
 	"gormat/configs"
 	"gormat/internal/pkg/icon"
-	"gormat/pkg/Sql2struct"
-	"gormat/pkg/Sql2struct/quickly"
-	"gormat/pkg/Sql2struct/sqlorm"
+	"gormat/pkg/sql2struct"
+	"gormat/pkg/sql2struct/quickly"
+	"gormat/pkg/sql2struct/sqlorm"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
+//Screen the sql2Struct screen
+func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(``)
-	if err := Sql2struct.InitDb(dbConf); err != nil {
+	if err := sql2struct.InitDb(dbConf); err != nil {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
 			widget.NewLabel(err.Error()),
@@ -31,12 +32,12 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 	}
 	var tables = widget.NewTabContainer()
 	var currentTable = make(chan *widget.TabItem)
-	if tbs, err := Sql2struct.DBMetas(nil, Sql2struct.Configs().ExcludeTables, Sql2struct.Configs().TryComplete); err == nil {
+	if tbs, err := sql2struct.DBMetas(nil, sql2struct.Configs().ExcludeTables, sql2struct.Configs().TryComplete); err == nil {
 		for _, t := range tbs {
 			tables.Append(widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
 		tables.SelectTabIndex(0)
-		go func(dbConf *Sql2struct.SourceMap) {
+		go func(dbConf *sql2struct.SourceMap) {
 			for {
 				time.Sleep(time.Microsecond * 50)
 				if <-currentTable != tables.CurrentTab() {
@@ -50,7 +51,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 						return
 					}
 					tableBox := widget.NewMultiLineEntry()
-					if result, err := Sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
+					if result, err := sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
 						resultBox.SetText(``)
 						tableBox.SetText(err.Error())
 					} else {
@@ -115,6 +116,7 @@ func Screen(win fyne.Window, dbConf *Sql2struct.SourceMap) *fyne.Container {
 	)
 }
 
+//QuickScreen the sql2Struct quickScreen
 func QuickScreen() *fyne.Container {
 	result := widget.NewMultiLineEntry()
 	data := widget.NewMultiLineEntry()

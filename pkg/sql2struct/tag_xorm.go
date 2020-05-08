@@ -1,10 +1,10 @@
-/*
+/*Package sql2struct ...
 @Time : 2020/1/7 11:04
 @Software: GoLand
 @File : xorm_tag
 @Author : Bingo <airplayx@gmail.com>
 */
-package Sql2struct
+package sql2struct
 
 import (
 	"sort"
@@ -17,13 +17,14 @@ var created = []string{"created_at"}
 var updated = []string{"updated_at"}
 var deleted = []string{"deleted_at"}
 
+//GetXormTag ...
 func GetXormTag(table *core.Table, col *core.Column) string {
-	isNameId := col.Name == table.AutoIncrement
-	isIdPk := isNameId && sqlType2TypeString(col.SQLType) == "int64"
+	isNameID := col.Name == table.AutoIncrement
+	isIDPk := isNameID && sqlType2TypeString(col.SQLType) == "int64"
 
 	var res []string
 	if !col.Nullable {
-		if !isIdPk {
+		if !isIDPk {
 			res = append(res, "not null")
 		}
 	}
@@ -43,15 +44,15 @@ func GetXormTag(table *core.Table, col *core.Column) string {
 		res = append(res, "autoincr")
 	}
 
-	if col.SQLType.IsTime() && InStringSlice(col.Name, created) {
+	if col.SQLType.IsTime() && inStringSlice(col.Name, created) {
 		res = append(res, "created")
 	}
 
-	if col.SQLType.IsTime() && InStringSlice(col.Name, updated) {
+	if col.SQLType.IsTime() && inStringSlice(col.Name, updated) {
 		res = append(res, "updated")
 	}
 
-	if col.SQLType.IsTime() && InStringSlice(col.Name, deleted) {
+	if col.SQLType.IsTime() && inStringSlice(col.Name, deleted) {
 		res = append(res, "deleted")
 	}
 

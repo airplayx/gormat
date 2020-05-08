@@ -1,4 +1,4 @@
-/*
+/*Package sql2struct ...
 @Time : 2019/12/20 16:36
 @Software: GoLand
 @File : special
@@ -14,11 +14,12 @@ import (
 	"fyne.io/fyne/widget"
 	"github.com/buger/jsonparser"
 	"gormat/configs"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"strings"
 )
 
-func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
+//Special ...
+func Special(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 	specialData := widget.NewMultiLineEntry()
 	specialData.SetText(strings.ReplaceAll(options.Special, ",", ",\n"))
 	autoBool := widget.NewCheck(configs.Text("the fields starting with is_ are automatically converted to bool"), func(bool) {})
@@ -32,8 +33,8 @@ func Special(win fyne.Window, options *Sql2struct.SQL2Struct) fyne.Widget {
 			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
 			options.Tinyint2bool = autoBool.Checked
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-				configs.Json = data
+			if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+				configs.JSON = data
 				dialog.ShowInformation(configs.Text("info"), configs.Text("save ok"), win)
 			} else {
 				dialog.ShowError(errors.New(err.Error()), win)

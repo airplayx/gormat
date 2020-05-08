@@ -1,4 +1,4 @@
-package Sql2struct
+package sql2struct
 
 import (
 	"encoding/json"
@@ -11,13 +11,15 @@ import (
 	"path/filepath"
 )
 
+//GenTool ...
 type GenTool struct {
 	targetDir   string
 	packageName string
 	tables      []*core.Table
-	models      map[string]model
+	models      map[string]Model
 }
 
+//NewGenTool ...
 func NewGenTool() *GenTool {
 	dir := Configs().TargetDir
 	if Configs().AutoSave {
@@ -28,10 +30,11 @@ func NewGenTool() *GenTool {
 	return &GenTool{
 		targetDir:   dir,
 		packageName: filepath.Base(dir),
-		models:      make(map[string]model),
+		models:      make(map[string]Model),
 	}
 }
 
+//getDBMetas ...
 func (genTool *GenTool) getDBMetas(ts []string) (err error) {
 	genTool.tables, err = DBMetas(ts, Configs().ExcludeTables, Configs().TryComplete)
 	if err != nil {
@@ -43,8 +46,20 @@ func (genTool *GenTool) getDBMetas(ts []string) (err error) {
 
 func (genTool *GenTool) genModels(maps string) {
 	for _, table := range genTool.tables {
-		model := NewModel(table, maps)
-		genTool.models[model.TableName] = model
+		m := &Model{
+			StructName: core.LintGonicMapper.Table2Obj(table.Name),
+			TableName:  table.Name,
+			Imports:    map[string]string{},
+			Comment:    table.Comment,
+		}
+		for _, column := range table.Columns() {
+			f := NewModelField(table, column, maps)
+			for k, v := range f.Imports {
+				m.Imports[k] = v
+			}
+			m.Fields = append(m.Fields, *f)
+		}
+		genTool.models[m.TableName] = *m
 	}
 	return
 }
@@ -89,6 +104,7 @@ func (genTool *GenTool) genFile() (by []byte, err error) {
 	return
 }
 
+//Gen ...
 func (genTool *GenTool) Gen(ts []string, dbConf *SourceMap) (result []byte, err error) {
 	if err = InitDb(dbConf); err != nil {
 		return

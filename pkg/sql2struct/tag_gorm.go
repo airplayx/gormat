@@ -1,4 +1,4 @@
-package Sql2struct
+package sql2struct
 
 import (
 	"fmt"
@@ -8,15 +8,16 @@ import (
 	"github.com/xormplus/core"
 )
 
+//GetGormTag ...
 func GetGormTag(table *core.Table, col *core.Column) string {
-	isNameId := col.Name == table.AutoIncrement
-	isIdPk := isNameId && sqlType2TypeString(col.SQLType) == "int64"
+	isNameID := col.Name == table.AutoIncrement
+	isIDPk := isNameID && sqlType2TypeString(col.SQLType) == "int64"
 
 	var res []string
 	res = append(res, "column:"+col.Name)
 
 	if !col.Nullable {
-		if !isIdPk {
+		if !isIDPk {
 			res = append(res, "not null")
 		}
 	}

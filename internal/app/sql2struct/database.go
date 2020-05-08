@@ -1,4 +1,4 @@
-/*
+/*Package sql2struct ...
 @Time : 2019/12/20 16:06
 @Software: GoLand
 @File : database
@@ -15,12 +15,13 @@ import (
 	"github.com/buger/jsonparser"
 	"gormat/configs"
 	"gormat/internal/pkg/icon"
-	"gormat/pkg/Sql2struct"
+	"gormat/pkg/sql2struct"
 	"strings"
 	"time"
 )
 
-func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, options *Sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
+//DataBase create new dbConf or load
+func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, options *sql2struct.SQL2Struct, dbIndex []int) fyne.Widget {
 	driver := widget.NewSelect([]string{"Mysql" /*, "PostgreSQL", "Sqlite3", "Mssql"*/}, func(s string) {
 
 	})
@@ -58,7 +59,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			progressDialog.Hide()
 		}()
 		progressDialog.Show()
-		err := Sql2struct.InitDb(&Sql2struct.SourceMap{
+		err := sql2struct.InitDb(&sql2struct.SourceMap{
 			Db:       []string{db.Text},
 			User:     user.Text,
 			Password: password.Text,
@@ -70,7 +71,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			dialog.ShowError(errors.New(err.Error()), currentWindow)
 		} else {
 			dialog.ShowInformation(configs.Text("info"), configs.Text("connection successful"), currentWindow)
-			_ = Sql2struct.DB().Close()
+			_ = sql2struct.DB().Close()
 		}
 	}))
 	return &widget.Form{
@@ -84,7 +85,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			}
 			newDB := widget.NewTabItemWithIcon(
 				db.Text, icon.Database,
-				Screen(currentWindow, &Sql2struct.SourceMap{
+				Screen(currentWindow, &sql2struct.SourceMap{
 					Driver:   driver.Selected,
 					Host:     host.Text,
 					User:     user.Text,
@@ -136,7 +137,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 					if v.Host+":"+v.Port == host.Text+":"+port.Text {
 						ipBox.SelectTabIndex(k)
 						ipBox.CurrentTab().Content.(*widget.TabContainer).Append(newDB)
-						sourceMap[k].Db = Sql2struct.RmDuplicateElement(append(v.Db, db.Text))
+						sourceMap[k].Db = sql2struct.RmDuplicateElement(append(v.Db, db.Text))
 						break
 					}
 				}
@@ -144,7 +145,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				ipBox.Append(widget.NewTabItemWithIcon(host.Text+":"+port.Text, i, dbBox))
 				ipBox.SetTabLocation(widget.TabLocationLeading)
 				ipBox.SelectTabIndex(len(ipBox.Items) - 1)
-				options.SourceMap = append(sourceMap, Sql2struct.SourceMap{
+				options.SourceMap = append(sourceMap, sql2struct.SourceMap{
 					Driver:   driver.Selected,
 					Host:     host.Text,
 					User:     user.Text,
@@ -154,8 +155,8 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				})
 			}
 			jsons, _ := json.Marshal(options)
-			if data, err := jsonparser.Set(configs.Json, jsons, "sql2struct"); err == nil {
-				configs.Json = data
+			if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
+				configs.JSON = data
 				defer func() {
 					if ipBox.Hidden {
 						ipBox.Show()

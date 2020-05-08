@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"gormat/pkg/Sql2struct/sqlorm/util"
+	"gormat/pkg/sql2struct/sqlorm/util"
 
 	"github.com/pinzolo/casee"
 	"log"
