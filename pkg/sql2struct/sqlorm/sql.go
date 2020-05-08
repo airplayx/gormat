@@ -1,4 +1,4 @@
-/*
+/*Package sqlorm ...
 @Time : 2020/1/11 12:20
 @Software: GoLand
 @File : sql
@@ -20,40 +20,43 @@ import (
 	"log"
 )
 
-type SqlGenerator struct {
+//SQLGenerator ...
+type SQLGenerator struct {
 	structName string
 	modelType  *ast.StructType
 }
 
-func NewSqlGenerator(typeSpec *ast.TypeSpec) (*SqlGenerator, error) {
+//NewSQLGenerator ...
+func NewSQLGenerator(typeSpec *ast.TypeSpec) (*SQLGenerator, error) {
 	structType, ok := typeSpec.Type.(*ast.StructType)
 	if !ok {
 		return nil, errors.New("typeSpec is not struct type")
 	}
 
-	return &SqlGenerator{
+	return &SQLGenerator{
 		structName: typeSpec.Name.Name,
 		modelType:  structType,
 	}, nil
 }
 
-func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
+//GetCreateTableSQL ...
+func (ms *SQLGenerator) GetCreateTableSQL(t *core.Table) (string, error) {
 	var tags []string
 	var primaryKeys []string
 	indices := map[string][]string{}
 	uniqInd := map[string][]string{}
 	for _, field := range ms.getStructFieds(ms.modelType) {
-		tag, err := generateSqlTag(field)
+		tag, err := generateSQLTag(field)
 		switch t := field.Type.(type) {
 		case *ast.Ident:
 			if err != nil {
-				log.Printf("generateSqlTag [%s] failed:%v", t.Name, err)
+				log.Printf("generateSQLTag [%s] failed:%v", t.Name, err)
 			} else {
 				tags = append(tags, fmt.Sprintf("%s %s", getColumnName(field), tag))
 			}
 		case *ast.SelectorExpr:
 			if err != nil {
-				log.Printf("generateSqlTag [%s] failed:%v", t.Sel.Name, err)
+				log.Printf("generateSQLTag [%s] failed:%v", t.Sel.Name, err)
 			} else {
 				tags = append(tags, fmt.Sprintf("%s %s", getColumnName(field), tag))
 			}
@@ -120,7 +123,7 @@ func (ms *SqlGenerator) GetCreateTableSql(t *core.Table) (string, error) {
 		strings.Join(options, " ")), nil
 }
 
-func (ms *SqlGenerator) getStructFieds(node ast.Node) []*ast.Field {
+func (ms *SQLGenerator) getStructFieds(node ast.Node) []*ast.Field {
 	var fields []*ast.Field
 	nodeType, ok := node.(*ast.StructType)
 	if !ok {
@@ -150,7 +153,7 @@ func (ms *SqlGenerator) getStructFieds(node ast.Node) []*ast.Field {
 	return fields
 }
 
-func generateSqlTag(field *ast.Field) (string, error) {
+func generateSQLTag(field *ast.Field) (string, error) {
 	var sqlType string
 	var err error
 
@@ -193,10 +196,8 @@ func generateSqlTag(field *ast.Field) (string, error) {
 
 	if strings.TrimSpace(additionalType) == "" {
 		return sqlType, nil
-	} else {
-		return fmt.Sprintf("%v %v", sqlType, additionalType), nil
 	}
-
+	return fmt.Sprintf("%v %v", sqlType, additionalType), nil
 }
 
 func getColumnName(field *ast.Field) string {
@@ -237,7 +238,7 @@ func mysqlTag(field *ast.Field, sqlType string, size int, autoIncrease bool) (s 
 	case *ast.SelectorExpr:
 		typeName = t.Sel.Name
 	default:
-		return "", errors.New(fmt.Sprintf("field %s not supported", util.GetFieldName(field)))
+		return "", fmt.Errorf("field %s not supported", util.GetFieldName(field))
 	}
 	switch typeName {
 	case "bool":
@@ -260,11 +261,12 @@ func mysqlTag(field *ast.Field, sqlType string, size int, autoIncrease bool) (s 
 	case "time":
 		return "datetime", nil
 	default:
-		return "", errors.New(fmt.Sprintf("type %s not supported", typeName))
+		return "", fmt.Errorf("type %s not supported", typeName)
 
 	}
 }
 
+//ParseTagSetting ...
 func ParseTagSetting(str string) map[string]string {
 	tags := strings.Split(str, ";")
 	setting := map[string]string{}

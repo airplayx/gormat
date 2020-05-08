@@ -72,12 +72,12 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 								return match
 							})
 							for _, typ := range types {
-								ms, err := sqlorm.NewSqlGenerator(typ)
+								ms, err := sqlorm.NewSQLGenerator(typ)
 								if err != nil {
 									tableBox.SetText(fmt.Sprintf("create model struct failed:%v", err))
 									continue
 								} else {
-									if sql, err := ms.GetCreateTableSql(currentT); err != nil {
+									if sql, err := ms.GetCreateTableSQL(currentT); err != nil {
 										tableBox.SetText(fmt.Sprintf("generate sql failed:%v", err))
 									} else {
 										sqlStr = append(sqlStr, sql)

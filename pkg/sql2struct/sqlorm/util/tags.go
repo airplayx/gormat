@@ -1,4 +1,4 @@
-/*
+/*Package util ...
 @Time : 2020/1/12 11:06
 @Software: GoLand
 @File : tags
@@ -243,7 +243,7 @@ func (t *Tags) Tags() []*Tag {
 	return t.tags
 }
 
-// Tags returns a slice of tags. The order is the original tag order unless it
+// Keys returns a slice of tags. The order is the original tag order unless it
 // was changed.
 func (t *Tags) Keys() []string {
 	var keys []string

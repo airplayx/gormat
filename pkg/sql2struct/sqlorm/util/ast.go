@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+//GetFieldTag ...
 func GetFieldTag(field *ast.Field, key string) *Tag {
 	if field.Tag == nil {
 		return &Tag{}
@@ -25,6 +26,7 @@ func GetFieldTag(field *ast.Field, key string) *Tag {
 	return tag
 }
 
+//GetFieldName ...
 func GetFieldName(field *ast.Field) string {
 	if len(field.Names) > 0 {
 		return field.Names[0].Name
