@@ -40,7 +40,7 @@ jobs:
       run: cd cmd && go build -v .
 
     - name: Test
-      run: cd test && go test -v ./... -coverprofile coverage.out -covermode atomic
+      run: cd configs && go test -v ./... -coverprofile coverage.out -covermode atomic
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
