@@ -44,52 +44,28 @@ func (genTool *GenTool) getDBMetas() (err error) {
 	return nil
 }
 
-func (genTool *GenTool) genModels(maps string) {
-	for _, table := range genTool.tables {
-		m := &Model{
-			StructName: core.LintGonicMapper.Table2Obj(table.Name),
-			TableName:  table.Name,
-			Imports:    map[string]string{},
-			Comment:    table.Comment,
-		}
-		for _, column := range table.Columns() {
-			f := NewModelField(table, column, maps)
-			for k, v := range f.Imports {
-				m.Imports[k] = v
-			}
-			m.Fields = append(m.Fields, *f)
-		}
-		genTool.models[m.TableName] = *m
-	}
-	return
-}
-
-func (genTool *GenTool) genFile(table string) (by []byte, err error) {
-	for _, model := range genTool.models {
-		if table != "" && model.TableName != table {
-			continue
-		}
+func (genTool *GenTool) genFile(table *schemas.Table) (by []byte, err error) {
+	if v, ok := genTool.models[table.Name]; ok {
 		//package
 		str := fmt.Sprintln("package", genTool.packageName)
-
 		//import
-		if len(model.Imports) > 0 {
+		if len(v.Imports) > 0 {
 			str += fmt.Sprintln("import (")
-			for _, i := range model.Imports {
+			for _, i := range v.Imports {
 				str += fmt.Sprintln(`"` + i + `"`)
 			}
 			str += fmt.Sprintln(")")
 		}
 		//struct
-		str += fmt.Sprintln("type", model.StructName, "struct {")
-		for _, v := range model.Fields {
+		str += fmt.Sprintln("type", v.StructName, "struct {")
+		for _, v := range v.Fields {
 			str += fmt.Sprintln(v.FieldName, v.Type, v.Tag, v.Comment)
 		}
 		str += fmt.Sprintln("}")
 
 		//func
-		str += fmt.Sprintln("func (*", model.StructName, ") TableName() string {")
-		str += fmt.Sprintln(fmt.Sprintf("return `%s` //"+model.Comment, model.TableName))
+		str += fmt.Sprintln("func (", v.StructName, ") TableName() string {")
+		str += fmt.Sprintln(fmt.Sprintf("return `%s` //"+v.Comment, v.TableName))
 		str += fmt.Sprintln("}")
 		//format
 		by, err = format.Source([]byte(str))
@@ -97,7 +73,7 @@ func (genTool *GenTool) genFile(table string) (by []byte, err error) {
 			return
 		}
 		if Configs().AutoSave {
-			file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", model.TableName))
+			file := filepath.Join(genTool.targetDir, fmt.Sprintf("%s.go", v.TableName))
 			if err = ioutil.WriteFile(file, by, 0644); err != nil {
 				return
 			}
@@ -122,6 +98,21 @@ func (genTool *GenTool) Gen(table *schemas.Table, dbConf *SourceMap) (result []b
 	if err = json.Unmarshal(reflect, &config); err != nil {
 		return
 	}
-	genTool.genModels(config)
-	return genTool.genFile(table.Name)
+	for _, table := range genTool.tables {
+		m := &Model{
+			StructName: core.LintGonicMapper.Table2Obj(table.Name),
+			TableName:  table.Name,
+			Imports:    map[string]string{},
+			Comment:    table.Comment,
+		}
+		for _, column := range table.Columns() {
+			f := NewModelField(table, column, config)
+			for k, v := range f.Imports {
+				m.Imports[k] = v
+			}
+			m.Fields = append(m.Fields, *f)
+		}
+		genTool.models[m.TableName] = *m
+	}
+	return genTool.genFile(table)
 }
