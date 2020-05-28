@@ -1,47 +1,35 @@
-/*Package sql2struct ...
-@Time : 2020/1/3 13:58
-@Software: GoLand
-@File : init
-@Author : https://github.com/hsyan2008/gom
-*/
 package sql2struct
 
 import (
-	"encoding/json"
-	"github.com/buger/jsonparser"
-	"gormat/configs"
-	"log"
+	"fmt"
+	"strings"
+	//load some db pkg
+	_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/xormplus/xorm"
+	l "github.com/xormplus/xorm/log"
 )
 
-//SQL2Struct ...
-type SQL2Struct struct {
-	AutoSave      bool        `json:"auto_save"`
-	ExcludeTables []string    `json:"exclude_tables"`
-	JSONOmitempty bool        `json:"json_omitempty"`
-	Reflect       string      `json:"reflect"`
-	SourceMap     []SourceMap `json:"sourceMap"`
-	Special       string      `json:"special"`
-	Tags          []string    `json:"tags"`
-	TargetDir     string      `json:"target_dir"`
-	Tinyint2bool  bool        `json:"tinyint2bool"`
-	TryComplete   bool        `json:"try_complete"`
-}
+//Engine ...
+var Engine *xorm.Engine
 
-//SourceMap ...
-type SourceMap struct {
-	Db       []string `json:"db"`
-	Driver   string   `json:"driver"`
-	Host     string   `json:"host"`
-	Password string   `json:"password"`
-	Port     string   `json:"port"`
-	User     string   `json:"user"`
-}
-
-//Configs ...
-func Configs() (s2s *SQL2Struct) {
-	data, _, _, _ := jsonparser.Get(configs.JSON, "sql2struct")
-	if err := json.Unmarshal([]byte(data), &s2s); err != nil {
-		log.Println(err.Error())
+//Init ...
+func Init(db *SourceMap) (err error) {
+	switch strings.Title(db.Driver) {
+	case "PostgreSQL":
+		Engine, err = xorm.NewPostgreSQL(fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", xorm.POSTGRESQL_DRIVER, db.Password, db.User, db.Host, db.Port, strings.Join(db.Db, "")))
+	case "Sqlite3":
+		Engine, err = xorm.NewSqlite3(strings.Join(db.Db, ""))
+	case "Mssql":
+		Engine, err = xorm.NewMSSQL(xorm.MSSQL_DRIVER, fmt.Sprintf("%s://%s:%s@%s/instance?database=%s", xorm.MSSQL_DRIVER, db.User, db.Password, db.Host, strings.Join(db.Db, "")))
+	default:
+		Engine, err = xorm.NewMySQL(xorm.MYSQL_DRIVER, fmt.Sprintf("%s:%s@(%s:%s)/%s", db.User, db.Password, db.Host, db.Port, strings.Join(db.Db, "")))
 	}
-	return
+	if err != nil {
+		return
+	}
+	Engine.SetLogLevel(l.LOG_WARNING)
+	return Engine.Ping()
 }

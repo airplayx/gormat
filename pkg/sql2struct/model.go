@@ -2,6 +2,7 @@ package sql2struct
 
 import (
 	"encoding/json"
+	"github.com/xormplus/xorm/schemas"
 	"strings"
 
 	"github.com/xormplus/core"
@@ -27,7 +28,7 @@ type ModelField struct {
 }
 
 //NewModelField ...
-func NewModelField(table *core.Table, column *core.Column, maps string) (f *ModelField) {
+func NewModelField(table *schemas.Table, column *schemas.Column, maps string) (f *ModelField) {
 	var reflect, special map[string]string
 	_ = json.Unmarshal([]byte(maps), &reflect)
 	f = &ModelField{

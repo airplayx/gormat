@@ -7,6 +7,7 @@
 package sql2struct
 
 import (
+	"github.com/xormplus/xorm/schemas"
 	"sort"
 	"strings"
 
@@ -18,7 +19,7 @@ var updated = []string{"updated_at"}
 var deleted = []string{"deleted_at"}
 
 //GetXormTag ...
-func GetXormTag(table *core.Table, col *core.Column) string {
+func GetXormTag(table *schemas.Table, col *schemas.Column) string {
 	isNameID := col.Name == table.AutoIncrement
 	isIDPk := isNameID && sqlType2TypeString(col.SQLType) == "int64"
 
@@ -76,7 +77,7 @@ func GetXormTag(table *core.Table, col *core.Column) string {
 		res = append(res, uistr)
 	}
 
-	res = append(res, DB().SQLType(col))
+	res = append(res, Engine.SQLType(col))
 
 	if len(res) > 0 {
 		return "xorm:\"" + strings.Join(res, " ") + "\""

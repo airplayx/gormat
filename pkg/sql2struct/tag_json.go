@@ -2,12 +2,11 @@ package sql2struct
 
 import (
 	"fmt"
-
-	"github.com/xormplus/core"
+	"github.com/xormplus/xorm/schemas"
 )
 
 //GetJSONTag ...
-func GetJSONTag(column *core.Column, isOmitempty bool) string {
+func GetJSONTag(column *schemas.Column, isOmitempty bool) string {
 	if !isOmitempty {
 		return fmt.Sprintf(`json:"%s"`, column.Name)
 	}

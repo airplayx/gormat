@@ -2,6 +2,7 @@ package sql2struct
 
 import (
 	"fmt"
+	"github.com/xormplus/xorm/schemas"
 	"sort"
 	"strings"
 
@@ -9,7 +10,7 @@ import (
 )
 
 //GetGormTag ...
-func GetGormTag(table *core.Table, col *core.Column) string {
+func GetGormTag(table *schemas.Table, col *schemas.Column) string {
 	isNameID := col.Name == table.AutoIncrement
 	isIDPk := isNameID && sqlType2TypeString(col.SQLType) == "int64"
 
@@ -25,17 +26,18 @@ func GetGormTag(table *core.Table, col *core.Column) string {
 		res = append(res, "primary_key")
 	}
 	if col.Default != "" {
-		if strings.Trim(col.Default, "'") == "" {
-			res = append(res, "default:''")
-		} else if strings.EqualFold(col.Default, "'NULL'") ||
-			strings.EqualFold(col.Default, "NULL") {
-			res = append(res, "default:null")
+		def := strings.Trim(col.Default, "'")
+		if strings.EqualFold(def, "NULL") {
+			def = "null"
+		} else if def == "current_timestamp()" || def == "CURRENT_TIMESTAMP" {
+			def = "current_timestamp()"
 		} else {
-			res = append(res, "default:'"+strings.Trim(col.Default, "'")+"'")
+			def = "'" + def + "'"
 		}
+		res = append(res, "default:"+def+"")
 	}
 	if col.IsAutoIncrement {
-		res = append(res, "AUTO_INCREMENT")
+		res = append(res, strings.ToLower("AUTO_INCREMENT"))
 	}
 
 	names := make([]string, 0, len(col.Indexes))

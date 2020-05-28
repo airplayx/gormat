@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/liudanking/gorm2sql/program"
-	"github.com/xormplus/core"
+	"github.com/xormplus/xorm/schemas"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -15,6 +15,7 @@ import (
 	"gormat/pkg/sql2struct"
 	"gormat/pkg/sql2struct/quickly"
 	"gormat/pkg/sql2struct/sqlorm"
+	"log"
 	"path/filepath"
 	"strings"
 	"time"
@@ -24,7 +25,7 @@ import (
 func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(``)
-	if err := sql2struct.InitDb(dbConf); err != nil {
+	if err := sql2struct.Init(dbConf); err != nil {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
 			widget.NewLabel(err.Error()),
@@ -32,7 +33,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 	}
 	var tables = widget.NewTabContainer()
 	var currentTable = make(chan *widget.TabItem)
-	if tbs, err := sql2struct.DBMetas(nil, sql2struct.Configs().ExcludeTables, sql2struct.Configs().TryComplete); err == nil {
+	if tbs, err := sql2struct.Engine.DBMetas(); err == nil {
 		for _, t := range tbs {
 			tables.Append(widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
@@ -41,7 +42,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 			for {
 				time.Sleep(time.Microsecond * 50)
 				if <-currentTable != tables.CurrentTab() {
-					var currentT *core.Table
+					var currentT *schemas.Table
 					for _, t := range tbs {
 						if t.Name == tables.CurrentTab().Text {
 							currentT = t
@@ -51,7 +52,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 						return
 					}
 					tableBox := widget.NewMultiLineEntry()
-					if result, err := sql2struct.NewGenTool().Gen([]string{currentT.Name}, dbConf); err != nil {
+					if result, err := sql2struct.NewGenTool().Gen(currentT, dbConf); err != nil {
 						resultBox.SetText(``)
 						tableBox.SetText(err.Error())
 					} else {
@@ -68,17 +69,20 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 						} else {
 							var sqlStr []string
 							types := program.FindMatchStruct([]*ast.File{file}, func(structName string) bool {
-								match, _ := filepath.Match(strings.Join(url, ""), structName)
+								match, err := filepath.Match(strings.Join(url, ""), structName)
+								if err != nil {
+									log.Println(err.Error())
+								}
 								return match
 							})
 							for _, typ := range types {
 								ms, err := sqlorm.NewSQLGenerator(typ)
 								if err != nil {
-									tableBox.SetText(fmt.Sprintf("create model struct failed:%v", err))
+									tableBox.SetText(fmt.Sprintf("create model struct failed:%s", err.Error()))
 									continue
 								} else {
 									if sql, err := ms.GetCreateTableSQL(currentT); err != nil {
-										tableBox.SetText(fmt.Sprintf("generate sql failed:%v", err))
+										tableBox.SetText(fmt.Sprintf("generate sql failed:%s", err.Error()))
 									} else {
 										sqlStr = append(sqlStr, sql)
 									}

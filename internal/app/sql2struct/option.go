@@ -16,7 +16,6 @@ import (
 	"github.com/chenhg5/collection"
 	"gormat/configs"
 	"gormat/pkg/sql2struct"
-	"strings"
 )
 
 //Option ...
@@ -61,18 +60,6 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 	jsonType.Hidden = !collection.Collect(options.Tags).Contains("json")
 	jsonT.SetChecked(!jsonType.Hidden)
 
-	excludeTables := widget.NewMultiLineEntry()
-	excludeTables.SetPlaceHolder(configs.Text("carriage return"))
-	excludeTables.SetText(strings.Join(options.ExcludeTables, "\n"))
-	tryComplete := widget.NewRadio([]string{configs.Text("yes"), configs.Text("no")}, func(s string) {
-
-	})
-	tryComplete.Horizontal = true
-	if options.TryComplete {
-		tryComplete.SetSelected(configs.Text("yes"))
-	} else {
-		tryComplete.SetSelected(configs.Text("no"))
-	}
 	return &widget.Form{
 		OnCancel: func() {
 			win.Close()
@@ -94,8 +81,6 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 				options.Tags = append(options.Tags, "json")
 			}
 			options.JSONOmitempty = jsonType.Selected == configs.Text("build and include omitempty")
-			options.ExcludeTables = strings.Split(excludeTables.Text, "\n")
-			options.TryComplete = tryComplete.Selected == configs.Text("yes")
 
 			jsons, _ := json.Marshal(options)
 			if data, err := jsonparser.Set(configs.JSON, jsons, "sql2struct"); err == nil {
@@ -113,8 +98,6 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 			{Text: "", Widget: xorm},
 			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
-			{Text: configs.Text("exclusion table"), Widget: excludeTables},
-			{Text: configs.Text("always execute"), Widget: tryComplete},
 		},
 	}
 }

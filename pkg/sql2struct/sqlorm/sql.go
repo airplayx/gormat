@@ -9,7 +9,7 @@ package sqlorm
 import (
 	"errors"
 	"fmt"
-	"github.com/xormplus/core"
+	"github.com/xormplus/xorm/schemas"
 	"go/ast"
 	"strconv"
 	"strings"
@@ -40,7 +40,7 @@ func NewSQLGenerator(typeSpec *ast.TypeSpec) (*SQLGenerator, error) {
 }
 
 //GetCreateTableSQL ...
-func (ms *SQLGenerator) GetCreateTableSQL(t *core.Table) (string, error) {
+func (ms *SQLGenerator) GetCreateTableSQL(t *schemas.Table) (string, error) {
 	var tags []string
 	var primaryKeys []string
 	indices := map[string][]string{}

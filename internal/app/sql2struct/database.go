@@ -59,7 +59,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			progressDialog.Hide()
 		}()
 		progressDialog.Show()
-		err := sql2struct.InitDb(&sql2struct.SourceMap{
+		err := sql2struct.Init(&sql2struct.SourceMap{
 			Db:       []string{db.Text},
 			User:     user.Text,
 			Password: password.Text,
@@ -71,7 +71,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			dialog.ShowError(errors.New(err.Error()), currentWindow)
 		} else {
 			dialog.ShowInformation(configs.Text("info"), configs.Text("connection successful"), currentWindow)
-			_ = sql2struct.DB().Close()
+			_ = sql2struct.Engine.Close()
 		}
 	}))
 	return &widget.Form{

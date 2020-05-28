@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/xormplus/core"
+	"github.com/xormplus/xorm/schemas"
 	"go/format"
 	"io/ioutil"
 	"log"
@@ -15,7 +16,7 @@ import (
 type GenTool struct {
 	targetDir   string
 	packageName string
-	tables      []*core.Table
+	tables      []*schemas.Table
 	models      map[string]Model
 }
 
@@ -35,12 +36,11 @@ func NewGenTool() *GenTool {
 }
 
 //getDBMetas ...
-func (genTool *GenTool) getDBMetas(ts []string) (err error) {
-	genTool.tables, err = DBMetas(ts, Configs().ExcludeTables, Configs().TryComplete)
+func (genTool *GenTool) getDBMetas() (err error) {
+	genTool.tables, err = Engine.DBMetas()
 	if err != nil {
 		return
 	}
-
 	return nil
 }
 
@@ -64,8 +64,11 @@ func (genTool *GenTool) genModels(maps string) {
 	return
 }
 
-func (genTool *GenTool) genFile() (by []byte, err error) {
+func (genTool *GenTool) genFile(table string) (by []byte, err error) {
 	for _, model := range genTool.models {
+		if table != "" && model.TableName != table {
+			continue
+		}
 		//package
 		str := fmt.Sprintln("package", genTool.packageName)
 
@@ -105,18 +108,20 @@ func (genTool *GenTool) genFile() (by []byte, err error) {
 }
 
 //Gen ...
-func (genTool *GenTool) Gen(ts []string, dbConf *SourceMap) (result []byte, err error) {
-	if err = InitDb(dbConf); err != nil {
+func (genTool *GenTool) Gen(table *schemas.Table, dbConf *SourceMap) (result []byte, err error) {
+	if err = Init(dbConf); err != nil {
 		return
 	}
-	if err = genTool.getDBMetas(ts); err != nil {
+
+	if err = genTool.getDBMetas(); err != nil {
 		return
 	}
+
 	reflect, _ := json.Marshal(Configs().Reflect)
 	var config string
 	if err = json.Unmarshal(reflect, &config); err != nil {
 		return
 	}
 	genTool.genModels(config)
-	return genTool.genFile()
+	return genTool.genFile(table.Name)
 }
