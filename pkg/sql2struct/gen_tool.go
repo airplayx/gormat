@@ -85,34 +85,34 @@ func (genTool *GenTool) genFile(table *schemas.Table) (by []byte, err error) {
 
 //Gen ...
 func (genTool *GenTool) Gen(table *schemas.Table, dbConf *SourceMap) (result []byte, err error) {
-	if err = Init(dbConf); err != nil {
-		return
-	}
+	//if err = Init(dbConf); err != nil {
+	//	return
+	//}
 
-	if err = genTool.getDBMetas(); err != nil {
-		return
-	}
+	//if err = genTool.getDBMetas(); err != nil {
+	//	return
+	//}
 
 	reflect, _ := json.Marshal(Configs().Reflect)
 	var config string
 	if err = json.Unmarshal(reflect, &config); err != nil {
 		return
 	}
-	for _, table := range genTool.tables {
-		m := &Model{
-			StructName: core.LintGonicMapper.Table2Obj(table.Name),
-			TableName:  table.Name,
-			Imports:    map[string]string{},
-			Comment:    table.Comment,
-		}
-		for _, column := range table.Columns() {
-			f := NewModelField(table, column, config)
-			for k, v := range f.Imports {
-				m.Imports[k] = v
-			}
-			m.Fields = append(m.Fields, *f)
-		}
-		genTool.models[m.TableName] = *m
+	//for _, table := range genTool.tables {
+	m := &Model{
+		StructName: core.LintGonicMapper.Table2Obj(table.Name),
+		TableName:  table.Name,
+		Imports:    map[string]string{},
+		Comment:    table.Comment,
 	}
+	for _, column := range table.Columns() {
+		f := NewModelField(table, column, config)
+		for k, v := range f.Imports {
+			m.Imports[k] = v
+		}
+		m.Fields = append(m.Fields, *f)
+	}
+	genTool.models[m.TableName] = *m
+	//}
 	return genTool.genFile(table)
 }

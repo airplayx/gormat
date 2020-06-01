@@ -38,7 +38,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 			tables.Append(widget.NewTabItemWithIcon(t.Name, icon.Table, widget.NewMultiLineEntry()))
 		}
 		tables.SelectTabIndex(0)
-		go func(dbConf *sql2struct.SourceMap) {
+		go func() {
 			for {
 				time.Sleep(time.Microsecond * 50)
 				if <-currentTable != tables.CurrentTab() {
@@ -52,7 +52,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 						return
 					}
 					tableBox := widget.NewMultiLineEntry()
-					if result, err := sql2struct.NewGenTool().Gen(currentT, dbConf); err != nil {
+					if result, err := sql2struct.NewGenTool().Gen(currentT, nil); err != nil {
 						resultBox.SetText(``)
 						tableBox.SetText(err.Error())
 					} else {
@@ -95,7 +95,7 @@ func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 					tables.Refresh()
 				}
 			}
-		}(dbConf)
+		}()
 	} else {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
