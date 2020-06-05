@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
-	"github.com/airplayx/json2go"
+	"github.com/airplayx/gorbit/json2go"
 	"strings"
 )
 

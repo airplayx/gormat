@@ -11,7 +11,7 @@ require (
 	github.com/CloudyKit/jet v2.1.2+incompatible // indirect
 	github.com/agrison/go-tablib v0.0.0-20160310143025-4930582c22ee // indirect
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
-	github.com/airplayx/json2go v0.0.0-20200518043302-bec860558397
+	github.com/airplayx/gorbit v0.0.0-20200605155611-74ad5e38e049
 	github.com/bndr/gotabulate v1.1.2 // indirect
 	github.com/buger/jsonparser v1.0.0
 	github.com/chenhg5/collection v0.0.0-20191118032303-cb21bccce4c3
