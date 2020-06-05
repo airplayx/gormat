@@ -51,7 +51,7 @@ func main() {
 	main.SetIcon(icon.Ico)
 	window := main.NewWindow("Gormat")
 	window.CenterOnScreen()
-	window.Resize(fyne.Size{Width: 1300, Height: 700})
+	window.Resize(fyne.Size{Width: 1920})
 	window.SetContent(_app.Container(main, window))
 	window.SetOnClosed(func() {
 		_ = ioutil.WriteFile(configs.CustomFile, configs.JSON, os.ModePerm)
@@ -61,9 +61,9 @@ func main() {
 }
 
 /**
-vendor/fyne.io/fyne/widget/tabcontainer.go:547
-vendor/fyne.io/fyne/widget/tabcontainer.go:193
-vendor/fyne.io/fyne/widget/tabcontainer.go:411
-vendor/fyne.io/fyne/widget/form.go:94
+vendor/fyne.io/fyne/widget/tabcontainer.go:568
+vendor/fyne.io/fyne/widget/tabcontainer.go:380
+vendor/fyne.io/fyne/widget/tabcontainer.go:430
+vendor/fyne.io/fyne/widget/form.go:121
 vendor/fyne.io/fyne/dialog/confirm.go:28
 */

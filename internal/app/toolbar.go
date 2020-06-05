@@ -37,7 +37,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			w.SetContent(widget.NewScrollContainer(
 				s2s.DataBase(win, w, ipBox, options, dbIndex)),
 			)
-			w.Resize(fyne.Size{Width: 650, Height: 300})
+			w.Resize(fyne.Size{Width: 1000, Height: 700})
 			w.CenterOnScreen()
 			w.Show()
 		}),
@@ -51,7 +51,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 			)
 			setting.SetTabLocation(widget.TabLocationLeading)
 			w.SetContent(setting)
-			w.Resize(fyne.Size{Width: 650, Height: 300})
+			w.Resize(fyne.Size{Width: 1000, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
 		}),
@@ -61,7 +61,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 				layout.NewGridLayout(1),
 				widget.NewScrollContainer(s2s.QuickScreen()),
 			))
-			w.Resize(fyne.Size{Width: 1000, Height: 500})
+			w.Resize(fyne.Size{Width: 1350, Height: 500})
 			w.CenterOnScreen()
 			w.Show()
 		}),
@@ -121,7 +121,7 @@ func ToolBar(app fyne.App, win fyne.Window, ipBox *widget.TabContainer, options 
 				w.SetContent(widget.NewScrollContainer(
 					s2s.DataBase(win, w, ipBox, options, dbIndex)))
 			}
-			w.Resize(fyne.Size{Width: 650, Height: 300})
+			w.Resize(fyne.Size{Width: 1000, Height: 700})
 			w.CenterOnScreen()
 			w.Show()
 		}),
