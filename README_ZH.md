@@ -31,13 +31,13 @@
 在golang开发中，有很多时候需要手动敲结构体，并且需要手动入库。尽管gorm有自动迁移的功能，但并不能有效、理想化的形成数据库字段。
 网上也有很多开源的例子，但是都没有界面化并且方便管理的工具，所以我开始写这个项目，目的就是更高效的开发，转换即用。
 
-本项目借鉴了许多开源转换库的代码，并结合orm进行适度调整。在开发中遇到了很多的问题，fyne这个GUI开发框架也是有很多坑点的，现不赘述。不管是数据库转Struct，还是Struct转SQL语句，普遍还存在一些误差，所以转换结果仅供参考，
+本项目借鉴了许多开源转换库的代码，并结合orm进行适度调整。在开发中遇到了很多的问题，fyne这个GUI开发框架也是有很多坑点的，现不赘述。不管是数据库转Struct，还是SQL转Struct语句，普遍还存在一些误差，所以转换结果仅供参考，
 实际项目请自行调整使用。
 
 ### 开发条件
 
 ```
-golang >= 1.11
+golang 1.11+
 ```
 
 ### 安装
@@ -46,9 +46,12 @@ golang >= 1.11
 
 不同平台需要安装额外的开发环境
 
-OS X & Linux:
+Linux and BSD:
 ```sh
-OpenSSL
+Ubuntu / Debian: sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+Fedora: sudo dnf install golang gcc libXcursor-devel libXrandr-devel mesa-libGL-devel libXi-devel libXinerama-devel
+Solus: sudo eopkg it -c system.devel golang mesalib-devel libxrandr-devel libxcursor-devel libxi-devel libxinerama-devel
+Arch Linux: sudo pacman -S go xorg-server-devel
 ```
 
 Windows:
@@ -69,36 +72,6 @@ go build -o gormat.exe -ldflags="-H windowsgui"
 
 本项目使用fyne开发，更多打包编译步骤参考: [https://fyne.io/develop/distribution.html](https://fyne.io/develop/distribution.html)
 
-## 开源支持
-
-    fyne.io/fyne
-   	github.com/Chronokeeper/anyxml
-   	github.com/CloudyKit/fastprinter
-   	github.com/CloudyKit/jet
-   	github.com/agrison/go-tablib
-   	github.com/agrison/mxj
-   	github.com/bndr/gotabulate
-   	github.com/buger/jsonparser
-   	github.com/chenhg5/collection
-   	github.com/denisenkom/go-mssqldb
-   	github.com/fatih/astrewrite
-   	github.com/fatih/camelcase
-   	github.com/fatih/structs
-   	github.com/go-sql-driver/mysql
-   	github.com/lib/pq
-   	github.com/liudanking/gorm2sql
-   	github.com/liudanking/goutil
-   	github.com/mattn/go-sqlite3
-   	github.com/pinzolo/casee
-   	github.com/tealeg/xlsx
-   	github.com/xormplus/builder
-   	github.com/xormplus/core
-   	github.com/xormplus/xorm
-   	golang.org/x/net
-   	golang.org/x/tools
-   	gopkg.in/flosch/pongo2.v3
-   	gopkg.in/yaml.v2
-	
 ## 鸣谢
 
     github.com/hsyan2008/gom

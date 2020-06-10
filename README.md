@@ -30,12 +30,12 @@
 
 In golang development, there are times when you need to tap the structure manually and store it manually.Although Gorm has the ability to migrate automatically, it does not form database fields effectively and ideally.There are also many open source examples on the web, but there are no user-friendly and easy-to-manage tools, so I started this project with the goal of more efficient development, conversion and ready-to-use.
 
-This project borrows a lot of code from open source conversion libraries and makes some adjustments in conjunction with orm.There are many problems encountered in the development, and Fyne is a GUI development framework with many pits, which should not be further discussed.Whether it is a database to Struct or a Struct to SQL statement, there are still some errors, so the conversion results are only for reference, please adjust the use of the actual project.
+This project borrows a lot of code from open source conversion libraries and makes some adjustments in conjunction with orm.There are many problems encountered in the development, and Fyne is a GUI development framework with many pits, which should not be further discussed.Whether it is a database to Struct or a SQL to Struct statement, there are still some errors, so the conversion results are only for reference, please adjust the use of the actual project.
 
 ### Prerequisites 
 
 ```
-golang >= 1.11
+golang 1.11+
 ```
 
 ### Installation 
@@ -44,9 +44,12 @@ No additional environment is required for installation and use, move to [release
 
 Different platforms need to install additional development environments.
 
-OS X & Linux:
+Linux and BSD:
 ```sh
-OpenSSL
+Ubuntu / Debian: sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+Fedora: sudo dnf install golang gcc libXcursor-devel libXrandr-devel mesa-libGL-devel libXi-devel libXinerama-devel
+Solus: sudo eopkg it -c system.devel golang mesalib-devel libxrandr-devel libxcursor-devel libxi-devel libxinerama-devel
+Arch Linux: sudo pacman -S go xorg-server-devel
 ```
 
 Windows:
@@ -67,36 +70,6 @@ go build -o gormat.exe -ldflags="-H windowsgui"
 
 In this project, Fyne is used for development. For more steps of packaging and compiling, please refer to [https://fyne.io/develop/distribution.html](https://fyne.io/develop/distribution.html)
 
-## Contributing
-
-    fyne.io/fyne
-   	github.com/Chronokeeper/anyxml
-   	github.com/CloudyKit/fastprinter
-   	github.com/CloudyKit/jet
-   	github.com/agrison/go-tablib
-   	github.com/agrison/mxj
-   	github.com/bndr/gotabulate
-   	github.com/buger/jsonparser
-   	github.com/chenhg5/collection
-   	github.com/denisenkom/go-mssqldb
-   	github.com/fatih/astrewrite
-   	github.com/fatih/camelcase
-   	github.com/fatih/structs
-   	github.com/go-sql-driver/mysql
-   	github.com/lib/pq
-   	github.com/liudanking/gorm2sql
-   	github.com/liudanking/goutil
-   	github.com/mattn/go-sqlite3
-   	github.com/pinzolo/casee
-   	github.com/tealeg/xlsx
-   	github.com/xormplus/builder
-   	github.com/xormplus/core
-   	github.com/xormplus/xorm
-   	golang.org/x/net
-   	golang.org/x/tools
-   	gopkg.in/flosch/pongo2.v3
-   	gopkg.in/yaml.v2
-	
 ## Thanks
 
     github.com/hsyan2008/gom
