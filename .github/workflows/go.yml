@@ -13,36 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.13
-      id: go
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+        id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+          if [ -f Gopkg.toml ]; then
+              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+              dep ensure
+          fi
 
-    - name: Set up environment
-      run:
-        sudo apt-get install xorg-dev
-        && sudo apt-get install build-essential libgl1-mesa-dev
-        && sudo apt-get install freeglut3-dev
+      - name: Set up environment
+        run:
+          sudo apt-get install xorg-dev
+          && sudo apt-get install build-essential libgl1-mesa-dev
+          && sudo apt-get install freeglut3-dev
 
-    - name: Build
-      run: cd cmd && go build -v .
+      - name: Test
+        run: go test -v ./... -coverprofile coverage.out -covermode atomic
 
-    - name: Test
-      run: cd configs && go test -v ./... -coverprofile coverage.out -covermode atomic
+      - name: Build
+        run: cd cmd && go build -v .
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
