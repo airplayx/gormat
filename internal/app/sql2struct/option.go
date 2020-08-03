@@ -62,7 +62,7 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 
 	return &widget.Form{
 		OnCancel: func() {
-			win.Close()
+			//win.Close()
 		},
 		OnSubmit: func() {
 			options.TargetDir = targetDir.Text
@@ -99,5 +99,7 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 			{Text: "", Widget: jsonT},
 			{Text: "", Widget: jsonType},
 		},
+		CancelText: configs.Text("cancel"),
+		SubmitText: configs.Text("confirm"),
 	}
 }

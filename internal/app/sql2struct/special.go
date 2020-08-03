@@ -27,7 +27,7 @@ func Special(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 
 	return &widget.Form{
 		OnCancel: func() {
-			win.Close()
+			//win.Close()
 		},
 		OnSubmit: func() {
 			options.Special = strings.ReplaceAll(specialData.Text, ",\n", ",")
@@ -44,5 +44,7 @@ func Special(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 			{Text: configs.Text("bool"), Widget: autoBool},
 			{Text: configs.Text("specified fields transformation"), Widget: specialData},
 		},
+		CancelText: configs.Text("cancel"),
+		SubmitText: configs.Text("confirm"),
 	}
 }

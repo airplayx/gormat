@@ -122,7 +122,7 @@ func (f *Form) CreateRenderer() fyne.WidgetRenderer {
 	f.cancelButton = NewButton("", f.OnCancel)
 	f.submitButton = NewButton("", f.OnSubmit)
 	f.submitButton.Style = PrimaryButton
-	f.buttonBox = NewHBox(layout.NewSpacer(), f.cancelButton, f.submitButton)
+	f.buttonBox = NewHBox(layout.NewSpacer() /*f.cancelButton,*/, f.submitButton)
 
 	renderer := cache.Renderer(NewVBox(f.itemGrid, f.buttonBox))
 	f.setButtons() // will set correct visibility on the submit/cancel btns

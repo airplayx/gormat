@@ -55,10 +55,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 				progressDialog.SetValue(num)
 				num += 0.01
 			}
-			progressDialog.SetValue(1)
-			progressDialog.Hide()
 		}()
-		progressDialog.Show()
 		err := sql2struct.Init(&sql2struct.SourceMap{
 			Db:       []string{db.Text},
 			User:     user.Text,
@@ -68,15 +65,17 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			Driver:   driver.Selected,
 		})
 		if err != nil {
+			progressDialog.Hide()
 			dialog.ShowError(errors.New(err.Error()), currentWindow)
 		} else {
+			progressDialog.Hide()
 			dialog.ShowInformation(configs.Text("info"), configs.Text("connection successful"), currentWindow)
 			_ = sql2struct.Engine.Close()
 		}
 	}))
 	return &widget.Form{
 		OnCancel: func() {
-			currentWindow.Close()
+			//currentWindow.Close()
 		},
 		OnSubmit: func() {
 			if db.Text == "" {
@@ -176,5 +175,7 @@ func DataBase(window, currentWindow fyne.Window, ipBox *widget.TabContainer, opt
 			{Text: configs.Text("database"), Widget: db},
 			{Text: "", Widget: testDb},
 		},
+		CancelText: configs.Text("cancel"),
+		SubmitText: configs.Text("confirm"),
 	}
 }

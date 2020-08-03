@@ -24,7 +24,7 @@ func Reflect(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 	dataType.SetText(strings.ReplaceAll(options.Reflect, ",", ",\n"))
 	return &widget.Form{
 		OnCancel: func() {
-			win.Close()
+			//win.Close()
 		},
 		OnSubmit: func() {
 			options.Reflect = strings.ReplaceAll(dataType.Text, ",\n", ",")
@@ -39,5 +39,7 @@ func Reflect(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 		Items: []*widget.FormItem{
 			{Text: configs.Text("type conversion"), Widget: dataType},
 		},
+		CancelText: configs.Text("cancel"),
+		SubmitText: configs.Text("confirm"),
 	}
 }

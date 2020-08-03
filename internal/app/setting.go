@@ -77,7 +77,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 
 	return &widget.Form{
 		OnCancel: func() {
-			win.Close()
+			//win.Close()
 		},
 		OnSubmit: func() {
 			dialog.ShowInformation(configs.Text("info"), configs.Text("effective after restart"), win)
@@ -96,5 +96,7 @@ func SettingScreen(app fyne.App, win fyne.Window) fyne.CanvasObject {
 			//	theMe,
 			//)},
 		},
+		CancelText: configs.Text("cancel"),
+		SubmitText: configs.Text("confirm"),
 	}
 }

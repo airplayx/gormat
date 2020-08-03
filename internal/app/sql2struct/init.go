@@ -3,6 +3,7 @@ package sql2struct
 import (
 	"fmt"
 	"fyne.io/fyne"
+	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/liudanking/gorm2sql/program"
@@ -25,6 +26,16 @@ import (
 func Screen(win fyne.Window, dbConf *sql2struct.SourceMap) *fyne.Container {
 	resultBox := widget.NewMultiLineEntry()
 	resultBox.SetPlaceHolder(``)
+	progressDialog := dialog.NewProgress(dbConf.Host, dbConf.Db[0], win)
+	go func() {
+		num := 0.0
+		for num <= 1.0 {
+			time.Sleep(50 * time.Millisecond)
+			progressDialog.SetValue(num)
+			num += 0.01
+		}
+	}()
+	defer progressDialog.Hide()
 	if err := sql2struct.Init(dbConf); err != nil {
 		return fyne.NewContainerWithLayout(
 			layout.NewGridLayout(1),
