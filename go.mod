@@ -5,7 +5,7 @@ go 1.13
 replace fyne.io/fyne => ./vendor/fyne.io/fyne
 
 require (
-	fyne.io/fyne v0.0.0-00010101000000-000000000000
+	fyne.io/fyne v1.3.2
 	github.com/Chronokeeper/anyxml v0.0.0-20160530174208-54457d8e98c6 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet v2.1.2+incompatible // indirect

@@ -2,7 +2,7 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "Gormat - Tool For Gopher"
-#define MyAppVersion "0.0.5"
+#define MyAppVersion "0.0.6"
 #define MyAppPublisher "airplayx"
 #define MyAppURL "http://airplayx.com/"
 #define MyAppExeName "gormat.exe"
@@ -38,7 +38,7 @@ Name: "chinesesimp"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "E:\gormat\cmd\gormat.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "G:\gormat\cmd\gormat.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; 注意: 不要在任何共享系统文件上使用“Flags: ignoreversion”
 
 [Icons]
