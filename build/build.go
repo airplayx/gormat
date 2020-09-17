@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/app"
 	"github.com/buger/jsonparser"
 	"github.com/rakyll/statik/fs"
-	_ "gormat/cmd/statik"
+	_ "gormat/build/statik"
 	"gormat/configs"
 	_app "gormat/internal/app"
 	"gormat/internal/pkg/icon"
