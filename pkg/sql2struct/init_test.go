@@ -18,22 +18,22 @@ func TestInit(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{
-			name: "test1",
-			args: args{
-				&SourceMap{
-					Db: []string{
-						"test",
-					},
-					Driver:   "Mysql",
-					Host:     "localhost",
-					Password: "password",
-					User:     "root",
-					Port:     "3306",
-				},
-			},
-			wantErr: false,
-		},
+		//{
+		//	name: "test1",
+		//	args: args{
+		//		&SourceMap{
+		//			Db: []string{
+		//				"test",
+		//			},
+		//			Driver:   "Mysql",
+		//			Host:     "localhost",
+		//			Password: "password",
+		//			User:     "root",
+		//			Port:     "3306",
+		//		},
+		//	},
+		//	wantErr: false,
+		//},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
