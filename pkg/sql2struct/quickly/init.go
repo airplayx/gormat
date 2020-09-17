@@ -32,8 +32,8 @@ type column struct {
 	Constraint []byte
 }
 
-//LangT ...
-type LangT struct {
+//QuickOut ...
+type QuickOut struct {
 	Name   string
 	Fields map[int]field
 }
@@ -69,7 +69,7 @@ func (f field) String() string {
 }
 
 //GenType ...
-func (t LangT) GenType() ([]byte, error) {
+func (t QuickOut) GenType() ([]byte, error) {
 	str := fmt.Sprintln("type", t.Name, "struct {")
 	sortedMap(t.Fields, func(k int, v field) {
 		str += fmt.Sprintln(v)
@@ -157,7 +157,7 @@ func MatchStmt(r io.Reader) (byte [][][]byte, err error) {
 }
 
 //HandleStmtBlock ...
-func HandleStmtBlock(s [][]byte) (t LangT) {
+func HandleStmtBlock(s [][]byte) (t QuickOut) {
 	block := s[0]
 	leftTrimIdx := 0
 	rightTrimIdx := len(block) - 1

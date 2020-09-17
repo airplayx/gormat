@@ -1,23 +1,52 @@
-/*Package configs ...
-@Time : 2019/12/25 16:05
-@Software: GoLand
-@File : init
-@Author : Bingo <airplayx@gmail.com>
-*/
 package configs
 
 import (
+	"github.com/buger/jsonparser"
 	"testing"
 )
 
 func TestText(t *testing.T) {
-	var test = map[string]interface{}{
-		"language": "language",
+	JSON, _ = jsonparser.Set(JSON, []byte("\"cn\""), "const", "language")
+	type args struct {
+		key     string
+		replace []interface{}
 	}
-	for k, v := range test {
-		lang := Text(k)
-		if lang == "" || lang != v {
-			t.Errorf("#%s: %s; want %s", k, lang, v)
-		}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "test1 language",
+			args: args{
+				key: "light",
+			},
+			want: "白色",
+		},
+		{
+			name: "test2 language",
+			args: args{
+				key: "ddd",
+			},
+			want: "ddd",
+		},
+		{
+			name: "test3 language",
+			args: args{
+				key: "test %s and more %d",
+				replace: []interface{}{
+					"one",
+					3,
+				},
+			},
+			want: "test one and more 3",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Text(tt.args.key, tt.args.replace...); got != tt.want {
+				t.Errorf("Text() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

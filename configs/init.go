@@ -7,10 +7,10 @@
 package configs
 
 import (
+	"fmt"
 	"github.com/buger/jsonparser"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 var (
@@ -28,18 +28,10 @@ func init() {
 }
 
 //Text the func translation
-func Text(key string, replace ...string) string {
+func Text(key string, replace ...interface{}) string {
 	l, _ := jsonparser.GetString(JSON, "const", "language")
-	if l == "en" {
-		goto loop
-	} else if str, err := jsonparser.GetString(JSON, "language", key); err != nil {
-		goto loop
-	} else {
+	if str, err := jsonparser.GetString(JSON, "language", key); l != "en" && err == nil {
 		key = str
 	}
-loop:
-	if replace != nil {
-		return strings.Replace(key, "%s", replace[0], -1)
-	}
-	return key
+	return fmt.Sprintf(key, replace...)
 }
