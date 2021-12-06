@@ -23,7 +23,7 @@ func GetGormTag(table *schemas.Table, col *schemas.Column) string {
 		}
 	}
 	if col.IsPrimaryKey {
-		res = append(res, "primary_key")
+		res = append(res, "not null;primary_key")
 	}
 	if col.Default != "" {
 		def := strings.Trim(col.Default, "'")
@@ -37,7 +37,7 @@ func GetGormTag(table *schemas.Table, col *schemas.Column) string {
 		res = append(res, "default:"+def+"")
 	}
 	if col.IsAutoIncrement {
-		res = append(res, strings.ToLower("AUTO_INCREMENT"))
+		res = append(res, "AUTO_INCREMENT")
 	}
 
 	names := make([]string, 0, len(col.Indexes))
@@ -116,7 +116,9 @@ func GetGormTag(table *schemas.Table, col *schemas.Column) string {
 		res = append(res, "comment:'"+col.Comment+"'")
 	}
 
-	res = append(res, s)
+	if !col.IsPrimaryKey {
+		res = append(res, s)
+	}
 	if len(res) > 0 {
 		return "gorm:\"" + strings.Join(res, ";") + "\""
 	}

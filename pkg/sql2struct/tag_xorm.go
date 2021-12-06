@@ -31,7 +31,7 @@ func GetXormTag(table *schemas.Table, col *schemas.Column) string {
 	}
 
 	if col.IsPrimaryKey {
-		res = append(res, "pk")
+		res = append(res, "not null;pk")
 	}
 
 	if len(col.Default) >= 4 && strings.HasPrefix(col.Default, "''") && strings.HasSuffix(col.Default, "''") {
