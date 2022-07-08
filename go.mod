@@ -13,7 +13,7 @@ require (
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
 	github.com/airplayx/gorbit v0.0.0-20200605155611-74ad5e38e049
 	github.com/bndr/gotabulate v1.1.2 // indirect
-	github.com/buger/jsonparser v1.0.0
+	github.com/buger/jsonparser v1.1.1
 	github.com/chenhg5/collection v0.0.0-20191118032303-cb21bccce4c3
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
