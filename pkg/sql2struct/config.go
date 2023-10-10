@@ -15,14 +15,15 @@ import (
 
 //SQL2Struct ...
 type SQL2Struct struct {
-	AutoSave      bool        `json:"auto_save"`
-	JSONOmitempty bool        `json:"json_omitempty"`
-	Reflect       string      `json:"reflect"`
-	SourceMap     []SourceMap `json:"sourceMap"`
-	Special       string      `json:"special"`
-	Tags          []string    `json:"tags"`
-	TargetDir     string      `json:"target_dir"`
-	Tinyint2bool  bool        `json:"tinyint2bool"`
+	AutoSave        bool        `json:"auto_save"`
+	SaveFactoryFunc bool        `json:"save_factory_func"`
+	JSONOmitempty   bool        `json:"json_omitempty"`
+	Reflect         string      `json:"reflect"`
+	SourceMap       []SourceMap `json:"sourceMap"`
+	Special         string      `json:"special"`
+	Tags            []string    `json:"tags"`
+	TargetDir       string      `json:"target_dir"`
+	Tinyint2bool    bool        `json:"tinyint2bool"`
 }
 
 //SourceMap ...
@@ -38,7 +39,7 @@ type SourceMap struct {
 //Configs ...
 func Configs() (s2s *SQL2Struct) {
 	data, _, _, _ := jsonparser.Get(configs.JSON, "sql2struct")
-	if err := json.Unmarshal([]byte(data), &s2s); err != nil {
+	if err := json.Unmarshal(data, &s2s); err != nil {
 		log.Println(err.Error())
 	}
 	return

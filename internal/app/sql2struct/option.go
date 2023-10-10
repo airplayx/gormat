@@ -32,6 +32,16 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 		autoSave.SetSelected(configs.Text("no"))
 	}
 
+	saveFactoryFunc := widget.NewRadio([]string{configs.Text("yes"), configs.Text("no")}, func(s string) {
+
+	})
+	saveFactoryFunc.Horizontal = true
+	if options.SaveFactoryFunc {
+		saveFactoryFunc.SetSelected(configs.Text("yes"))
+	} else {
+		saveFactoryFunc.SetSelected(configs.Text("no"))
+	}
+
 	gorm := widget.NewCheck("gorm", func(bool) {})
 	gorm.SetChecked(collection.Collect(options.Tags).Contains("gorm"))
 
@@ -67,6 +77,7 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 		OnSubmit: func() {
 			options.TargetDir = targetDir.Text
 			options.AutoSave = autoSave.Selected == configs.Text("yes")
+			options.SaveFactoryFunc = saveFactoryFunc.Selected == configs.Text("yes")
 			options.Tags = []string{}
 			if gorm.Checked {
 				options.Tags = append(options.Tags, "gorm")
@@ -92,6 +103,7 @@ func Option(win fyne.Window, options *sql2struct.SQL2Struct) fyne.Widget {
 		},
 		Items: []*widget.FormItem{
 			{Text: configs.Text("auto save files"), Widget: autoSave},
+			{Text: configs.Text("save factory func"), Widget: saveFactoryFunc},
 			{Text: configs.Text("output folder"), Widget: targetDir},
 			{Text: configs.Text("tags"), Widget: gorm},
 			//{Text: "", Widget: beegoOrm},

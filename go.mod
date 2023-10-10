@@ -2,7 +2,7 @@ module gormat
 
 go 1.13
 
-replace fyne.io/fyne => ./vendor/fyne.io/fyne
+replace fyne.io/fyne => ./vendor_/fyne.io/fyne
 
 require (
 	fyne.io/fyne v1.3.2
